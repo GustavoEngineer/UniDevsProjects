@@ -1,0 +1,105 @@
+@BinasCesar_HostAddress = http://localhost:5232
+
+GET {{BinasCesar_HostAddress}}/weatherforecast/
+Accept: application/json
+
+### Variables de entorno
+@baseUrl = https://localhost:7001
+@contentType = application/json
+@token = 
+
+### 1. Login para obtener token JWT
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "admin123"
+}
+
+### 2. Extraer token de la respuesta
+@token = {{login.response.body.token}}
+
+### 3. Probar endpoint protegido con token
+GET {{baseUrl}}/api/auth/test
+Authorization: Bearer {{token}}
+
+### 4. Obtener todos los mensajes cifrados (requiere autenticación)
+GET {{baseUrl}}/api/MensajeCifrado?pagina=1&registrosPorPagina=10
+Authorization: Bearer {{token}}
+
+### 5. Crear un nuevo mensaje cifrado (requiere autenticación)
+POST {{baseUrl}}/api/MensajeCifrado
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "mensajeOriginal": "HOLA MUNDO",
+    "desplazamiento": 3
+}
+
+### 6. Obtener mensaje por ID (requiere autenticación)
+GET {{baseUrl}}/api/MensajeCifrado/1
+Authorization: Bearer {{token}}
+
+### 7. Cifrar mensaje sin guardar (requiere autenticación)
+POST {{baseUrl}}/api/MensajeCifrado/cifrar
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "mensajeOriginal": "PROGRAMACION",
+    "desplazamiento": 7
+}
+
+### 8. Descifrar mensaje (requiere autenticación)
+POST {{baseUrl}}/api/MensajeCifrado/descifrar
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "mensajeOriginal": "WYVNYHTHJPW",
+    "desplazamiento": 7
+}
+
+### 9. Actualizar mensaje (requiere autenticación)
+PUT {{baseUrl}}/api/MensajeCifrado/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "mensajeOriginal": "MENSAJE ACTUALIZADO",
+    "desplazamiento": 5
+}
+
+### 10. Eliminar mensaje (requiere autenticación)
+DELETE {{baseUrl}}/api/MensajeCifrado/1
+Authorization: Bearer {{token}}
+
+### 11. Probar sin token (debería devolver 401)
+GET {{baseUrl}}/api/MensajeCifrado
+
+### 12. Probar con credenciales incorrectas
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "usuario_incorrecto",
+    "password": "password_incorrecto"
+}
+
+### Obtener un mensaje completo (cifrado y descifrado) por ID
+GET {{baseUrl}}/api/MensajeCifrado/1/completo
+Content-Type: {{contentType}}
+
+### Guardar un mensaje cifrado directamente
+POST {{baseUrl}}/api/MensajeCifrado/guardar-cifrado
+Content-Type: {{contentType}}
+
+{
+  "mensajeCifrado": "KROD PXQGR",
+  "desplazamiento": 3
+}
+
+###

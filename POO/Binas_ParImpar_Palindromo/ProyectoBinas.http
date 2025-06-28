@@ -1,0 +1,224 @@
+@ProyectoBinas_HostAddress = http://localhost:5238
+
+GET {{ProyectoBinas_HostAddress}}/weatherforecast/
+Accept: application/json
+
+### Variables de entorno
+@baseUrl = https://localhost:7001
+@apiUrl = {{baseUrl}}/api/palindromos
+@contentType = application/json
+
+### ========================================
+### ENDPOINTS DE PALÍNDROMOS
+### ========================================
+
+### Obtener todos los palíndromos
+GET {{baseUrl}}/api/Palindromo
+Content-Type: {{contentType}}
+
+### Obtener palíndromo por ID
+GET {{baseUrl}}/api/Palindromo/1
+Content-Type: {{contentType}}
+
+### Crear nuevo palíndromo
+POST {{baseUrl}}/api/Palindromo
+Content-Type: {{contentType}}
+
+{
+  "palabra": "ana"
+}
+
+### Actualizar palíndromo
+PUT {{baseUrl}}/api/Palindromo/1
+Content-Type: {{contentType}}
+
+{
+  "palabra": "oso"
+}
+
+### Eliminar palíndromo
+DELETE {{baseUrl}}/api/Palindromo/1
+Content-Type: {{contentType}}
+
+### Verificar palíndromo sin guardar
+GET {{baseUrl}}/api/Palindromo/verificar/radar
+Content-Type: {{contentType}}
+
+### Verificar múltiples palíndromos
+POST {{baseUrl}}/api/Palindromo/verificar-multiples
+Content-Type: {{contentType}}
+
+{
+  "palabras": ["ana", "oso", "radar", "hola", "casa"]
+}
+
+### ========================================
+### ENDPOINTS DE NÚMEROS (NUEVA FUNCIONALIDAD)
+### ========================================
+
+### Obtener todos los números
+GET {{baseUrl}}/api/Numero
+Content-Type: {{contentType}}
+
+### Obtener número por ID
+GET {{baseUrl}}/api/Numero/1
+Content-Type: {{contentType}}
+
+### Obtener números pares
+GET {{baseUrl}}/api/Numero/paridad/true
+Content-Type: {{contentType}}
+
+### Obtener números impares
+GET {{baseUrl}}/api/Numero/paridad/false
+Content-Type: {{contentType}}
+
+### Crear nuevo número
+POST {{baseUrl}}/api/Numero
+Content-Type: {{contentType}}
+
+{
+  "valor": 42
+}
+
+### Actualizar número
+PUT {{baseUrl}}/api/Numero/1
+Content-Type: {{contentType}}
+
+{
+  "valor": 15
+}
+
+### Eliminar número
+DELETE {{baseUrl}}/api/Numero/1
+Content-Type: {{contentType}}
+
+### Verificar número sin guardar
+GET {{baseUrl}}/api/Numero/verificar/7
+Content-Type: {{contentType}}
+
+### Verificar múltiples números
+POST {{baseUrl}}/api/Numero/verificar-multiples
+Content-Type: {{contentType}}
+
+{
+  "numeros": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+}
+
+### Obtener estadísticas de números
+GET {{baseUrl}}/api/Numero/estadisticas
+Content-Type: {{contentType}}
+
+### ========================================
+### EJEMPLOS DE USO
+### ========================================
+
+### Ejemplo 1: Verificar si 42 es par
+GET {{baseUrl}}/api/Numero/verificar/42
+
+### Ejemplo 2: Verificar si 17 es impar
+GET {{baseUrl}}/api/Numero/verificar/17
+
+### Ejemplo 3: Crear y guardar un número par
+POST {{baseUrl}}/api/Numero
+Content-Type: {{contentType}}
+
+{
+  "valor": 100
+}
+
+### Ejemplo 4: Crear y guardar un número impar
+POST {{baseUrl}}/api/Numero
+Content-Type: {{contentType}}
+
+{
+  "valor": 99
+}
+
+### Ejemplo 5: Verificar múltiples números
+POST {{baseUrl}}/api/Numero/verificar-multiples
+Content-Type: {{contentType}}
+
+{
+  "numeros": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+### Ejemplo 6: Obtener solo números pares de la base de datos
+GET {{baseUrl}}/api/Numero/paridad/true
+
+### Ejemplo 7: Obtener solo números impares de la base de datos
+GET {{baseUrl}}/api/Numero/paridad/false
+
+### 1. Verificar si la API está funcionando
+GET {{baseUrl}}/
+
+### 2. Obtener todos los palíndromos
+GET {{apiUrl}}
+
+### 3. Verificar si una palabra es palíndromo (sin guardar)
+GET {{apiUrl}}/verificar/ana
+
+### 4. Verificar otra palabra
+GET {{apiUrl}}/verificar/radar
+
+### 5. Verificar palabra con espacios
+GET {{apiUrl}}/verificar/A man a plan a canal Panama
+
+### 6. Verificar palabra con acentos
+GET {{apiUrl}}/verificar/reconocer
+
+### 7. Crear un nuevo palíndromo
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "palabra": "ana"
+}
+
+### 8. Crear otro palíndromo
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "palabra": "radar"
+}
+
+### 9. Crear una palabra que no es palíndromo
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "palabra": "hola"
+}
+
+### 10. Obtener palíndromo por ID (reemplazar {id} con un ID válido)
+GET {{apiUrl}}/1
+
+### 11. Actualizar palíndromo (reemplazar {id} con un ID válido)
+PUT {{apiUrl}}/1
+Content-Type: application/json
+
+{
+  "palabra": "oso"
+}
+
+### 12. Eliminar palíndromo (reemplazar {id} con un ID válido)
+DELETE {{apiUrl}}/1
+
+### 13. Intentar obtener un palíndromo que no existe
+GET {{apiUrl}}/999
+
+### 14. Intentar crear un palíndromo con datos inválidos
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "palabra": ""
+}
+
+### 15. Verificar palabra vacía
+GET {{apiUrl}}/verificar/
+
+### 16. Obtener documentación Swagger
+GET {{baseUrl}}/swagger
+
+###
