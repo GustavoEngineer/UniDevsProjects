@@ -1,0 +1,494 @@
+/* Paleta de colores */
+:root {
+    --azul-oscuro: #1b324c;
+    --azul-claro: #65b3e5;
+    --azul-gris: #63707d;
+    --azul-muy-claro: #cedee8;
+    --blanco: #fefefe;
+}
+
+/* Estilos para la plataforma educativa de IA */
+body {
+    margin: 0;
+    padding: 0;
+    /* Fondo azul claro elegante */
+    background: linear-gradient(120deg, #65b3e5 60%, #cedee8 100%);
+    font-family: 'Open Sans', sans-serif; /* Texto de cuerpo por defecto */
+    font-weight: 400;
+    min-height: 100vh;
+}
+
+.left-panel {
+    width: 50%;
+    height: 100vh;
+    background-color: var(--blanco);
+    position: fixed;
+    left: 0;
+    top: 0;
+    box-shadow: 0 12px 48px 0 rgba(27, 50, 76, 0.28), 2px 0 32px 0 rgba(27, 50, 76, 0.16);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+}
+
+.left-panel.swapped {
+    transform: translateX(100%);
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 0 40px;
+}
+
+.login-container h2 {
+    color: var(--azul-oscuro);
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-family: 'Poppins', sans-serif; /* Títulos principales */
+    font-weight: 700; /* Bold */
+    letter-spacing: 1px;
+}
+
+.login-form {
+    width: 100%;
+    max-width: 350px;
+    background: rgba(206, 222, 232, 0.25);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px 0 rgba(99, 112, 125, 0.08);
+    padding: 32px 28px 24px 28px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--azul-gris);
+    font-family: 'Open Sans', sans-serif; /* Campos de formulario */
+    font-weight: 400; /* Regular */
+    font-size: 14px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--azul-muy-claro);
+    background: var(--blanco);
+    border-radius: 14px;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    color: var(--azul-oscuro);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+    /* Neumorfismo más sutil */
+    box-shadow:
+        4px 4px 12px 0 rgba(206, 222, 232, 0.4),
+        -4px -4px 12px 0 #fff,
+        inset 2px 2px 6px 0 rgba(206, 222, 232, 0.2),
+        inset -2px -2px 6px 0 #fff;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--azul-claro);
+    /* Neumorfismo sutil al enfocar */
+    box-shadow:
+        6px 6px 16px 0 rgba(206, 222, 232, 0.5),
+        -6px -6px 16px 0 #fff,
+        inset 3px 3px 8px 0 rgba(206, 222, 232, 0.3),
+        inset -3px -3px 8px 0 #fff;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--azul-claro);
+    color: var(--blanco);
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+    /* Neumorfismo sutil para botones */
+    box-shadow:
+        4px 4px 12px 0 rgba(101, 179, 229, 0.2),
+        -2px -2px 8px 0 rgba(255, 255, 255, 0.6),
+        inset 1px 1px 4px 0 rgba(255, 255, 255, 0.3),
+        inset -1px -1px 4px 0 rgba(101, 179, 229, 0.1);
+}
+
+.login-btn:hover {
+    background: linear-gradient(90deg, var(--azul-claro) 60%, var(--azul-oscuro) 100%);
+    transform: translateY(-2px);
+    /* Neumorfismo sutil al hover */
+    box-shadow:
+        6px 6px 16px 0 rgba(101, 179, 229, 0.25),
+        -3px -3px 10px 0 rgba(255, 255, 255, 0.7),
+        inset 2px 2px 6px 0 rgba(255, 255, 255, 0.4),
+        inset -2px -2px 6px 0 rgba(101, 179, 229, 0.15);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+    /* Neumorfismo sutil presionado */
+    box-shadow:
+        2px 2px 8px 0 rgba(101, 179, 229, 0.15),
+        -1px -1px 6px 0 rgba(255, 255, 255, 0.5),
+        inset 3px 3px 8px 0 rgba(101, 179, 229, 0.2),
+        inset -1px -1px 4px 0 rgba(255, 255, 255, 0.2);
+}
+
+.login-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif; /* Mensajes pequeños */
+    font-weight: 300; /* Light */
+    color: var(--azul-gris);
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    accent-color: var(--azul-claro);
+}
+
+.forgot-password {
+    color: var(--azul-claro);
+    text-decoration: none;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif; /* Mensajes pequeños */
+    font-weight: 300; /* Light */
+    font-style: italic; /* Italic */
+    transition: color 0.3s;
+}
+
+.forgot-password:hover {
+    color: var(--azul-oscuro);
+    text-decoration: underline;
+}
+
+.social-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 1001;
+}
+
+.social-circle {
+    width: 48px;
+    height: 48px;
+    background: var(--blanco);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    z-index: 1002;
+    transition: all 0.3s ease;
+    /* Neumorfismo sutil para círculos sociales */
+    box-shadow:
+        4px 4px 8px 0 rgba(206, 222, 232, 0.3),
+        -4px -4px 8px 0 #fff,
+        inset 1px 1px 3px 0 rgba(255, 255, 255, 0.8),
+        inset -1px -1px 3px 0 rgba(206, 222, 232, 0.1);
+}
+
+.social-circle:hover {
+    transform: translateY(-2px) scale(1.05);
+    /* Neumorfismo sutil al hover */
+    box-shadow:
+        6px 6px 12px 0 rgba(206, 222, 232, 0.4),
+        -6px -6px 12px 0 #fff,
+        inset 2px 2px 4px 0 rgba(255, 255, 255, 0.9),
+        inset -2px -2px 4px 0 rgba(206, 222, 232, 0.15);
+}
+
+.social-circle:active {
+    transform: translateY(0) scale(1.02);
+    /* Neumorfismo sutil presionado */
+    box-shadow:
+        2px 2px 6px 0 rgba(206, 222, 232, 0.2),
+        -2px -2px 6px 0 #fff,
+        inset 3px 3px 6px 0 rgba(206, 222, 232, 0.2),
+        inset -1px -1px 3px 0 rgba(255, 255, 255, 0.7);
+}
+
+.social-circle img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+}
+
+.right-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 50%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    z-index: 1;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.right-panel.swapped {
+    transform: translateX(-100%);
+}
+
+.welcome-message {
+    color: #1b324c;
+    font-family: 'Poppins', 'Montserrat', sans-serif;
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    max-width: 480px;
+    line-height: 1.4;
+    background: none;
+    box-shadow: none;
+}
+
+.welcome-message strong {
+    font-size: 2.2rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 18px;
+}
+
+.welcome-question {
+    margin-top: 32px;
+    margin-bottom: 18px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #63707d;
+}
+
+.register-btn {
+    padding: 12px 36px;
+    background: var(--azul-oscuro);
+    color: var(--blanco);
+    border: none;
+    border-radius: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    /* Neumorfismo sutil para botones */
+    box-shadow:
+        4px 4px 12px 0 rgba(27, 50, 76, 0.2),
+        -2px -2px 8px 0 rgba(255, 255, 255, 0.6),
+        inset 1px 1px 4px 0 rgba(255, 255, 255, 0.3),
+        inset -1px -1px 4px 0 rgba(27, 50, 76, 0.1);
+}
+
+.register-btn:hover {
+    background: linear-gradient(90deg, var(--azul-oscuro) 60%, var(--azul-claro) 100%);
+    transform: translateY(-2px) scale(1.04);
+    /* Neumorfismo sutil al hover */
+    box-shadow:
+        6px 6px 16px 0 rgba(27, 50, 76, 0.25),
+        -3px -3px 10px 0 rgba(255, 255, 255, 0.7),
+        inset 2px 2px 6px 0 rgba(255, 255, 255, 0.4),
+        inset -2px -2px 6px 0 rgba(27, 50, 76, 0.15);
+}
+
+.register-btn:active {
+    transform: translateY(0) scale(1.02);
+    /* Neumorfismo sutil presionado */
+    box-shadow:
+        2px 2px 8px 0 rgba(27, 50, 76, 0.15),
+        -1px -1px 6px 0 rgba(255, 255, 255, 0.5),
+        inset 3px 3px 8px 0 rgba(27, 50, 76, 0.2),
+        inset -1px -1px 4px 0 rgba(255, 255, 255, 0.2);
+}
+
+.logo-iaway {
+    display: block;
+    margin: 0 auto 32px auto;
+    max-width: 120px;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 4px 16px rgba(99,112,125,0.10));
+    transition: transform 0.2s;
+}
+
+.logo-iaway:hover {
+    transform: scale(1.04) rotate(-2deg);
+}
+
+/* Estilos para el formulario de registro */
+.register-container {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 0 40px;
+}
+
+.register-container h2 {
+    color: var(--azul-oscuro);
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.register-form {
+    width: 100%;
+    max-width: 350px;
+    background: rgba(206, 222, 232, 0.25);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px 0 rgba(99, 112, 125, 0.08);
+    padding: 32px 28px 24px 28px;
+}
+
+.register-form-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--azul-claro);
+    color: var(--blanco);
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+    /* Neumorfismo sutil para botones */
+    box-shadow:
+        4px 4px 12px 0 rgba(101, 179, 229, 0.2),
+        -2px -2px 8px 0 rgba(255, 255, 255, 0.6),
+        inset 1px 1px 4px 0 rgba(255, 255, 255, 0.3),
+        inset -1px -1px 4px 0 rgba(101, 179, 229, 0.1);
+}
+
+.register-form-btn:hover {
+    background: linear-gradient(90deg, var(--azul-claro) 60%, var(--azul-oscuro) 100%);
+    transform: translateY(-2px);
+    /* Neumorfismo sutil al hover */
+    box-shadow:
+        6px 6px 16px 0 rgba(101, 179, 229, 0.25),
+        -3px -3px 10px 0 rgba(255, 255, 255, 0.7),
+        inset 2px 2px 6px 0 rgba(255, 255, 255, 0.4),
+        inset -2px -2px 6px 0 rgba(101, 179, 229, 0.15);
+}
+
+.register-form-btn:active {
+    transform: translateY(0);
+    /* Neumorfismo sutil presionado */
+    box-shadow:
+        2px 2px 8px 0 rgba(101, 179, 229, 0.15),
+        -1px -1px 6px 0 rgba(255, 255, 255, 0.5),
+        inset 3px 3px 8px 0 rgba(101, 179, 229, 0.2),
+        inset -1px -1px 4px 0 rgba(255, 255, 255, 0.2);
+}
+
+.register-container.visible {
+    display: flex !important;
+}
+
+/* Clases para manejar la visibilidad */
+.hidden {
+    display: none !important;
+}
+
+.login-container.hidden {
+    display: none;
+}
+
+/* Estilos para el mensaje de bienvenida de login */
+.login-welcome-message {
+    color: #1b324c;
+    font-family: 'Poppins', 'Montserrat', sans-serif;
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    max-width: 480px;
+    line-height: 1.4;
+    background: none;
+    box-shadow: none;
+}
+
+.login-welcome-message strong {
+    font-size: 2.2rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 18px;
+}
+
+.login-btn-welcome {
+    padding: 12px 36px;
+    background: var(--azul-oscuro);
+    color: var(--blanco);
+    border: none;
+    border-radius: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    /* Neumorfismo sutil para botones */
+    box-shadow:
+        4px 4px 12px 0 rgba(27, 50, 76, 0.2),
+        -2px -2px 8px 0 rgba(255, 255, 255, 0.6),
+        inset 1px 1px 4px 0 rgba(255, 255, 255, 0.3),
+        inset -1px -1px 4px 0 rgba(27, 50, 76, 0.1);
+}
+
+.login-btn-welcome:hover {
+    background: linear-gradient(90deg, var(--azul-oscuro) 60%, var(--azul-claro) 100%);
+    transform: translateY(-2px) scale(1.04);
+    /* Neumorfismo sutil al hover */
+    box-shadow:
+        6px 6px 16px 0 rgba(27, 50, 76, 0.25),
+        -3px -3px 10px 0 rgba(255, 255, 255, 0.7),
+        inset 2px 2px 6px 0 rgba(255, 255, 255, 0.4),
+        inset -2px -2px 6px 0 rgba(27, 50, 76, 0.15);
+}
+
+.login-btn-welcome:active {
+    transform: translateY(0) scale(1.02);
+    /* Neumorfismo sutil presionado */
+    box-shadow:
+        2px 2px 8px 0 rgba(27, 50, 76, 0.15),
+        -1px -1px 6px 0 rgba(255, 255, 255, 0.5),
+        inset 3px 3px 8px 0 rgba(27, 50, 76, 0.2),
+        inset -1px -1px 4px 0 rgba(255, 255, 255, 0.2);
+}
