@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Plataforma Educativa IA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700&family=Open+Sans:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/dashboard.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="images/LogoIAWAY.png" alt="Logo IAWAY" class="logo" />
+                <h1>IAWAY</h1>
+            </div>
+            <div class="user-section">
+                <div class="user-info">
+                    <span class="user-name">Usuario</span>
+                    <span class="user-role">Estudiante</span>
+                </div>
+                <div class="user-avatar">
+                    <img src="images/LogoIAWAY.png" alt="Avatar" />
+                </div>
+                <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="nav-menu">
+            <a href="#" class="nav-item active">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Inicio</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📚</span>
+                <span class="nav-text">Cursos</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">🎯</span>
+                <span class="nav-text">Proyectos</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Progreso</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">👥</span>
+                <span class="nav-text">Comunidad</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-text">Configuración</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="welcome-section">
+            <h2>¡Bienvenido a IAWAY!</h2>
+            <p>Explora el mundo de la inteligencia artificial y desarrolla tus habilidades</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-content">
+                    <h3>Progreso General</h3>
+                    <p class="stat-value">75%</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎓</div>
+                <div class="stat-content">
+                    <h3>Cursos Completados</h3>
+                    <p class="stat-value">3/8</p>
+                    <p class="stat-description">Siguiente: Machine Learning</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-content">
+                    <h3>Puntos Ganados</h3>
+                    <p class="stat-value">1,250</p>
+                    <p class="stat-description">Nivel: Avanzado</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-content">
+                    <h3>Tiempo de Estudio</h3>
+                    <p class="stat-value">24h</p>
+                    <p class="stat-description">Esta semana</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="content-section">
+            <h3>Actividad Reciente</h3>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon">✅</div>
+                    <div class="activity-content">
+                        <h4>Completaste "Introducción a Python"</h4>
+                        <p>Hace 2 horas</p>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon">🎯</div>
+                    <div class="activity-content">
+                        <h4>Nuevo proyecto disponible</h4>
+                        <p>Hace 1 día</p>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon">🏆</div>
+                    <div class="activity-content">
+                        <h4>Ganaste 50 puntos</h4>
+                        <p>Hace 2 días</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommended Courses -->
+        <div class="content-section">
+            <h3>Cursos Recomendados</h3>
+            <div class="courses-grid">
+                <div class="course-card">
+                    <div class="course-image">
+                        <span class="course-icon">🤖</span>
+                    </div>
+                    <div class="course-content">
+                        <h4>Machine Learning Básico</h4>
+                        <p>Aprende los fundamentos del ML</p>
+                        <div class="course-meta">
+                            <span>⏱️ 8 horas</span>
+                            <span>📊 Intermedio</span>
+                        </div>
+                        <button class="course-btn">Comenzar</button>
+                    </div>
+                </div>
+                <div class="course-card">
+                    <div class="course-image">
+                        <span class="course-icon">🧠</span>
+                    </div>
+                    <div class="course-content">
+                        <h4>Redes Neuronales</h4>
+                        <p>Construye tu primera red neuronal</p>
+                        <div class="course-meta">
+                            <span>⏱️ 12 horas</span>
+                            <span>📊 Avanzado</span>
+                        </div>
+                        <button class="course-btn">Comenzar</button>
+                    </div>
+                </div>
+                <div class="course-card">
+                    <div class="course-image">
+                        <span class="course-icon">📊</span>
+                    </div>
+                    <div class="course-content">
+                        <h4>Análisis de Datos</h4>
+                        <p>Visualiza y analiza datos</p>
+                        <div class="course-meta">
+                            <span>⏱️ 6 horas</span>
+                            <span>📊 Básico</span>
+                        </div>
+                        <button class="course-btn">Comenzar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html> 
