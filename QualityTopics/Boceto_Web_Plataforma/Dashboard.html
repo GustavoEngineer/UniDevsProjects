@@ -37,21 +37,25 @@
                 <span class="nav-icon">🏠</span>
                 <span class="nav-text">Inicio</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="#" class="nav-item" id="nav-courses">
                 <span class="nav-icon">📚</span>
                 <span class="nav-text">Cursos</span>
             </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon">🎯</span>
-                <span class="nav-text">Proyectos</span>
+            <a href="#" class="nav-item" id="nav-notes">
+                <span class="nav-icon">📝</span>
+                <span class="nav-text">Apuntes</span>
             </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon">📊</span>
-                <span class="nav-text">Progreso</span>
+            <a href="#" class="nav-item" id="nav-challenges">
+                <span class="nav-icon">🏆</span>
+                <span class="nav-text">Retos</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="#" class="nav-item" id="nav-community">
                 <span class="nav-icon">👥</span>
                 <span class="nav-text">Comunidad</span>
+            </a>
+            <a href="#" class="nav-item" id="nav-premium">
+                <span class="nav-icon">⭐</span>
+                <span class="nav-text">Premium</span>
             </a>
             <a href="#" class="nav-item">
                 <span class="nav-icon">⚙️</span>
@@ -101,6 +105,106 @@
                     <h3>Tiempo de Estudio</h3>
                     <p class="stat-value">24h</p>
                     <p class="stat-description">Esta semana</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen del Usuario -->
+        <div class="user-summary-section">
+            <div class="summary-header">
+                <h3>📊 Mi Resumen</h3>
+                <button class="notifications-btn" onclick="openNotificationsModal()">
+                    <span class="notifications-icon">🔔</span>
+                    <span class="notifications-count">3</span>
+                </button>
+            </div>
+            
+            <div class="summary-content">
+                <div class="user-activity">
+                    <h4>🕒 Actividad Reciente</h4>
+                    <div class="activity-timeline">
+                        <div class="activity-item">
+                            <div class="activity-icon">📚</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Completaste el módulo "¿Qué es la Inteligencia Artificial?"</div>
+                                <div class="activity-time">Hace 2 horas</div>
+                                <div class="activity-score">Puntuación: 95/100</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon">🏆</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Ganaste el logro "Primer Módulo Completado"</div>
+                                <div class="activity-time">Hace 2 horas</div>
+                                <div class="activity-score">+50 puntos</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon">📝</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Creaste un nuevo apunte: "Conceptos básicos de IA"</div>
+                                <div class="activity-time">Hace 1 día</div>
+                                <div class="activity-score">Apunte guardado</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon">👥</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Te uniste al grupo de estudio "Machine Learning"</div>
+                                <div class="activity-time">Hace 2 días</div>
+                                <div class="activity-score">5 miembros</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon">🎯</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Completaste el reto diario: "Prompt Engineering"</div>
+                                <div class="activity-time">Hace 3 días</div>
+                                <div class="activity-score">+25 puntos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="user-stats-detail">
+                    <h4>📈 Estadísticas Detalladas</h4>
+                    <div class="stats-detail-grid">
+                        <div class="stat-detail-card">
+                            <div class="stat-detail-icon">⏱️</div>
+                            <div class="stat-detail-content">
+                                <div class="stat-detail-value">24h</div>
+                                <div class="stat-detail-label">Tiempo de estudio esta semana</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-detail-card">
+                            <div class="stat-detail-icon">🎯</div>
+                            <div class="stat-detail-content">
+                                <div class="stat-detail-value">85%</div>
+                                <div class="stat-detail-label">Promedio de puntuación</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-detail-card">
+                            <div class="stat-detail-icon">🔥</div>
+                            <div class="stat-detail-content">
+                                <div class="stat-detail-value">7</div>
+                                <div class="stat-detail-label">Días consecutivos activo</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-detail-card">
+                            <div class="stat-detail-icon">🏅</div>
+                            <div class="stat-detail-content">
+                                <div class="stat-detail-value">#15</div>
+                                <div class="stat-detail-label">Posición en el ranking</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -199,6 +303,193 @@
                 <!-- Los módulos se cargarán dinámicamente con JavaScript -->
             </div>
         </div>
+
+        <!-- Sección de Apuntes (inicialmente oculta) -->
+        <div class="content-section" id="notesSection" style="display:none;">
+            <div class="notes-header">
+                <h3>📝 Mis Apuntes</h3>
+                <button class="add-note-btn" id="addNoteBtn">+ Nuevo Apunte</button>
+            </div>
+            <div class="notes-list" id="notesList">
+                <!-- Los apuntes se cargarán aquí -->
+            </div>
+        </div>
+
+        <!-- Sección de Retos (inicialmente oculta) -->
+        <div class="content-section" id="challengesSection" style="display:none;">
+            <div class="challenges-header">
+                <h3>🏆 Retos Diarios</h3>
+            </div>
+            <div class="challenges-calendar">
+                <!-- Los retos se llenan dinámicamente por JS -->
+            </div>
+        </div>
+
+        <!-- Sección de Comunidad (inicialmente oculta) -->
+        <div class="content-section" id="communitySection" style="display:none;">
+            <div class="community-header">
+                <h3>👥 Comunidad IAWAY</h3>
+                <p>Conecta con otros estudiantes, comparte conocimientos y compite en el ranking</p>
+            </div>
+            
+            <!-- Información de la Comunidad -->
+            <div class="community-info-section">
+                <div class="community-description">
+                    <p>La plataforma reconoce que aprender es más efectivo cuando se hace en comunidad, por lo que incluye espacios donde los usuarios pueden interactuar, colaborar y apoyarse mutuamente.</p>
+                </div>
+                
+                <div class="community-features">
+                    <div class="community-feature">
+                        <div class="feature-icon">💬</div>
+                        <div class="feature-content">
+                            <h4>Foros Temáticos</h4>
+                            <p>Organizados por materias y moderados para mantener conversaciones constructivas y útiles. Los usuarios pueden hacer preguntas, compartir conocimientos y votar por las mejores respuestas.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="community-feature">
+                        <div class="feature-icon">🎨</div>
+                        <div class="feature-content">
+                            <h4>Galería de Proyectos</h4>
+                            <p>Los estudiantes pueden mostrar sus proyectos, recibir comentarios constructivos y colaborar con otros en iniciativas grupales.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="community-feature">
+                        <div class="feature-icon">🤝</div>
+                        <div class="feature-content">
+                            <h4>Sistema de Mentoría</h4>
+                            <p>Conecta a estudiantes experimentados con principiantes que comparten intereses similares, creando oportunidades de aprendizaje personalizado y construcción de redes profesionales.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="community-feature">
+                        <div class="feature-icon">👥</div>
+                        <div class="feature-content">
+                            <h4>Grupos de Estudio Virtuales</h4>
+                            <p>Permiten formar salas de estudio colaborativo con herramientas como pizarras digitales compartidas y videollamadas integradas. La plataforma utiliza algoritmos inteligentes para sugerir grupos compatibles basándose en objetivos de aprendizaje, horarios y estilos de estudio similares.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Botón de Chat -->
+            <div class="chat-section">
+                <div class="chat-header">
+                    <h4>💬 Chat en Tiempo Real</h4>
+                    <p>Conecta con tus amigos y compañeros de estudio</p>
+                </div>
+                <button class="open-chat-btn" onclick="openChatModal()">
+                    <span class="chat-icon">💬</span>
+                    <span class="chat-text">Abrir Chat</span>
+                    <span class="online-indicator">🟢 12 en línea</span>
+                </button>
+            </div>
+            
+            <!-- Ranking de Estudiantes -->
+            <div class="ranking-section">
+                <div class="ranking-header">
+                    <h4>🏅 Ranking de Estudiantes</h4>
+                    <div class="ranking-filters">
+                        <select id="rankingFilter" class="ranking-filter">
+                            <option value="global">🌍 Global</option>
+                            <option value="friends">👥 Amigos</option>
+                            <option value="university">🎓 Universidad</option>
+                            <option value="region">🌎 Región</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="ranking-table-container">
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th>Posición</th>
+                                <th>Estudiante</th>
+                                <th>Nivel</th>
+                                <th>Puntos</th>
+                                <th>Módulos Completados</th>
+                                <th>Logros</th>
+                                <th>Tiempo de Estudio</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankingTableBody">
+                            <!-- Los datos se cargarán dinámicamente con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Premium (inicialmente oculta) -->
+        <div class="content-section" id="premiumSection" style="display:none;">
+            <div class="premium-header">
+                <h3>⭐ IAWAY Premium</h3>
+                <p>Desbloquea todo tu potencial con herramientas avanzadas de inteligencia artificial</p>
+            </div>
+            
+            <div class="pricing-cards">
+                <!-- Plan Gratuito -->
+                <div class="pricing-card free">
+                    <div class="card-header">
+                        <div class="plan-icon">🎓</div>
+                        <h4>Plan Gratuito</h4>
+                        <div class="price">
+                            <span class="amount">$0</span>
+                            <span class="period">/mes</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="features-list">
+                            <li>✅ Acceso a módulos básicos de IA</li>
+                            <li>✅ Contenido educativo fundamental</li>
+                            <li>✅ Participación en la comunidad</li>
+                            <li>✅ Seguimiento básico de progreso</li>
+                            <li>✅ Acceso a retos diarios</li>
+                            <li>✅ Sistema de logros básico</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer">
+                        <button class="plan-btn current">Plan Actual</button>
+                    </div>
+                </div>
+
+                <!-- Plan Premium -->
+                <div class="pricing-card premium">
+                    <div class="card-header">
+                        <div class="plan-icon">⭐</div>
+                        <h4>Plan Premium</h4>
+                        <div class="price">
+                            <span class="amount">$200</span>
+                            <span class="period">/mes</span>
+                        </div>
+                        <div class="popular-badge">Más Popular</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="premium-description">
+                            <p>Estás a un paso de liberar todo tu potencial con IAWAY! Has llegado a una sección Premium diseñada para quienes quieren ir más allá del aprendizaje tradicional y llevar sus habilidades con inteligencia artificial al siguiente nivel.</p>
+                        </div>
+                        <ul class="features-list">
+                            <li>✅ Acceso completo a herramientas como ChatGPT, Notion AI, Copilot, Gemini y más</li>
+                            <li>✅ Actividades interactivas con retroalimentación automática</li>
+                            <li>✅ Módulos exclusivos enfocados en automatización, creatividad y eficiencia académica</li>
+                            <li>✅ Rutas de aprendizaje personalizadas y contenido actualizado</li>
+                            <li>✅ Certificados digitales y medallas para destacar tu progreso</li>
+                            <li>✅ Comunidad privada con otros estudiantes y expertos en IA</li>
+                            <li>✅ Recursos descargables, plantillas y material adicional para tus proyectos escolares</li>
+                        </ul>
+                        <div class="premium-cta">
+                            <p><strong>🔓 ¿Quieres desbloquear tu próximo nivel?</strong></p>
+                            <p>Activa IAWAY Premium hoy mismo y transforma tu experiencia académica con inteligencia artificial real, práctica y poderosa.</p>
+                            <p><em>📌 Sin complicaciones. Sin límites. Solo aprendizaje inteligente.</em></p>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="plan-btn upgrade">Pagar $200/mes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <!-- Modal de Perfil -->
@@ -209,38 +500,156 @@
                 <button class="close-modal" onclick="closeProfileModal()">&times;</button>
             </div>
             <div class="profile-modal-body">
-                <div class="profile-info">
-                    <div class="profile-avatar">
-                        <img src="images/LogoIAWAY.png" alt="Avatar" />
+                <!-- Información Básica del Usuario -->
+                <div class="profile-section">
+                    <h3>👤 Información Personal</h3>
+                    <div class="profile-info">
+                        <div class="profile-avatar">
+                            <img src="images/LogoIAWAY.png" alt="Avatar" />
+                        </div>
+                        <div class="profile-details">
+                            <div class="profile-item">
+                                <label>Nombre:</label>
+                                <span id="profileName">Cargando...</span>
+                            </div>
+                            <div class="profile-item">
+                                <label>Email:</label>
+                                <span id="profileEmail">Cargando...</span>
+                            </div>
+                            <div class="profile-item">
+                                <label>Nivel de Estudios:</label>
+                                <span id="profileEducation">Cargando...</span>
+                            </div>
+                            <div class="profile-item" id="profileCareerItem" style="display: none;">
+                                <label>Carrera:</label>
+                                <span id="profileCareer">Cargando...</span>
+                            </div>
+                            <div class="profile-item">
+                                <label>Objetivos:</label>
+                                <p id="profileObjectives">Cargando...</p>
+                            </div>
+                            <div class="profile-item">
+                                <label>Tiempo de Estudio:</label>
+                                <span id="profileStudyTime">Cargando...</span>
+                            </div>
+                            <div class="profile-item">
+                                <label>Miembro desde:</label>
+                                <span id="profileMemberSince">Cargando...</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="profile-details">
-                        <div class="profile-item">
-                            <label>Nombre:</label>
-                            <span id="profileName">Cargando...</span>
+                </div>
+
+                <!-- Tablero de Control de Aprendizaje -->
+                <div class="profile-section">
+                    <h3>📊 Tablero de Control de Aprendizaje</h3>
+                    <div class="learning-dashboard">
+                        <div class="dashboard-description">
+                            <p>Cada usuario tiene un perfil personalizado que funciona como un tablero de control de su aprendizaje. Este perfil transforma todos los datos de estudio en información útil y fácil de entender mediante gráficos coloridos y métricas claras.</p>
                         </div>
-                        <div class="profile-item">
-                            <label>Email:</label>
-                            <span id="profileEmail">Cargando...</span>
+                        <div class="dashboard-metrics">
+                            <div class="metric-card">
+                                <div class="metric-icon">📈</div>
+                                <div class="metric-content">
+                                    <h4>Progreso por Materia</h4>
+                                    <p>Visualiza tu avance en diferentes módulos de IA</p>
+                                </div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-icon">🎯</div>
+                                <div class="metric-content">
+                                    <h4>Fortalezas y Áreas de Mejora</h4>
+                                    <p>Identifica tus puntos fuertes y temas que necesitan más atención</p>
+                                </div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-icon">⏱️</div>
+                                <div class="metric-content">
+                                    <h4>Evolución Temporal</h4>
+                                    <p>Sigue tu progreso y desarrollo a lo largo del tiempo</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="profile-item">
-                            <label>Nivel de Estudios:</label>
-                            <span id="profileEducation">Cargando...</span>
+                    </div>
+                </div>
+
+                <!-- Sistema de Logros -->
+                <div class="profile-section">
+                    <h3>🏆 Sistema de Logros</h3>
+                    <div class="achievements-system">
+                        <div class="achievements-description">
+                            <p>El sistema de logros funciona como una colección de insignias que los estudiantes pueden ganar por diferentes tipos de actividades: ser rápido respondiendo, mantener consistencia en el estudio, dominar temas específicos o ayudar a otros estudiantes.</p>
                         </div>
-                        <div class="profile-item" id="profileCareerItem" style="display: none;">
-                            <label>Carrera:</label>
-                            <span id="profileCareer">Cargando...</span>
+                        <div class="achievements-categories">
+                            <div class="achievement-category">
+                                <div class="category-icon">⚡</div>
+                                <div class="category-content">
+                                    <h4>Velocidad de Respuesta</h4>
+                                    <p>Logros por responder rápidamente a los ejercicios</p>
+                                </div>
+                            </div>
+                            <div class="achievement-category">
+                                <div class="category-icon">📅</div>
+                                <div class="category-content">
+                                    <h4>Consistencia</h4>
+                                    <p>Insignias por mantener un estudio regular y constante</p>
+                                </div>
+                            </div>
+                            <div class="achievement-category">
+                                <div class="category-icon">🎓</div>
+                                <div class="category-content">
+                                    <h4>Dominio de Temas</h4>
+                                    <p>Logros por dominar completamente módulos específicos</p>
+                                </div>
+                            </div>
+                            <div class="achievement-category">
+                                <div class="category-icon">🤝</div>
+                                <div class="category-content">
+                                    <h4>Ayuda a Otros</h4>
+                                    <p>Insignias por ayudar y colaborar con otros estudiantes</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="profile-item">
-                            <label>Objetivos:</label>
-                            <p id="profileObjectives">Cargando...</p>
+                        <div class="achievements-criteria">
+                            <h4>📋 Criterios Transparentes</h4>
+                            <p>Cada logro tiene criterios claros y transparentes para que los usuarios sepan exactamente qué necesitan hacer para conseguirlos.</p>
                         </div>
-                        <div class="profile-item">
-                            <label>Tiempo de Estudio:</label>
-                            <span id="profileStudyTime">Cargando...</span>
+                    </div>
+                </div>
+
+                <!-- Sistema de Clasificaciones -->
+                <div class="profile-section">
+                    <h3>🏅 Sistema de Clasificaciones</h3>
+                    <div class="rankings-system">
+                        <div class="rankings-description">
+                            <p>La plataforma también incluye un sistema de clasificaciones que permite a los usuarios comparar su rendimiento con otros estudiantes. Estas clasificaciones se pueden filtrar por edad, región o nivel académico, y se reinician periódicamente para mantener la competencia justa y motivante.</p>
                         </div>
-                        <div class="profile-item">
-                            <label>Miembro desde:</label>
-                            <span id="profileMemberSince">Cargando...</span>
+                        <div class="rankings-filters">
+                            <div class="filter-option">
+                                <div class="filter-icon">👥</div>
+                                <div class="filter-content">
+                                    <h4>Filtros por Edad</h4>
+                                    <p>Compara tu rendimiento con estudiantes de tu misma edad</p>
+                                </div>
+                            </div>
+                            <div class="filter-option">
+                                <div class="filter-icon">🌍</div>
+                                <div class="filter-content">
+                                    <h4>Filtros por Región</h4>
+                                    <p>Compite con estudiantes de tu misma región geográfica</p>
+                                </div>
+                            </div>
+                            <div class="filter-option">
+                                <div class="filter-icon">🎓</div>
+                                <div class="filter-content">
+                                    <h4>Filtros por Nivel Académico</h4>
+                                    <p>Compara tu progreso con estudiantes de tu mismo nivel</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rankings-features">
+                            <h4>🔄 Reinicio Periódico</h4>
+                            <p>Las clasificaciones se reinician periódicamente para mantener la competencia justa y motivante, dando a todos la oportunidad de destacar.</p>
                         </div>
                     </div>
                 </div>
@@ -313,6 +722,204 @@
                 <button class="start-module-btn" id="startModuleBtn">Comenzar Módulo</button>
                 <button class="continue-module-btn" id="continueModuleBtn" style="display: none;">Continuar</button>
                 <button class="close-btn" onclick="closeModuleModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Reto de Hoy -->
+    <div id="challengeModal" class="challenge-modal">
+        <div class="challenge-modal-content">
+            <div class="challenge-modal-header">
+                <h2>Detalles del Reto de Hoy</h2>
+                <button class="close-modal" onclick="closeChallengeModal()">&times;</button>
+            </div>
+            <div class="challenge-modal-body">
+                <div class="challenge-detail-section">
+                    <h3>Descripción</h3>
+                    <p id="challengeModalDesc">Aquí va la descripción ampliada del reto de hoy. ¡Pon a prueba tus habilidades!</p>
+                </div>
+                <div class="challenge-detail-section">
+                    <h3>Consejos de la Comunidad</h3>
+                    <ul class="challenge-tips">
+                        <li>💡 "Divide el reto en pasos pequeños para avanzar más fácil."</li>
+                        <li>💡 "No tengas miedo de equivocarte, ¡es parte del aprendizaje!"</li>
+                        <li>💡 "Comparte tus ideas con otros para recibir feedback."</li>
+                    </ul>
+                </div>
+                <div class="challenge-detail-section">
+                    <h3>Sube tu documento</h3>
+                    <div class="challenge-upload-modal">
+                        <label class="upload-label">Selecciona archivo:
+                            <input type="file" disabled style="opacity:0.5; cursor:not-allowed;">
+                        </label>
+                        <span class="challenge-mini">(Solo visual, no se almacena ni envía)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="challenge-modal-footer">
+                <button class="close-btn" onclick="closeChallengeModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Chat -->
+    <div id="chatModal" class="chat-modal">
+        <div class="chat-modal-content">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div class="chat-avatar">👥</div>
+                    <div>
+                        <h3>Chat IAWAY</h3>
+                        <span class="chat-status">🟢 12 amigos en línea</span>
+                    </div>
+                </div>
+                <button class="close-modal" onclick="closeChatModal()">&times;</button>
+            </div>
+            
+            <div class="chat-body">
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Mensajes simulados -->
+                    <div class="message received">
+                        <div class="message-avatar">AG</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">Ana García</span>
+                                <span class="message-time">14:30</span>
+                            </div>
+                            <div class="message-text">¡Hola! ¿Alguien está trabajando en el módulo de Machine Learning?</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message sent">
+                        <div class="message-content">
+                            <div class="message-text">¡Hola Ana! Sí, estoy en ese módulo. ¿En qué parte estás?</div>
+                            <div class="message-time">14:32</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-avatar">LM</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">Luis Martínez</span>
+                                <span class="message-time">14:33</span>
+                            </div>
+                            <div class="message-text">Yo también estoy ahí. ¿Quieren hacer un grupo de estudio?</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-avatar">ML</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">María López</span>
+                                <span class="message-time">14:35</span>
+                            </div>
+                            <div class="message-text">¡Excelente idea! Podemos compartir recursos y ayudarnos mutuamente.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message sent">
+                        <div class="message-content">
+                            <div class="message-text">Perfecto, creemos un grupo. ¿Mañana a las 3 PM les parece bien?</div>
+                            <div class="message-time">14:36</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-avatar">DS</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">Diego Silva</span>
+                                <span class="message-time">14:37</span>
+                            </div>
+                            <div class="message-text">¡Me apunto! También tengo algunos materiales que pueden ser útiles.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-area">
+                    <div class="chat-input-container">
+                        <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." disabled>
+                        <button class="send-btn" disabled>📤</button>
+                    </div>
+                    <div class="chat-note">
+                        <p><em>💡 Esta es solo una demostración visual. El chat no está funcional.</em></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Notificaciones -->
+    <div id="notificationsModal" class="notifications-modal">
+        <div class="notifications-modal-content">
+            <div class="notifications-modal-header">
+                <h3>🔔 Notificaciones</h3>
+                <button class="close-modal" onclick="closeNotificationsModal()">&times;</button>
+            </div>
+            
+            <div class="notifications-list">
+                <div class="notification-item unread">
+                    <div class="notification-icon">🎓</div>
+                    <div class="notification-content">
+                        <div class="notification-title">¡Nuevo módulo disponible!</div>
+                        <div class="notification-message">El módulo "Machine Learning Avanzado" ya está disponible para ti.</div>
+                        <div class="notification-time">Hace 30 minutos</div>
+                    </div>
+                    <div class="notification-status"></div>
+                </div>
+                
+                <div class="notification-item unread">
+                    <div class="notification-icon">👥</div>
+                    <div class="notification-content">
+                        <div class="notification-title">Nuevo mensaje en el chat</div>
+                        <div class="notification-message">Ana García te envió un mensaje en el grupo "Machine Learning".</div>
+                        <div class="notification-time">Hace 1 hora</div>
+                    </div>
+                    <div class="notification-status"></div>
+                </div>
+                
+                <div class="notification-item unread">
+                    <div class="notification-icon">🏆</div>
+                    <div class="notification-content">
+                        <div class="notification-title">¡Logro desbloqueado!</div>
+                        <div class="notification-message">Has ganado el logro "Estudiante Consistente" por 7 días consecutivos.</div>
+                        <div class="notification-time">Hace 2 horas</div>
+                    </div>
+                    <div class="notification-status"></div>
+                </div>
+                
+                <div class="notification-item">
+                    <div class="notification-icon">📚</div>
+                    <div class="notification-content">
+                        <div class="notification-title">Recordatorio de estudio</div>
+                        <div class="notification-message">No olvides continuar con el módulo "Prompt Engineering".</div>
+                        <div class="notification-time">Hace 1 día</div>
+                    </div>
+                </div>
+                
+                <div class="notification-item">
+                    <div class="notification-icon">🎯</div>
+                    <div class="notification-content">
+                        <div class="notification-title">Nuevo reto disponible</div>
+                        <div class="notification-message">El reto diario "Creatividad con IA" está listo para ti.</div>
+                        <div class="notification-time">Hace 1 día</div>
+                    </div>
+                </div>
+                
+                <div class="notification-item">
+                    <div class="notification-icon">👥</div>
+                    <div class="notification-content">
+                        <div class="notification-title">Grupo de estudio actualizado</div>
+                        <div class="notification-message">Se agregaron nuevos recursos al grupo "Machine Learning".</div>
+                        <div class="notification-time">Hace 2 días</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="notifications-footer">
+                <button class="mark-all-read-btn" onclick="markAllNotificationsRead()">Marcar todas como leídas</button>
             </div>
         </div>
     </div>
