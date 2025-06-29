@@ -105,84 +105,219 @@
             </div>
         </div>
 
-        <!-- Recent Activity -->
+        <!-- Logros -->
         <div class="content-section">
-            <h3>Actividad Reciente</h3>
-            <div class="activity-list">
-                <div class="activity-item">
-                    <div class="activity-icon">✅</div>
-                    <div class="activity-content">
-                        <h4>Completaste "Introducción a Python"</h4>
-                        <p>Hace 2 horas</p>
+            <h3>🏆 Logros</h3>
+            <div class="achievements-grid">
+                <div class="achievement-card completed">
+                    <div class="achievement-icon">🎓</div>
+                    <div class="achievement-content">
+                        <h4>Primer Módulo Completado</h4>
+                        <p>Completaste "¿Qué es la Inteligencia Artificial?"</p>
+                        <div class="achievement-meta">
+                            <span>✅ Completado</span>
+                            <span>95/100 puntos</span>
+                        </div>
                     </div>
                 </div>
-                <div class="activity-item">
-                    <div class="activity-icon">🎯</div>
-                    <div class="activity-content">
-                        <h4>Nuevo proyecto disponible</h4>
-                        <p>Hace 1 día</p>
+                <div class="achievement-card in-progress">
+                    <div class="achievement-icon">🚀</div>
+                    <div class="achievement-content">
+                        <h4>En Camino al Éxito</h4>
+                        <p>2 módulos en progreso - ¡Sigue así!</p>
+                        <div class="achievement-meta">
+                            <span>🔄 En progreso</span>
+                            <span>65% completado</span>
+                        </div>
                     </div>
                 </div>
-                <div class="activity-item">
-                    <div class="activity-icon">🏆</div>
-                    <div class="activity-content">
-                        <h4>Ganaste 50 puntos</h4>
-                        <p>Hace 2 días</p>
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">⭐</div>
+                    <div class="achievement-content">
+                        <h4>Experto en IA</h4>
+                        <p>Completa todos los módulos para desbloquear</p>
+                        <div class="achievement-meta">
+                            <span>🔒 Bloqueado</span>
+                            <span>1/10 módulos</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">🎯</div>
+                    <div class="achievement-content">
+                        <h4>Prompt Master</h4>
+                        <p>Completa el módulo de Prompt Engineering</p>
+                        <div class="achievement-meta">
+                            <span>🔒 Bloqueado</span>
+                            <span>0% completado</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">⚖️</div>
+                    <div class="achievement-content">
+                        <h4>Ético Digital</h4>
+                        <p>Completa el módulo de Ética y uso responsable</p>
+                        <div class="achievement-meta">
+                            <span>🔒 Bloqueado</span>
+                            <span>0% completado</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">🎨</div>
+                    <div class="achievement-content">
+                        <h4>Creativo IA</h4>
+                        <p>Completa el módulo de Creatividad + IA</p>
+                        <div class="achievement-meta">
+                            <span>🔒 Bloqueado</span>
+                            <span>0% completado</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Recommended Courses -->
+        <!-- Módulos de IA -->
         <div class="content-section">
-            <h3>Cursos Recomendados</h3>
-            <div class="courses-grid">
-                <div class="course-card">
-                    <div class="course-image">
-                        <span class="course-icon">🤖</span>
-                    </div>
-                    <div class="course-content">
-                        <h4>Machine Learning Básico</h4>
-                        <p>Aprende los fundamentos del ML</p>
-                        <div class="course-meta">
-                            <span>⏱️ 8 horas</span>
-                            <span>📊 Intermedio</span>
-                        </div>
-                        <button class="course-btn">Comenzar</button>
+            <div class="modules-header">
+                <h3>Módulos de Inteligencia Artificial</h3>
+                <div class="modules-filters">
+                    <select id="moduleFilter" class="module-filter">
+                        <option value="all">Todos los módulos</option>
+                        <option value="completed">Completados</option>
+                        <option value="in-progress">En progreso</option>
+                        <option value="not-started">No iniciados</option>
+                    </select>
+                    <div class="search-modules">
+                        <input type="text" id="moduleSearch" placeholder="Buscar módulos..." class="search-input">
                     </div>
                 </div>
-                <div class="course-card">
-                    <div class="course-image">
-                        <span class="course-icon">🧠</span>
-                    </div>
-                    <div class="course-content">
-                        <h4>Redes Neuronales</h4>
-                        <p>Construye tu primera red neuronal</p>
-                        <div class="course-meta">
-                            <span>⏱️ 12 horas</span>
-                            <span>📊 Avanzado</span>
-                        </div>
-                        <button class="course-btn">Comenzar</button>
-                    </div>
-                </div>
-                <div class="course-card">
-                    <div class="course-image">
-                        <span class="course-icon">📊</span>
-                    </div>
-                    <div class="course-content">
-                        <h4>Análisis de Datos</h4>
-                        <p>Visualiza y analiza datos</p>
-                        <div class="course-meta">
-                            <span>⏱️ 6 horas</span>
-                            <span>📊 Básico</span>
-                        </div>
-                        <button class="course-btn">Comenzar</button>
-                    </div>
-                </div>
+            </div>
+            
+            <div class="modules-grid" id="modulesGrid">
+                <!-- Los módulos se cargarán dinámicamente con JavaScript -->
             </div>
         </div>
     </main>
 
+    <!-- Modal de Perfil -->
+    <div id="profileModal" class="profile-modal">
+        <div class="profile-modal-content">
+            <div class="profile-modal-header">
+                <h2>Mi Perfil</h2>
+                <button class="close-modal" onclick="closeProfileModal()">&times;</button>
+            </div>
+            <div class="profile-modal-body">
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        <img src="images/LogoIAWAY.png" alt="Avatar" />
+                    </div>
+                    <div class="profile-details">
+                        <div class="profile-item">
+                            <label>Nombre:</label>
+                            <span id="profileName">Cargando...</span>
+                        </div>
+                        <div class="profile-item">
+                            <label>Email:</label>
+                            <span id="profileEmail">Cargando...</span>
+                        </div>
+                        <div class="profile-item">
+                            <label>Nivel de Estudios:</label>
+                            <span id="profileEducation">Cargando...</span>
+                        </div>
+                        <div class="profile-item" id="profileCareerItem" style="display: none;">
+                            <label>Carrera:</label>
+                            <span id="profileCareer">Cargando...</span>
+                        </div>
+                        <div class="profile-item">
+                            <label>Objetivos:</label>
+                            <p id="profileObjectives">Cargando...</p>
+                        </div>
+                        <div class="profile-item">
+                            <label>Tiempo de Estudio:</label>
+                            <span id="profileStudyTime">Cargando...</span>
+                        </div>
+                        <div class="profile-item">
+                            <label>Miembro desde:</label>
+                            <span id="profileMemberSince">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-modal-footer">
+                <button class="edit-profile-btn" onclick="editProfile()">Editar Perfil</button>
+                <button class="close-btn" onclick="closeProfileModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalles del Módulo -->
+    <div id="moduleModal" class="module-modal">
+        <div class="module-modal-content">
+            <div class="module-modal-header">
+                <div class="module-header-info">
+                    <span class="module-icon" id="moduleModalIcon">🤖</span>
+                    <div>
+                        <h2 id="moduleModalTitle">Título del Módulo</h2>
+                        <span class="module-number" id="moduleModalNumber">Módulo 1</span>
+                    </div>
+                </div>
+                <button class="close-modal" onclick="closeModuleModal()">&times;</button>
+            </div>
+            <div class="module-modal-body">
+                <div class="module-overview">
+                    <div class="module-section">
+                        <h3>📋 Objetivo</h3>
+                        <p id="moduleModalObjective">Objetivo del módulo...</p>
+                    </div>
+                    <div class="module-section">
+                        <h3>📚 Contenido Clave</h3>
+                        <p id="moduleModalContent">Contenido del módulo...</p>
+                    </div>
+                    <div class="module-section">
+                        <h3>🎯 Actividad Práctica</h3>
+                        <p id="moduleModalActivity">Actividad práctica...</p>
+                    </div>
+                </div>
+                
+                <div class="module-progress-section">
+                    <h3>📊 Progreso del Módulo</h3>
+                    <div class="progress-stats">
+                        <div class="progress-item">
+                            <span class="progress-label">Progreso General</span>
+                            <div class="progress-bar-module">
+                                <div class="progress-fill-module" id="moduleProgressFill"></div>
+                            </div>
+                            <span class="progress-percentage" id="moduleProgressPercentage">0%</span>
+                        </div>
+                        <div class="progress-item">
+                            <span class="progress-label">Tiempo Dedicado</span>
+                            <span class="progress-value" id="moduleTimeSpent">0 horas</span>
+                        </div>
+                        <div class="progress-item">
+                            <span class="progress-label">Puntuación</span>
+                            <span class="progress-value" id="moduleScore">0/100</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="module-history-section">
+                    <h3>📈 Historial de Actividad</h3>
+                    <div class="activity-timeline" id="moduleActivityTimeline">
+                        <!-- El historial se cargará dinámicamente -->
+                    </div>
+                </div>
+            </div>
+            <div class="module-modal-footer">
+                <button class="start-module-btn" id="startModuleBtn">Comenzar Módulo</button>
+                <button class="continue-module-btn" id="continueModuleBtn" style="display: none;">Continuar</button>
+                <button class="close-btn" onclick="closeModuleModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/modules.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html> 

@@ -148,18 +148,18 @@ function handleLoginSubmit(e) {
         // Guardar datos del usuario (simulación)
         const userData = {
             email: email,
-            name: email.split('@')[0], // Usar parte del email como nombre
+            name: 'Gustavo', // Nombre predeterminado para login
             loginTime: new Date().toISOString()
         };
         localStorage.setItem('userData', JSON.stringify(userData));
         
-        // Mostrar mensaje de éxito
-        showSuccessMessage('¡Inicio de sesión exitoso! Redirigiendo...');
+        // Mostrar mensaje de bienvenida personalizado
+        showSuccessMessage('¡Bienvenido de nuevo Gustavo a IAWAY!');
         
-        // Redirigir después de 1.5 segundos
+        // Redirigir después de 2 segundos para que se vea el mensaje
         setTimeout(() => {
             window.location.href = 'Dashboard.html';
-        }, 1500);
+        }, 2000);
     }
 }
 
@@ -215,13 +215,13 @@ function handleRegisterSubmit(e) {
         };
         localStorage.setItem('userData', JSON.stringify(userData));
         
-        // Mostrar mensaje de éxito
-        showSuccessMessage('¡Registro exitoso! Redirigiendo...');
+        // Mostrar mensaje de bienvenida personalizado con el nombre del usuario
+        showSuccessMessage(`¡Bienvenido ${name} a IAWAY!`);
         
-        // Redirigir después de 1.5 segundos
+        // Redirigir al formulario de perfil después de 2 segundos
         setTimeout(() => {
-            window.location.href = 'Dashboard.html';
-        }, 1500);
+            window.location.href = 'profile-form.html';
+        }, 2000);
     }
 }
 

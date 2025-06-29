@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completa tu Perfil - IAWAY</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700&family=Open+Sans:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/styles.css">
+    <style>
+        .profile-form-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .profile-form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .profile-form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .profile-form-header img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+        }
+        
+        .profile-form-header h1 {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .profile-form-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .profile-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+        
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        
+        .career-select {
+            display: none;
+        }
+        
+        .career-select.show {
+            display: block;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin-top: 10px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e1e5e9;
+            border-radius: 2px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-form-container">
+        <div class="profile-form-card">
+            <div class="profile-form-header">
+                <img src="images/LogoIAWAY.png" alt="Logo IAWAY" />
+                <h1>Completa tu Perfil</h1>
+                <p>Ayúdanos a personalizar tu experiencia de aprendizaje</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            
+            <form class="profile-form" id="profileForm">
+                <div class="form-group">
+                    <label for="education-level">¿Qué nivel de estudios tienes?</label>
+                    <select id="education-level" name="educationLevel" required>
+                        <option value="">Selecciona tu nivel de estudios</option>
+                        <option value="secundaria">Secundaria</option>
+                        <option value="preparatoria">Preparatoria</option>
+                        <option value="universidad">Universidad</option>
+                    </select>
+                </div>
+                
+                <div class="form-group career-select" id="careerSelect">
+                    <label for="career">¿Qué carrera estudias?</label>
+                    <select id="career" name="career">
+                        <option value="arquitectura" selected>Arquitectura</option>
+                        <option value="ingenieria-civil">Ingeniería Civil</option>
+                        <option value="ingenieria-industrial">Ingeniería Industrial</option>
+                        <option value="ingenieria-sistemas">Ingeniería en Sistemas</option>
+                        <option value="medicina">Medicina</option>
+                        <option value="derecho">Derecho</option>
+                        <option value="administracion">Administración</option>
+                        <option value="contabilidad">Contabilidad</option>
+                        <option value="psicologia">Psicología</option>
+                        <option value="comunicacion">Comunicación</option>
+                        <option value="otra">Otra</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="objectives">¿Cuáles son tus objetivos de aprendizaje?</label>
+                    <textarea id="objectives" name="objectives" placeholder="Ej: Quiero aprender machine learning para aplicarlo en mi trabajo, mejorar mis habilidades de programación, etc." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="study-time">¿Cuánto tiempo puedes dedicar al estudio?</label>
+                    <select id="study-time" name="studyTime" required>
+                        <option value="">Selecciona tu tiempo disponible</option>
+                        <option value="15-minutos">15 minutos diarios</option>
+                        <option value="20-minutos">20 minutos diarios</option>
+                        <option value="30-minutos">30 minutos diarios</option>
+                        <option value="1-hora">+1 hora diaria</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Completar Perfil
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="js/profile-form.js"></script>
+</body>
+</html> 

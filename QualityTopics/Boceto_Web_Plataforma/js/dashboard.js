@@ -147,6 +147,18 @@ function updateUserInfo() {
     if (userRoleElement) {
         userRoleElement.textContent = userEmail;
     }
+    
+    // Mostrar mensaje de bienvenida personalizado en el dashboard
+    const welcomeSection = document.querySelector('.welcome-section h2');
+    if (welcomeSection && userData.name) {
+        // Si es un usuario que se registró (tiene registerTime), mostrar mensaje de bienvenida
+        if (userData.registerTime) {
+            welcomeSection.textContent = `¡Bienvenido ${userName} a IAWAY!`;
+        } else {
+            // Si es un usuario que hizo login, mostrar mensaje de bienvenida de vuelta
+            welcomeSection.textContent = `¡Bienvenido de nuevo ${userName} a IAWAY!`;
+        }
+    }
 }
 
 // Función para agregar efectos de hover a las cards
@@ -170,6 +182,18 @@ function simulateDataLoading() {
     setTimeout(() => {
         updateUserInfo();
         animateStats();
+        
+        // Mostrar notificación de bienvenida personalizada
+        const userData = JSON.parse(localStorage.getItem('userData')) || {};
+        const userName = userData.name || 'Usuario';
+        
+        if (userData.registerTime) {
+            // Usuario nuevo (se registró)
+            showNotification(`¡Bienvenido ${userName} a IAWAY!`, 'success');
+        } else if (userData.loginTime) {
+            // Usuario existente (hizo login)
+            showNotification(`¡Bienvenido de nuevo ${userName} a IAWAY!`, 'success');
+        }
     }, 500);
 }
 
@@ -182,7 +206,37 @@ document.addEventListener('DOMContentLoaded', function() {
     handleCourseButtons();
     handleResponsiveSidebar();
     addHoverEffects();
+    addProfileClickEvent();
     simulateDataLoading();
+    
+    // Agregar evento para cerrar modal al hacer clic fuera
+    const modal = document.getElementById('profileModal');
+    if (modal) {
+        modal.addEventListener('click', handleModalClick);
+    }
+    
+    // Inicializar módulos
+    if (typeof renderModules === 'function') {
+        renderModules();
+        
+        // Agregar eventos de filtrado
+        const filterSelect = document.getElementById('moduleFilter');
+        const searchInput = document.getElementById('moduleSearch');
+        
+        if (filterSelect) {
+            filterSelect.addEventListener('change', filterModules);
+        }
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', filterModules);
+        }
+        
+        // Agregar evento para cerrar modal de módulo al hacer clic fuera
+        const moduleModal = document.getElementById('moduleModal');
+        if (moduleModal) {
+            moduleModal.addEventListener('click', handleModuleModalClick);
+        }
+    }
     
     // Agregar efecto de carga inicial
     document.body.style.opacity = '0';
@@ -226,4 +280,129 @@ function showNotification(message, type = 'info') {
             document.body.removeChild(notification);
         }, 300);
     }, 3000);
+}
+
+// Función para abrir el modal de perfil
+function openProfileModal() {
+    const modal = document.getElementById('profileModal');
+    modal.style.display = 'block';
+    
+    // Cargar datos del usuario en el modal
+    loadProfileData();
+    
+    // Prevenir scroll del body
+    document.body.style.overflow = 'hidden';
+}
+
+// Función para cerrar el modal de perfil
+function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    modal.style.display = 'none';
+    
+    // Restaurar scroll del body
+    document.body.style.overflow = 'auto';
+}
+
+// Función para cargar datos del perfil en el modal
+function loadProfileData() {
+    const userData = JSON.parse(localStorage.getItem('userData')) || {};
+    
+    // Mapear valores para mostrar en español
+    const educationMap = {
+        'secundaria': 'Secundaria',
+        'preparatoria': 'Preparatoria',
+        'universidad': 'Universidad'
+    };
+    
+    const careerMap = {
+        'arquitectura': 'Arquitectura',
+        'ingenieria-civil': 'Ingeniería Civil',
+        'ingenieria-industrial': 'Ingeniería Industrial',
+        'ingenieria-sistemas': 'Ingeniería en Sistemas',
+        'medicina': 'Medicina',
+        'derecho': 'Derecho',
+        'administracion': 'Administración',
+        'contabilidad': 'Contabilidad',
+        'psicologia': 'Psicología',
+        'comunicacion': 'Comunicación',
+        'otra': 'Otra'
+    };
+    
+    const studyTimeMap = {
+        '15-minutos': '15 minutos diarios',
+        '20-minutos': '20 minutos diarios',
+        '30-minutos': '30 minutos diarios',
+        '1-hora': '+1 hora diaria'
+    };
+    
+    // Actualizar elementos del modal
+    document.getElementById('profileName').textContent = userData.name || 'No especificado';
+    document.getElementById('profileEmail').textContent = userData.email || 'No especificado';
+    document.getElementById('profileEducation').textContent = educationMap[userData.educationLevel] || 'No especificado';
+    document.getElementById('profileObjectives').textContent = userData.objectives || 'No especificado';
+    document.getElementById('profileStudyTime').textContent = studyTimeMap[userData.studyTime] || 'No especificado';
+    
+    // Manejar la carrera (solo mostrar si es universidad)
+    const careerItem = document.getElementById('profileCareerItem');
+    const careerSpan = document.getElementById('profileCareer');
+    
+    if (userData.educationLevel === 'universidad' && userData.career) {
+        careerItem.style.display = 'block';
+        careerSpan.textContent = careerMap[userData.career] || userData.career;
+    } else {
+        careerItem.style.display = 'none';
+    }
+    
+    // Mostrar fecha de registro
+    const memberSince = userData.registerTime || userData.loginTime;
+    if (memberSince) {
+        const date = new Date(memberSince);
+        const options = { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        document.getElementById('profileMemberSince').textContent = date.toLocaleDateString('es-ES', options);
+    } else {
+        document.getElementById('profileMemberSince').textContent = 'No disponible';
+    }
+}
+
+// Función para editar perfil
+function editProfile() {
+    // Por ahora, redirigir al formulario de perfil
+    // En una implementación más avanzada, podrías abrir un modal de edición
+    if (confirm('¿Deseas editar tu perfil? Serás redirigido al formulario de perfil.')) {
+        window.location.href = 'profile-form.html';
+    }
+}
+
+// Función para agregar evento de clic a la foto de perfil
+function addProfileClickEvent() {
+    const userAvatar = document.querySelector('.user-avatar');
+    if (userAvatar) {
+        userAvatar.style.cursor = 'pointer';
+        userAvatar.addEventListener('click', openProfileModal);
+        
+        // Agregar tooltip
+        userAvatar.title = 'Ver mi perfil';
+    }
+}
+
+// Función para cerrar modal al hacer clic fuera
+function handleModalClick(e) {
+    const modal = document.getElementById('profileModal');
+    if (e.target === modal) {
+        closeProfileModal();
+    }
+}
+
+// Funciones para manejar módulos (se cargan desde modules.js)
+function handleModuleModalClick(e) {
+    const modal = document.getElementById('moduleModal');
+    if (e.target === modal) {
+        closeModuleModal();
+    }
 } 
