@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "name": "Norman Osborn",
+    "alias": "Green Goblin",
+    "city": "Nueva York",
+    "team": "Sinister Six",
+    "attack": 80,
+    "defense": 65
+  },
+  {
+    "id": 2,
+    "name": "Joker",
+    "alias": "The Joker",
+    "city": "Gotham",
+    "team": "Rogues Gallery",
+    "attack": 70,
+    "defense": 60
+  },
+  {
+    "id": 3,
+    "name": "Lex Luthor",
+    "alias": "Lex Luthor",
+    "city": "Metropolis",
+    "team": "Legion of Doom",
+    "attack": 85,
+    "defense": 90
+  },
+  {
+    "id": 4,
+    "name": "Thanos",
+    "alias": "Thanos",
+    "city": "Titan",
+    "team": "Black Order",
+    "attack": 95,
+    "defense": 95
+  },
+  {
+    "id": 5,
+    "name": "Ares",
+    "alias": "Ares",
+    "city": "Olympus",
+    "team": "Gods of War",
+    "attack": 90,
+    "defense": 85
+  }
+] 
