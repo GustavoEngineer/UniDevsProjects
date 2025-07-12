@@ -44,13 +44,28 @@
             "id": "4",
             "nombre": "Wonder Woman",
             "vidaInicial": 100,
-            "vidaActual": 35
+            "vidaActual": 6
           }
         ],
         "acciones": [
           {
             "numeroGolpe": 1,
             "atacante": {
+              "id": "1",
+              "nombre": "Superman"
+            },
+            "defensor": {
+              "id": "4",
+              "nombre": "Wonder Woman"
+            },
+            "tipoGolpe": "golpeCritico",
+            "danio": 47,
+            "vidaRestante": 53,
+            "timestamp": "2025-07-12T22:22:52.198Z"
+          },
+          {
+            "numeroGolpe": 2,
+            "atacante": {
               "id": "4",
               "nombre": "Wonder Woman"
             },
@@ -58,13 +73,13 @@
               "id": "1",
               "nombre": "Superman"
             },
-            "tipoGolpe": "golpeBasico",
-            "danio": 10,
-            "vidaRestante": 90,
-            "timestamp": "2025-07-12T00:09:12.644Z"
+            "tipoGolpe": "golpeCritico",
+            "danio": 49,
+            "vidaRestante": 51,
+            "timestamp": "2025-07-12T22:23:25.894Z"
           },
           {
-            "numeroGolpe": 2,
+            "numeroGolpe": 3,
             "atacante": {
               "id": "1",
               "nombre": "Superman"
@@ -73,10 +88,82 @@
               "id": "4",
               "nombre": "Wonder Woman"
             },
+            "tipoGolpe": "golpeCritico",
+            "danio": 47,
+            "vidaRestante": 6,
+            "timestamp": "2025-07-12T22:23:32.022Z"
+          },
+          {
+            "numeroGolpe": 4,
+            "atacante": {
+              "id": "4",
+              "nombre": "Wonder Woman"
+            },
+            "defensor": {
+              "id": "1",
+              "nombre": "Superman"
+            },
+            "tipoGolpe": "golpeCritico",
+            "danio": 57,
+            "vidaRestante": 0,
+            "timestamp": "2025-07-12T22:23:38.604Z"
+          }
+        ],
+        "finalizado": true,
+        "ganador": "Wonder Woman"
+      },
+      {
+        "round": 2,
+        "personajes": [
+          {
+            "id": "4",
+            "nombre": "Wonder Woman",
+            "vidaInicial": 6,
+            "vidaActual": 0
+          },
+          {
+            "id": "5",
+            "nombre": "Lex Luthor",
+            "vidaInicial": 100,
+            "vidaActual": 0
+          },
+          {
+            "id": "2",
+            "nombre": "Batman",
+            "vidaInicial": 100,
+            "vidaActual": 25
+          }
+        ],
+        "acciones": [
+          {
+            "numeroGolpe": 1,
+            "atacante": {
+              "id": "5",
+              "nombre": "Lex Luthor"
+            },
+            "defensor": {
+              "id": "2",
+              "nombre": "Batman"
+            },
             "tipoGolpe": "golpeBasico",
-            "danio": 10,
-            "vidaRestante": 90,
-            "timestamp": "2025-07-12T00:09:36.996Z"
+            "danio": 7,
+            "vidaRestante": 93,
+            "timestamp": "2025-07-12T23:23:14.929Z"
+          },
+          {
+            "numeroGolpe": 2,
+            "atacante": {
+              "id": "2",
+              "nombre": "Batman"
+            },
+            "defensor": {
+              "id": "5",
+              "nombre": "Lex Luthor"
+            },
+            "tipoGolpe": "golpeBasico",
+            "danio": 7,
+            "vidaRestante": 93,
+            "timestamp": "2025-07-12T23:23:39.827Z"
           },
           {
             "numeroGolpe": 3,
@@ -85,47 +172,92 @@
               "nombre": "Wonder Woman"
             },
             "defensor": {
-              "id": "1",
-              "nombre": "Superman"
+              "id": "2",
+              "nombre": "Batman"
             },
-            "tipoGolpe": "golpeCritico",
-            "danio": 46,
-            "vidaRestante": 44,
-            "timestamp": "2025-07-12T00:09:59.510Z"
+            "tipoGolpe": "golpeBasico",
+            "danio": 5,
+            "vidaRestante": 88,
+            "timestamp": "2025-07-12T23:23:51.090Z"
           },
           {
             "numeroGolpe": 4,
             "atacante": {
-              "id": "1",
-              "nombre": "Superman"
+              "id": "2",
+              "nombre": "Batman"
             },
             "defensor": {
               "id": "4",
               "nombre": "Wonder Woman"
             },
             "tipoGolpe": "golpeCritico",
-            "danio": 55,
-            "vidaRestante": 35,
-            "timestamp": "2025-07-12T00:10:19.075Z"
+            "danio": 49,
+            "vidaRestante": 0,
+            "timestamp": "2025-07-12T23:24:00.305Z"
           },
           {
             "numeroGolpe": 5,
             "atacante": {
-              "id": "4",
-              "nombre": "Wonder Woman"
+              "id": "5",
+              "nombre": "Lex Luthor"
             },
             "defensor": {
-              "id": "1",
-              "nombre": "Superman"
+              "id": "2",
+              "nombre": "Batman"
+            },
+            "tipoGolpe": "golpeCritico",
+            "danio": 55,
+            "vidaRestante": 33,
+            "timestamp": "2025-07-12T23:24:44.371Z"
+          },
+          {
+            "numeroGolpe": 6,
+            "atacante": {
+              "id": "2",
+              "nombre": "Batman"
+            },
+            "defensor": {
+              "id": "5",
+              "nombre": "Lex Luthor"
+            },
+            "tipoGolpe": "golpeCritico",
+            "danio": 52,
+            "vidaRestante": 41,
+            "timestamp": "2025-07-12T23:24:49.138Z"
+          },
+          {
+            "numeroGolpe": 7,
+            "atacante": {
+              "id": "5",
+              "nombre": "Lex Luthor"
+            },
+            "defensor": {
+              "id": "2",
+              "nombre": "Batman"
+            },
+            "tipoGolpe": "golpeBasico",
+            "danio": 8,
+            "vidaRestante": 25,
+            "timestamp": "2025-07-12T23:25:05.438Z"
+          },
+          {
+            "numeroGolpe": 8,
+            "atacante": {
+              "id": "2",
+              "nombre": "Batman"
+            },
+            "defensor": {
+              "id": "5",
+              "nombre": "Lex Luthor"
             },
             "tipoGolpe": "golpeCritico",
             "danio": 51,
             "vidaRestante": 0,
-            "timestamp": "2025-07-12T00:10:29.651Z"
+            "timestamp": "2025-07-12T23:25:17.882Z"
           }
         ],
-        "finalizado": true,
-        "ganador": "Wonder Woman"
+        "finalizado": false,
+        "ganador": "Batman"
       }
     ],
     "finalizada": false

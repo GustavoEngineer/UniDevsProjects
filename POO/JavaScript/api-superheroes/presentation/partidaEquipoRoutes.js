@@ -170,7 +170,7 @@ router.post('/partidas/equipos/round/1', async (req, res) => {
  * @swagger
  * /partidas/equipos/round/2:
  *   post:
- *     summary: Jugar el round 2 de una batalla en equipo
+ *     summary: Jugar el round 2 de una batalla en equipo (requiere round 1 completado)
  *     tags: [PartidasEquipo]
  *     requestBody:
  *       required: true
@@ -180,18 +180,19 @@ router.post('/partidas/equipos/round/1', async (req, res) => {
  *             type: object
  *             required:
  *               - partidaId
- *               - id1
- *               - id2
+ *               - idPersonajeAtacante
+ *               - tipoGolpe
  *             properties:
  *               partidaId:
  *                 type: string
  *                 description: ID de la partida en curso
- *               id1:
+ *               idPersonajeAtacante:
  *                 type: string
- *                 description: ID del personaje del equipo 1
- *               id2:
+ *                 description: ID del personaje que ataca (debe ser válido para round 2)
+ *               tipoGolpe:
  *                 type: string
- *                 description: ID del personaje del equipo 2
+ *                 enum: [golpeBasico, golpeEspecial, golpeCritico]
+ *                 description: Tipo de golpe a realizar
  *     responses:
  *       200:
  *         description: Resultado del round 2
@@ -202,27 +203,63 @@ router.post('/partidas/equipos/round/1', async (req, res) => {
  *               properties:
  *                 round:
  *                   type: integer
- *                 id1:
- *                   type: string
- *                 id2:
- *                   type: string
- *                 resultado:
+ *                 accion:
  *                   type: object
- *                 personajesDisponiblesEquipo1:
+ *                   properties:
+ *                     numeroGolpe:
+ *                       type: integer
+ *                     atacante:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                         nombre:
+ *                           type: string
+ *                     defensor:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                         nombre:
+ *                           type: string
+ *                     tipoGolpe:
+ *                       type: string
+ *                     danio:
+ *                       type: integer
+ *                     vidaRestante:
+ *                       type: integer
+ *                     timestamp:
+ *                       type: string
+ *                 defensorPerdio:
+ *                   type: boolean
+ *                 ganador:
+ *                   type: string
+ *                 personajesDisponiblesRound2:
  *                   type: array
  *                   items:
- *                     type: string
- *                 personajesDisponiblesEquipo2:
- *                   type: array
- *                   items:
- *                     type: string
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       nombre:
+ *                         type: string
+ *                       equipo:
+ *                         type: string
+ *                       tipo:
+ *                         type: string
+ *                         enum: [Sobreviviente Round 1, Siguiente disponible]
  *       400:
- *         description: Datos inválidos
+ *         description: Datos inválidos o round 1 no completado
  */
 router.post('/partidas/equipos/round/2', async (req, res) => {
-  const { partidaId, id1, id2 } = req.body;
+  const { partidaId, idPersonajeAtacante, tipoGolpe } = req.body;
+  
+  if (!partidaId || !idPersonajeAtacante || !tipoGolpe) {
+    return res.status(400).json({ error: 'Faltan datos obligatorios: partidaId, idPersonajeAtacante, tipoGolpe' });
+  }
+  
   try {
-    const result = await PartidaService.jugarRoundEquipo(2, partidaId, id1, id2);
+    const result = await PartidaService.jugarRound2Equipo(partidaId, idPersonajeAtacante, tipoGolpe);
     res.json(result);
   } catch (e) {
     res.status(400).json({ error: e.message });
@@ -233,7 +270,7 @@ router.post('/partidas/equipos/round/2', async (req, res) => {
  * @swagger
  * /partidas/equipos/round/3:
  *   post:
- *     summary: Jugar el round 3 de una batalla en equipo (finaliza la partida)
+ *     summary: Jugar el round 3 de una batalla en equipo (requiere round 2 completado)
  *     tags: [PartidasEquipo]
  *     requestBody:
  *       required: true
@@ -243,21 +280,22 @@ router.post('/partidas/equipos/round/2', async (req, res) => {
  *             type: object
  *             required:
  *               - partidaId
- *               - id1
- *               - id2
+ *               - idPersonajeAtacante
+ *               - tipoGolpe
  *             properties:
  *               partidaId:
  *                 type: string
  *                 description: ID de la partida en curso
- *               id1:
+ *               idPersonajeAtacante:
  *                 type: string
- *                 description: ID del personaje del equipo 1
- *               id2:
+ *                 description: ID del personaje que ataca (debe ser válido para round 3)
+ *               tipoGolpe:
  *                 type: string
- *                 description: ID del personaje del equipo 2
+ *                 enum: [golpeBasico, golpeEspecial, golpeCritico]
+ *                 description: Tipo de golpe a realizar
  *     responses:
  *       200:
- *         description: Resultado del round 3 y de la batalla
+ *         description: Resultado del round 3
  *         content:
  *           application/json:
  *             schema:
@@ -265,29 +303,64 @@ router.post('/partidas/equipos/round/2', async (req, res) => {
  *               properties:
  *                 round:
  *                   type: integer
- *                 id1:
- *                   type: string
- *                 id2:
- *                   type: string
- *                 resultado:
+ *                 accion:
  *                   type: object
- *                 resumenBatalla:
- *                   type: object
- *                 personajesDisponiblesEquipo1:
+ *                   properties:
+ *                     numeroGolpe:
+ *                       type: integer
+ *                       description: Número secuencial del golpe (1, 2, 3, etc.)
+ *                     atacante:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                         nombre:
+ *                           type: string
+ *                     defensor:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                         nombre:
+ *                           type: string
+ *                     tipoGolpe:
+ *                       type: string
+ *                       enum: [golpeBasico, golpeEspecial, golpeCritico]
+ *                     danio:
+ *                       type: integer
+ *                     vidaRestante:
+ *                       type: integer
+ *                     timestamp:
+ *                       type: string
+ *                       format: date-time
+ *                 defensorPerdio:
+ *                   type: boolean
+ *                 ganador:
+ *                   type: string
+ *                 partidaFinalizada:
+ *                   type: boolean
+ *                 ganadorFinal:
+ *                   type: string
+ *                 personajesDisponiblesRound3:
  *                   type: array
  *                   items:
- *                     type: string
- *                 personajesDisponiblesEquipo2:
- *                   type: array
- *                   items:
- *                     type: string
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       nombre:
+ *                         type: string
+ *                       equipo:
+ *                         type: string
+ *                       tipo:
+ *                         type: string
  *       400:
  *         description: Datos inválidos
  */
 router.post('/partidas/equipos/round/3', async (req, res) => {
-  const { partidaId, id1, id2 } = req.body;
+  const { partidaId, idPersonajeAtacante, tipoGolpe } = req.body;
   try {
-    const result = await PartidaService.jugarRoundEquipo(3, partidaId, id1, id2);
+    const result = await PartidaService.jugarRound3Equipo(partidaId, idPersonajeAtacante, tipoGolpe);
     res.json(result);
   } catch (e) {
     res.status(400).json({ error: e.message });
