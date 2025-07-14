@@ -157,9 +157,16 @@ router.post('/partidas/equipos/iniciar', (req, res) => {
  *         description: Datos inválidos
  */
 router.post('/partidas/equipos/round/1', async (req, res) => {
-  const { Partida_ID, idPersonajeAtacante, tipoGolpe } = req.body;
+  // Compatibilidad: aceptar partidaId o Partida_ID
+  const partidaId = req.body.partidaId || req.body.Partida_ID;
+  const idPersonajeAtacante = req.body.idPersonajeAtacante;
+  const tipoGolpe = req.body.tipoGolpe;
+  // Validación de datos obligatorios igual que en round 2
+  if (!partidaId || !idPersonajeAtacante || !tipoGolpe) {
+    return res.status(400).json({ error: 'Faltan datos obligatorios: partidaId, idPersonajeAtacante, tipoGolpe' });
+  }
   try {
-    const result = await PartidaService.jugarRoundEquipo(1, Partida_ID, idPersonajeAtacante, tipoGolpe);
+    const result = await PartidaService.jugarRoundEquipo(1, partidaId, idPersonajeAtacante, tipoGolpe);
     res.json(result);
   } catch (e) {
     res.status(400).json({ error: e.message });
@@ -253,11 +260,9 @@ router.post('/partidas/equipos/round/1', async (req, res) => {
  */
 router.post('/partidas/equipos/round/2', async (req, res) => {
   const { partidaId, idPersonajeAtacante, tipoGolpe } = req.body;
-  
   if (!partidaId || !idPersonajeAtacante || !tipoGolpe) {
     return res.status(400).json({ error: 'Faltan datos obligatorios: partidaId, idPersonajeAtacante, tipoGolpe' });
   }
-  
   try {
     const result = await PartidaService.jugarRound2Equipo(partidaId, idPersonajeAtacante, tipoGolpe);
     res.json(result);
@@ -359,6 +364,9 @@ router.post('/partidas/equipos/round/2', async (req, res) => {
  */
 router.post('/partidas/equipos/round/3', async (req, res) => {
   const { partidaId, idPersonajeAtacante, tipoGolpe } = req.body;
+  if (!partidaId || !idPersonajeAtacante || !tipoGolpe) {
+    return res.status(400).json({ error: 'Faltan datos obligatorios: partidaId, idPersonajeAtacante, tipoGolpe' });
+  }
   try {
     const result = await PartidaService.jugarRound3Equipo(partidaId, idPersonajeAtacante, tipoGolpe);
     res.json(result);

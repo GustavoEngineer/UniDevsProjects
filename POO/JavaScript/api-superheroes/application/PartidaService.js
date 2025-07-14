@@ -249,7 +249,7 @@ class PartidaService {
 
     // Validar que el round 1 esté completado
     if (!partida.rounds || partida.rounds.length === 0 || !partida.rounds[0] || !partida.rounds[0].finalizado) {
-      throw new Error('El round 1 debe estar completado antes de iniciar el round 2');
+      throw new Error('No puedes iniciar el round 2 hasta que el round 1 esté finalizado.');
     }
 
     const round1 = partida.rounds[0];
@@ -458,14 +458,17 @@ class PartidaService {
       const supervivientesEquipo1 = round2.personajes.filter(p => p.vidaActual > 0 && partida.equipo1.some(eq => eq.id === p.id)).length;
       const supervivientesEquipo2 = round2.personajes.filter(p => p.vidaActual > 0 && partida.equipo2.some(eq => eq.id === p.id)).length;
       
-      console.log(`🔍 Supervivientes - Equipo 1: ${supervivientesEquipo1}, Equipo 2: ${supervivientesEquipo2}`);
-      
-      // Verificar regla de máximo 3 supervivientes (2 de un equipo, 1 del otro)
-      const totalSupervivientes = supervivientesEquipo1 + supervivientesEquipo2;
-      if (totalSupervivientes >= 3) {
-        console.log('🏁 Límite de supervivientes alcanzado (3). Finalizando round 2.');
+      // --- NUEVA LÓGICA: Finalizar round si todos los personajes disponibles del equipo anterior fueron eliminados ---
+      const equipoPerdedor = equipoPerdedorRound1 === 1 ? partida.equipo1 : partida.equipo2;
+      const idsPerdedorRound2 = personajesPerdedorDisponibles.map(p => p.id);
+      const algunoVivoEquipoPerdedor = round2.personajes.some(p => idsPerdedorRound2.includes(p.id) && p.vidaActual > 0);
+      // --- FIN NUEVA LÓGICA ---
+      // --- NUEVA LÓGICA: Finalizar round si solo queda un personaje vivo en total ---
+      const totalVivos = round2.personajes.filter(p => p.vidaActual > 0).length;
+      if (!algunoVivoEquipoPerdedor || totalVivos === 1) {
         round2.finalizado = true;
       }
+      // --- FIN NUEVA LÓGICA ---
     }
 
     // Guardar cambios en la partida
