@@ -229,14 +229,23 @@ class PartidaService {
     // Guardar cambios en la partida
     PartidaRepository.save(partida);
 
+    // Mostrar todos los personajes que pueden estar en el round 1, con estatus y vida actualizada
+    const personajesDisponiblesRound1 = roundActual.personajes.map(p => ({
+      id: p.id,
+      nombre: p.nombre,
+      equipo: partida.equipo1.some(eq => eq.id === p.id) ? 'Equipo 1' : 'Equipo 2',
+      tipo: 'Participante Round 1',
+      vidaActual: p.vidaActual,
+      estatus: p.vidaActual > 0 ? 'Vivo' : 'Eliminado'
+    }));
+
     // Retornar estructura esperada por el endpoint
     return {
       round: round,
       accion: accion,
       defensorPerdio: defensorPerdio,
       ganador: roundActual.ganador,
-      personajesDisponiblesEquipo1: partida.equipo1.map(p => p.id),
-      personajesDisponiblesEquipo2: partida.equipo2.map(p => p.id)
+      personajesDisponiblesRound1: personajesDisponiblesRound1
     };
   }
 
@@ -474,37 +483,15 @@ class PartidaService {
     // Guardar cambios en la partida
     PartidaRepository.save(partida);
 
-    // Obtener personajes disponibles para round 2 con nombres (excluyendo los ya usados)
-    const personajesDisponiblesRound2 = [];
-    
-    // Obtener personajes ya usados en este round 2
-    const personajesUsadosEnRound2 = round2.acciones.map(accion => accion.atacante.id);
-    
-    // Solo agregar personajes que no han sido usados aún
-    if (personajeVivoRound1 && !personajesUsadosEnRound2.includes(personajeVivoRound1.id)) {
-      personajesDisponiblesRound2.push({
-        id: personajeVivoRound1.id,
-        nombre: personajeVivoRound1.nombre,
-        equipo: equipoGanadorRound1 === 1 ? 'Equipo 1' : 'Equipo 2',
-        tipo: 'Sobreviviente Round 1'
-      });
-    }
-    if (siguientePersonajeGanador && !personajesUsadosEnRound2.includes(siguientePersonajeGanador.id)) {
-      personajesDisponiblesRound2.push({
-        id: siguientePersonajeGanador.id,
-        nombre: siguientePersonajeGanador.nombre,
-        equipo: equipoGanadorRound1 === 1 ? 'Equipo 1' : 'Equipo 2',
-        tipo: 'Siguiente disponible'
-      });
-    }
-    if (siguientePersonajePerdedor && !personajesUsadosEnRound2.includes(siguientePersonajePerdedor.id)) {
-      personajesDisponiblesRound2.push({
-        id: siguientePersonajePerdedor.id,
-        nombre: siguientePersonajePerdedor.nombre,
-        equipo: equipoPerdedorRound1 === 1 ? 'Equipo 1' : 'Equipo 2',
-        tipo: 'Siguiente disponible'
-      });
-    }
+    // Mostrar todos los personajes que pueden estar en el round 2, con estatus y vida actualizada
+    const personajesDisponiblesRound2 = round2.personajes.map(p => ({
+      id: p.id,
+      nombre: p.nombre,
+      equipo: partida.equipo1.some(eq => eq.id === p.id) ? 'Equipo 1' : 'Equipo 2',
+      tipo: (personajeVivoRound1 && p.id === personajeVivoRound1.id) ? 'Sobreviviente Round 1' : 'Siguiente disponible',
+      vidaActual: p.vidaActual,
+      estatus: p.vidaActual > 0 ? 'Vivo' : 'Eliminado'
+    }));
 
     // Retornar solo información esencial
     return {
@@ -525,60 +512,62 @@ class PartidaService {
 
     // Validar que el round 2 esté completado
     if (!partida.rounds || partida.rounds.length < 2 || !partida.rounds[1] || !partida.rounds[1].finalizado) {
-      throw new Error('El round 2 debe estar completado antes de iniciar el round 3');
+      throw new Error('No puedes iniciar el round 3 hasta que el round 2 esté finalizado.');
     }
 
     const round1 = partida.rounds[0];
     const round2 = partida.rounds[1];
-    
-    // Obtener personajes disponibles para round 3
-    const PersonajeService = require('./PersonajeService');
-    
-    // Obtener todos los personajes de ambos equipos
-    const todosLosPersonajes = [...partida.equipo1, ...partida.equipo2];
-    
-    // Filtrar personajes que no han sido usados en rounds anteriores
-    const personajesUsadosEnRoundsAnteriores = [];
-    
-    // Agregar personajes del round 1
-    if (round1.personajes) {
-      personajesUsadosEnRoundsAnteriores.push(...round1.personajes.map(p => p.id));
-    }
-    
-    // Agregar personajes del round 2
-    if (round2.personajes) {
-      personajesUsadosEnRoundsAnteriores.push(...round2.personajes.map(p => p.id));
-    }
-    
-    // Personajes disponibles para round 3: los que no han sido usados en rounds anteriores
-    const personajesDisponiblesRound3 = todosLosPersonajes.filter(p => 
-      !personajesUsadosEnRoundsAnteriores.includes(p.id)
-    );
 
-    // Validar que el personaje atacante sea válido para round 3
-    if (!personajesDisponiblesRound3.some(p => p.id === idPersonajeAtacante)) {
-      const nombresDisponibles = personajesDisponiblesRound3.map(p => p.nombre).join(', ');
-      throw new Error(`Personaje no válido para el round 3. Personajes disponibles: ${nombresDisponibles}`);
+    // Determinar sobreviviente de round 2
+    const ganadorRound2 = round2.ganador;
+    const personajeVivoRound2 = round2.personajes.find(p => p.nombre === ganadorRound2);
+
+    // Obtener siguiente personaje disponible de cada equipo (que no haya jugado en round 1 ni 2)
+    const personajesUsados = [];
+    if (round1.personajes) personajesUsados.push(...round1.personajes.map(p => p.id));
+    if (round2.personajes) personajesUsados.push(...round2.personajes.map(p => p.id));
+    const todosLosPersonajes = [...partida.equipo1, ...partida.equipo2];
+    const personajesNoUsados = todosLosPersonajes.filter(p => !personajesUsados.includes(p.id));
+
+    // Para round 3: sobreviviente de round 2 + siguiente disponible de cada equipo (si hay)
+    const personajesRound3 = [];
+    if (personajeVivoRound2) {
+      personajesRound3.push({
+        id: personajeVivoRound2.id,
+        nombre: personajeVivoRound2.nombre,
+        equipo: partida.equipo1.some(eq => eq.id === personajeVivoRound2.id) ? 'Equipo 1' : 'Equipo 2',
+        tipo: 'Sobreviviente Round 2',
+        vidaActual: personajeVivoRound2.vidaActual,
+        estatus: personajeVivoRound2.vidaActual > 0 ? 'Vivo' : 'Eliminado'
+      });
     }
+    // Siguiente disponible de cada equipo
+    const equipos = [partida.equipo1, partida.equipo2];
+    equipos.forEach((equipo, idx) => {
+      const disponibles = equipo.filter(p => !personajesUsados.includes(p.id));
+      if (disponibles.length > 0) {
+        const siguiente = disponibles[0];
+        personajesRound3.push({
+          id: siguiente.id,
+          nombre: siguiente.nombre,
+          equipo: idx === 0 ? 'Equipo 1' : 'Equipo 2',
+          tipo: 'Siguiente disponible',
+          vidaActual: 100,
+          estatus: 'Vivo'
+        });
+      }
+    });
 
     // Inicializar round 3 si no existe
     if (!partida.rounds[2]) {
-      console.log('🔧 Inicializando round 3...');
-      console.log('- Personajes disponibles:', personajesDisponiblesRound3.map(p => p.nombre));
-      
-      // Crear lista de personajes para round 3
-      const personajesRound3 = personajesDisponiblesRound3.map(p => ({
-        id: p.id,
-        nombre: p.nombre,
-        vidaInicial: 100,
-        vidaActual: 100
-      }));
-      
-      console.log('- Personajes round 3:', personajesRound3.map(p => `${p.nombre} (${p.id})`));
-      
       partida.rounds[2] = {
         round: 3,
-        personajes: personajesRound3,
+        personajes: personajesRound3.map(p => ({
+          id: p.id,
+          nombre: p.nombre,
+          vidaInicial: p.vidaActual,
+          vidaActual: p.vidaActual
+        })),
         acciones: [],
         finalizado: false,
         ganador: null
@@ -586,8 +575,6 @@ class PartidaService {
     }
 
     const round3 = partida.rounds[2];
-    
-    // Verificar si el round 3 ya está finalizado
     if (round3.finalizado) {
       throw new Error('El round 3 ya está finalizado');
     }
@@ -597,88 +584,66 @@ class PartidaService {
     if (!atacante) {
       throw new Error('Personaje atacante no encontrado en el round 3');
     }
-    
+    if (atacante.vidaActual <= 0) {
+      throw new Error(`El personaje ${atacante.nombre} está descalificado (vida: ${atacante.vidaActual}). No puede atacar.`);
+    }
     // Determinar a qué equipo pertenece el atacante
     const equipoAtacante = partida.equipo1.some(p => p.id === atacante.id) ? 1 : 2;
-    
     // Determinar el defensor
     let defensor;
     const ultimaAccion = round3.acciones[round3.acciones.length - 1];
-    
     if (ultimaAccion) {
-      // Si hay una acción anterior, el defensor debe ser el último atacante del equipo contrario
       const ultimoAtacanteId = ultimaAccion.atacante.id;
       const ultimoAtacanteEquipo = partida.equipo1.some(p => p.id === ultimoAtacanteId) ? 1 : 2;
-      
-      // Verificar que el atacante actual sea del equipo contrario al último atacante
       if (ultimoAtacanteEquipo !== equipoAtacante) {
-        // Contraataque directo: atacar al último atacante del equipo contrario
         defensor = round3.personajes.find(p => p.id === ultimoAtacanteId);
       } else {
-        // Nuevo ataque: elegir cualquier personaje del equipo contrario
         defensor = round3.personajes.find(p => {
           const equipoDefensor = partida.equipo1.some(eq => eq.id === p.id) ? 1 : 2;
           return p.id !== atacante.id && equipoDefensor !== equipoAtacante;
         });
       }
-      
-      // Verificar que el defensor no sea el mismo que el atacante
       if (defensor && defensor.id === atacante.id) {
         throw new Error('No se puede atacar a sí mismo. Error en la lógica de contraataque.');
       }
     } else {
-      // Primera acción del round 3: elegir cualquier personaje del equipo contrario
       defensor = round3.personajes.find(p => {
         const equipoDefensor = partida.equipo1.some(eq => eq.id === p.id) ? 1 : 2;
         return p.id !== atacante.id && equipoDefensor !== equipoAtacante;
       });
     }
-    
     if (!defensor) {
       throw new Error('No se encontró un defensor válido del equipo contrario');
     }
-
-    // Verificar que el personaje atacante no esté descalificado (vida <= 0)
-    if (atacante.vidaActual <= 0) {
-      throw new Error(`El personaje ${atacante.nombre} está descalificado (vida: ${atacante.vidaActual}). No puede atacar.`);
-    }
-
-    // Los personajes pueden ser usados múltiples veces en el round 3
-
     // Verificar turnos alternos entre equipos
     const ultimaAccionParaValidacion = round3.acciones[round3.acciones.length - 1];
     if (ultimaAccionParaValidacion) {
       const ultimoAtacanteId = ultimaAccionParaValidacion.atacante.id;
       const ultimoAtacanteEquipo = partida.equipo1.some(p => p.id === ultimoAtacanteId) ? 1 : 2;
       const atacanteActualEquipo = partida.equipo1.some(p => p.id === idPersonajeAtacante) ? 1 : 2;
-      
-      // Debe ser turno del equipo contrario
       if (ultimoAtacanteEquipo === atacanteActualEquipo) {
         throw new Error('No es tu turno. Debes esperar a que el otro equipo ataque.');
       }
     }
-
     // Calcular daño según el tipo de golpe
     let danio = 0;
     switch (tipoGolpe) {
       case 'golpeBasico':
-        danio = Math.floor(Math.random() * (10 - 5 + 1)) + 5; // Rango 5-10
+        danio = Math.floor(Math.random() * (10 - 5 + 1)) + 5;
         break;
       case 'golpeEspecial':
-        danio = Math.floor(Math.random() * (40 - 30 + 1)) + 30; // Rango 30-40
+        danio = Math.floor(Math.random() * (40 - 30 + 1)) + 30;
         break;
       case 'golpeCritico':
-        danio = Math.floor(Math.random() * (60 - 45 + 1)) + 45; // Rango 45-60
+        danio = Math.floor(Math.random() * (60 - 45 + 1)) + 45;
         break;
       default:
         throw new Error('Tipo de golpe inválido. Debe ser: golpeBasico, golpeEspecial o golpeCritico');
     }
-
     // Aplicar daño al defensor
     const vidaAnterior = defensor.vidaActual;
     defensor.vidaActual = Math.max(0, vidaAnterior - danio);
     const vidaRestante = defensor.vidaActual;
-
     // Crear acción del round
     const accion = {
       numeroGolpe: round3.acciones.length + 1,
@@ -695,23 +660,23 @@ class PartidaService {
       vidaRestante: vidaRestante,
       timestamp: new Date().toISOString()
     };
-
-    // Agregar acción al round
     round3.acciones.push(accion);
-
     // Verificar si el defensor perdió
     const defensorPerdio = vidaRestante <= 0;
     if (defensorPerdio) {
       round3.ganador = atacante.nombre;
+      // NO finalizar aún, solo marcar ganador provisional
+    }
+
+    // Verificar si solo queda un equipo con personajes vivos
+    const vivosEquipo1 = round3.personajes.filter(p => p.vidaActual > 0 && partida.equipo1.some(eq => eq.id === p.id)).length;
+    const vivosEquipo2 = round3.personajes.filter(p => p.vidaActual > 0 && partida.equipo2.some(eq => eq.id === p.id)).length;
+    if (vivosEquipo1 === 0 || vivosEquipo2 === 0) {
       round3.finalizado = true;
-      
-      // Finalizar la partida completa
       partida.finalizada = true;
-      
       // Determinar ganador final de la partida
       let victoriasEquipo1 = 0;
       let victoriasEquipo2 = 0;
-      
       for (const round of partida.rounds) {
         if (round.ganador) {
           const equipoGanador = partida.equipo1.some(p => p.nombre === round.ganador) ? 1 : 2;
@@ -719,22 +684,30 @@ class PartidaService {
           else victoriasEquipo2++;
         }
       }
-      
       partida.ganadorFinal = victoriasEquipo1 > victoriasEquipo2 ? 'Equipo 1' : 'Equipo 2';
+
+      // Resumen de sobrevivientes
+      const equipoGanador = vivosEquipo1 > 0 ? 'Equipo 1' : 'Equipo 2';
+      const equipoPerdedor = vivosEquipo1 > 0 ? 'Equipo 2' : 'Equipo 1';
+      const sobrevivientesGanador = round3.personajes.filter(p => p.vidaActual > 0 && ((equipoGanador === 'Equipo 1' && partida.equipo1.some(eq => eq.id === p.id)) || (equipoGanador === 'Equipo 2' && partida.equipo2.some(eq => eq.id === p.id)))).map(p => ({ id: p.id, nombre: p.nombre, vidaFinal: p.vidaActual }));
+      const sobrevivientesPerdedor = round3.personajes.filter(p => p.vidaActual > 0 && ((equipoPerdedor === 'Equipo 1' && partida.equipo1.some(eq => eq.id === p.id)) || (equipoPerdedor === 'Equipo 2' && partida.equipo2.some(eq => eq.id === p.id)))).map(p => ({ id: p.id, nombre: p.nombre, vidaFinal: p.vidaActual }));
+      round3.resumenFinal = {
+        equipoGanador,
+        equipoPerdedor,
+        sobrevivientesGanador,
+        sobrevivientesPerdedor
+      };
     }
-
-    // Guardar cambios en la partida
     PartidaRepository.save(partida);
-
-    // Obtener personajes disponibles para round 3 con nombres
-    const personajesDisponiblesRound3ConInfo = personajesDisponiblesRound3.map(p => ({
+    // Mostrar todos los personajes que pueden estar en el round 3, con estatus y vida actualizada
+    const personajesDisponiblesRound3 = round3.personajes.map(p => ({
       id: p.id,
       nombre: p.nombre,
       equipo: partida.equipo1.some(eq => eq.id === p.id) ? 'Equipo 1' : 'Equipo 2',
-      tipo: 'Disponible para Round 3'
+      tipo: (personajeVivoRound2 && p.id === personajeVivoRound2.id) ? 'Sobreviviente Round 2' : 'Siguiente disponible',
+      vidaActual: p.vidaActual,
+      estatus: p.vidaActual > 0 ? 'Vivo' : 'Eliminado'
     }));
-
-    // Retornar información del round 3
     return {
       round: 3,
       accion: accion,
@@ -742,7 +715,8 @@ class PartidaService {
       ganador: round3.ganador,
       partidaFinalizada: partida.finalizada,
       ganadorFinal: partida.ganadorFinal,
-      personajesDisponiblesRound3: personajesDisponiblesRound3ConInfo
+      personajesDisponiblesRound3: personajesDisponiblesRound3,
+      ...(round3.finalizado && round3.resumenFinal ? { resumenFinal: round3.resumenFinal } : {})
     };
   }
 
