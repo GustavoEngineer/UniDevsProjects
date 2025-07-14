@@ -259,7 +259,9 @@ router.post('/partidas/equipos/round/1', async (req, res) => {
  *         description: Datos inválidos o round 1 no completado
  */
 router.post('/partidas/equipos/round/2', async (req, res) => {
-  const { partidaId, idPersonajeAtacante, tipoGolpe } = req.body;
+  const partidaId = req.body.partidaId || req.body.Partida_ID;
+  const idPersonajeAtacante = req.body.idPersonajeAtacante;
+  const tipoGolpe = req.body.tipoGolpe;
   if (!partidaId || !idPersonajeAtacante || !tipoGolpe) {
     return res.status(400).json({ error: 'Faltan datos obligatorios: partidaId, idPersonajeAtacante, tipoGolpe' });
   }
@@ -363,7 +365,9 @@ router.post('/partidas/equipos/round/2', async (req, res) => {
  *         description: Datos inválidos
  */
 router.post('/partidas/equipos/round/3', async (req, res) => {
-  const { partidaId, idPersonajeAtacante, tipoGolpe } = req.body;
+  const partidaId = req.body.partidaId || req.body.Partida_ID;
+  const idPersonajeAtacante = req.body.idPersonajeAtacante;
+  const tipoGolpe = req.body.tipoGolpe;
   if (!partidaId || !idPersonajeAtacante || !tipoGolpe) {
     return res.status(400).json({ error: 'Faltan datos obligatorios: partidaId, idPersonajeAtacante, tipoGolpe' });
   }
