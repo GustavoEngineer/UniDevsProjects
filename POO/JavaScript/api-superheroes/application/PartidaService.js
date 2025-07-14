@@ -284,13 +284,36 @@ class PartidaService {
     const siguientePersonajePerdedor = personajesPerdedorDisponibles[0]; // Primer personaje disponible (no el último)
 
     // Validar que el personaje atacante sea válido para round 2
-    const personajesValidosRound2 = [];
-    if (personajeVivoRound1) personajesValidosRound2.push(personajeVivoRound1.id);
-    if (siguientePersonajeGanador) personajesValidosRound2.push(siguientePersonajeGanador.id);
-    if (siguientePersonajePerdedor) personajesValidosRound2.push(siguientePersonajePerdedor.id);
-
+    const personajesValidosRound2 = round2.personajes.filter(p => p.vidaActual > 0).map(p => p.id);
     if (!personajesValidosRound2.includes(idPersonajeAtacante)) {
-      throw new Error('Personaje no válido para el round 2. Personajes válidos: ' + personajesValidosRound2.join(', '));
+      const personajesValidosInfo = round2.personajes.filter(p => p.vidaActual > 0).map(p => ({ id: p.id, nombre: p.nombre }));
+      const personajeSolicitado = round2.personajes.find(p => p.id === idPersonajeAtacante);
+      if (personajeSolicitado && personajeSolicitado.vidaActual <= 0) {
+        // Buscar quién lo eliminó
+        const accionMuerte = round2.acciones.find(a => a.defensor.id === personajeSolicitado.id && a.vidaRestante === 0);
+        const asesino = accionMuerte ? accionMuerte.atacante : null;
+        throw new Error(`El personaje '${personajeSolicitado.nombre}' (ID: ${personajeSolicitado.id}) está eliminado${asesino ? `, fue eliminado por '${asesino.nombre}' (ID: ${asesino.id})` : ''}. Personajes válidos para atacar: ${JSON.stringify(personajesValidosInfo)}`);
+      } else {
+        throw new Error(`Personaje no válido para el round 2. Personajes válidos para atacar: ${JSON.stringify(personajesValidosInfo)}`);
+      }
+    }
+    // Verificar turnos alternos entre equipos
+    const ultimaAccionParaValidacion2 = round2.acciones[round2.acciones.length - 1];
+    if (ultimaAccionParaValidacion2) {
+      const ultimoAtacanteId = ultimaAccionParaValidacion2.atacante.id;
+      const ultimoAtacanteEquipo = partida.equipo1.some(p => p.id === ultimoAtacanteId) ? 1 : 2;
+      const atacanteActualEquipo = partida.equipo1.some(p => p.id === idPersonajeAtacante) ? 1 : 2;
+      if (ultimoAtacanteEquipo === atacanteActualEquipo) {
+        const personajesValidosInfo = round2.personajes.filter(p => p.vidaActual > 0).map(p => ({ id: p.id, nombre: p.nombre }));
+        throw new Error(`No es tu turno. Debes esperar a que el otro equipo ataque. Personajes válidos para atacar: ${JSON.stringify(personajesValidosInfo)}`);
+      }
+    }
+    // Verificar que el personaje atacante no esté eliminado
+    const atacante2 = round2.personajes.find(p => p.id === idPersonajeAtacante);
+    if (atacante2.vidaActual <= 0) {
+      const accionMuerte = round2.acciones.find(a => a.defensor.id === atacante2.id && a.vidaRestante === 0);
+      const asesino = accionMuerte ? accionMuerte.atacante : null;
+      throw new Error(`El personaje '${atacante2.nombre}' (ID: ${atacante2.id}) está eliminado${asesino ? `, fue eliminado por '${asesino.nombre}' (ID: ${asesino.id})` : ''}.`);
     }
 
     // Inicializar round 2 si no existe
@@ -399,7 +422,10 @@ class PartidaService {
 
     // Verificar que el personaje atacante no esté descalificado (vida <= 0)
     if (atacante.vidaActual <= 0) {
-      throw new Error(`El personaje ${atacante.nombre} está descalificado (vida: ${atacante.vidaActual}). No puede atacar.`);
+      // Buscar quién lo eliminó
+      const accionMuerte = round2.acciones.find(a => a.defensor.id === atacante.id && a.vidaRestante === 0);
+      const asesino = accionMuerte ? accionMuerte.atacante : null;
+      throw new Error(`El personaje '${atacante.nombre}' (ID: ${atacante.id}) está eliminado${asesino ? `, fue eliminado por '${asesino.nombre}' (ID: ${asesino.id})` : ''}.`);
     }
 
     // Los personajes pueden ser usados múltiples veces en el round 2
@@ -413,7 +439,8 @@ class PartidaService {
       
       // Debe ser turno del equipo contrario
       if (ultimoAtacanteEquipo === atacanteActualEquipo) {
-        throw new Error('No es tu turno. Debes esperar a que el otro equipo ataque.');
+        const personajesValidosInfo = round2.personajes.filter(p => p.vidaActual > 0).map(p => ({ id: p.id, nombre: p.nombre }));
+        throw new Error(`No es tu turno. Debes esperar a que el otro equipo ataque. Personajes válidos para atacar: ${JSON.stringify(personajesValidosInfo)}`);
       }
     }
 
@@ -584,9 +611,39 @@ class PartidaService {
     if (!atacante) {
       throw new Error('Personaje atacante no encontrado en el round 3');
     }
-    if (atacante.vidaActual <= 0) {
-      throw new Error(`El personaje ${atacante.nombre} está descalificado (vida: ${atacante.vidaActual}). No puede atacar.`);
+    // Validar que el personaje atacante sea válido para round 3
+    const personajesValidosRound3 = round3.personajes.filter(p => p.vidaActual > 0).map(p => p.id);
+    if (!personajesValidosRound3.includes(idPersonajeAtacante)) {
+      const personajesValidosInfo = round3.personajes.filter(p => p.vidaActual > 0).map(p => ({ id: p.id, nombre: p.nombre }));
+      const personajeSolicitado = round3.personajes.find(p => p.id === idPersonajeAtacante);
+      if (personajeSolicitado && personajeSolicitado.vidaActual <= 0) {
+        // Buscar quién lo eliminó
+        const accionMuerte = round3.acciones.find(a => a.defensor.id === personajeSolicitado.id && a.vidaRestante === 0);
+        const asesino = accionMuerte ? accionMuerte.atacante : null;
+        throw new Error(`El personaje '${personajeSolicitado.nombre}' (ID: ${personajeSolicitado.id}) está eliminado${asesino ? `, fue eliminado por '${asesino.nombre}' (ID: ${asesino.id})` : ''}. Personajes válidos para atacar: ${JSON.stringify(personajesValidosInfo)}`);
+      } else {
+        throw new Error(`Personaje no válido para el round 3. Personajes válidos para atacar: ${JSON.stringify(personajesValidosInfo)}`);
+      }
     }
+    // Verificar turnos alternos entre equipos
+    const ultimaAccionParaValidacion3 = round3.acciones[round3.acciones.length - 1];
+    if (ultimaAccionParaValidacion3) {
+      const ultimoAtacanteId = ultimaAccionParaValidacion3.atacante.id;
+      const ultimoAtacanteEquipo = partida.equipo1.some(p => p.id === ultimoAtacanteId) ? 1 : 2;
+      const atacanteActualEquipo = partida.equipo1.some(p => p.id === idPersonajeAtacante) ? 1 : 2;
+      if (ultimoAtacanteEquipo === atacanteActualEquipo) {
+        const personajesValidosInfo = round3.personajes.filter(p => p.vidaActual > 0).map(p => ({ id: p.id, nombre: p.nombre }));
+        throw new Error(`No es tu turno. Debes esperar a que el otro equipo ataque. Personajes válidos para atacar: ${JSON.stringify(personajesValidosInfo)}`);
+      }
+    }
+    // Verificar que el personaje atacante no esté eliminado
+    const atacante3 = round3.personajes.find(p => p.id === idPersonajeAtacante);
+    if (atacante3.vidaActual <= 0) {
+      const accionMuerte = round3.acciones.find(a => a.defensor.id === atacante3.id && a.vidaRestante === 0);
+      const asesino = accionMuerte ? accionMuerte.atacante : null;
+      throw new Error(`El personaje '${atacante3.nombre}' (ID: ${atacante3.id}) está eliminado${asesino ? `, fue eliminado por '${asesino.nombre}' (ID: ${asesino.id})` : ''}.`);
+    }
+
     // Determinar a qué equipo pertenece el atacante
     const equipoAtacante = partida.equipo1.some(p => p.id === atacante.id) ? 1 : 2;
     // Determinar el defensor
@@ -736,6 +793,157 @@ class PartidaService {
   static getPartidaById(id, tipo = 'equipos') {
     const PartidaRepository = require('../infrastructure/PartidaRepository');
     return PartidaRepository.getById(id, tipo);
+  }
+
+  // NUEVO: Ataque por ataque para 1v1
+  static ataque1v1(partidaId, idPersonajeAtacante, tipoGolpe) {
+    // Buscar la partida
+    const partidas = PartidaRepository.getAll1v1();
+    const partida = partidas.find(p => p.Partida_ID === partidaId);
+    if (!partida) throw new Error('Partida no encontrada');
+    if (partida.finalizada) throw new Error('La partida ya finalizó');
+
+    // Inicializar estructura de personajes si no existe
+    if (!partida.personajes || partida.personajes.length !== 2) {
+      throw new Error('Partida 1v1 mal inicializada');
+    }
+    // Usar historialAcciones para 1v1
+    if (!partida.historialAcciones) partida.historialAcciones = [];
+
+    // Vida actual de cada personaje (persistente)
+    if (typeof partida.personajes[0].vidaActual !== 'number') partida.personajes[0].vidaActual = 100;
+    if (typeof partida.personajes[1].vidaActual !== 'number') partida.personajes[1].vidaActual = 100;
+
+    // Validar personajes válidos
+    const personajesValidos = partida.personajes.filter(p => p.vidaActual > 0).map(p => p.id);
+    if (!personajesValidos.includes(idPersonajeAtacante)) {
+      const personajesValidosInfo = partida.personajes.filter(p => p.vidaActual > 0).map(p => ({ id: p.id, nombre: p.nombre }));
+      const personajeSolicitado = partida.personajes.find(p => p.id === idPersonajeAtacante);
+      if (personajeSolicitado && personajeSolicitado.vidaActual <= 0) {
+        // Buscar quién lo eliminó
+        const accionMuerte = partida.historialAcciones.find(a => a.defensor.id === personajeSolicitado.id && a.vidaRestante === 0);
+        const asesino = accionMuerte ? accionMuerte.atacante : null;
+        throw new Error(`El personaje '${personajeSolicitado.nombre}' (ID: ${personajeSolicitado.id}) está eliminado${asesino ? `, fue eliminado por '${asesino.nombre}' (ID: ${asesino.id})` : ''}. Personajes válidos para atacar: ${JSON.stringify(personajesValidosInfo)}`);
+      } else {
+        throw new Error(`Personaje no válido para el ataque. Personajes válidos para atacar: ${JSON.stringify(personajesValidosInfo)}`);
+      }
+    }
+    // Verificar turnos alternos
+    const ultimaAccion = partida.historialAcciones[partida.historialAcciones.length - 1];
+    if (ultimaAccion && ultimaAccion.atacante.id === idPersonajeAtacante) {
+      const personajesValidosInfo = partida.personajes.filter(p => p.vidaActual > 0).map(p => ({ id: p.id, nombre: p.nombre }));
+      throw new Error(`No es tu turno. Debes esperar a que el otro personaje ataque. Personajes válidos para atacar: ${JSON.stringify(personajesValidosInfo)}`);
+    }
+    // Verificar que el personaje atacante no esté eliminado
+    const personajeAtacante = partida.personajes.find(p => p.id === idPersonajeAtacante);
+    if (personajeAtacante.vidaActual <= 0) {
+      const accionMuerte = partida.historialAcciones.find(a => a.defensor.id === personajeAtacante.id && a.vidaRestante === 0);
+      const asesino = accionMuerte ? accionMuerte.atacante : null;
+      throw new Error(`El personaje '${personajeAtacante.nombre}' (ID: ${personajeAtacante.id}) está eliminado${asesino ? `, fue eliminado por '${asesino.nombre}' (ID: ${asesino.id})` : ''}.`);
+    }
+    // Determinar defensor
+    const personajeDefensor = partida.personajes.find(p => p.id !== idPersonajeAtacante);
+    if (!personajeDefensor || personajeDefensor.vidaActual <= 0) {
+      throw new Error('No hay defensor válido.');
+    }
+    // Calcular daño
+    let danio = 0;
+    switch (tipoGolpe) {
+      case 'golpeBasico':
+        danio = Math.floor(Math.random() * (10 - 5 + 1)) + 5;
+        break;
+      case 'golpeEspecial':
+        danio = Math.floor(Math.random() * (40 - 30 + 1)) + 30;
+        break;
+      case 'golpeCritico':
+        danio = Math.floor(Math.random() * (60 - 45 + 1)) + 45;
+        break;
+      default:
+        throw new Error('Tipo de golpe inválido. Debe ser: golpeBasico, golpeEspecial o golpeCritico');
+    }
+    // Aplicar daño
+    const vidaAnterior = personajeDefensor.vidaActual;
+    personajeDefensor.vidaActual = Math.max(0, vidaAnterior - danio);
+    const vidaRestante = personajeDefensor.vidaActual;
+    // Crear acción
+    const accion = {
+      numeroGolpe: partida.historialAcciones.length + 1,
+      atacante: { id: personajeAtacante.id, nombre: personajeAtacante.nombre },
+      defensor: { id: personajeDefensor.id, nombre: personajeDefensor.nombre },
+      tipoGolpe,
+      danio,
+      vidaRestante,
+      timestamp: new Date().toISOString()
+    };
+    partida.historialAcciones.push(accion);
+    // Verificar si el defensor perdió
+    const defensorPerdio = vidaRestante <= 0;
+    let ganador = null;
+    let finalizada = false;
+    if (defensorPerdio) {
+      ganador = personajeAtacante.nombre;
+      finalizada = true;
+      partida.finalizada = true;
+      // Resumen final
+      const resumenFinal = {
+        ganador: {
+          id: personajeAtacante.id,
+          nombre: personajeAtacante.nombre,
+          vidaFinal: personajeAtacante.vidaActual
+        },
+        perdedor: {
+          id: personajeDefensor.id,
+          nombre: personajeDefensor.nombre,
+          vidaFinal: personajeDefensor.vidaActual
+        }
+      };
+      PartidaRepository.save1v1(partidas);
+      return {
+        mensaje: `¡${personajeAtacante.nombre} ha ganado la partida 1v1!`,
+        resumenFinal,
+        personajes: partida.personajes.map(p => ({
+          id: p.id,
+          nombre: p.nombre,
+          vidaActual: p.vidaActual,
+          estatus: p.vidaActual > 0 ? 'Vivo' : 'Eliminado'
+        })),
+        finalizada: true
+      };
+    }
+    // Guardar cambios
+    PartidaRepository.save(partida);
+    // Personajes con estatus
+    const personajesAtaque = partida.personajes.map(p => ({
+      id: p.id,
+      nombre: p.nombre,
+      vidaActual: p.vidaActual,
+      estatus: p.vidaActual > 0 ? 'Vivo' : 'Eliminado'
+    }));
+    return {
+      ataque: accion,
+      defensorPerdio,
+      ganador,
+      finalizada,
+      personajes: personajesAtaque
+    };
+  }
+
+  // Obtener partida 1v1 por ID
+  static getPartida1v1ById(id) {
+    try {
+      return require('../infrastructure/PartidaRepository').getById(id, '1v1');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Eliminar partida 1v1 por ID
+  static deletePartida1v1ById(id) {
+    try {
+      return require('../infrastructure/PartidaRepository').deleteById(id, '1v1');
+    } catch (e) {
+      return false;
+    }
   }
 }
 
