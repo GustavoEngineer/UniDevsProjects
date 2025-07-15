@@ -133,6 +133,18 @@ router.get('/personajes/:id', (req, res) => {
 router.post('/personajes', (req, res) => {
   // Eliminar id si viene en el body
   if ('id' in req.body) delete req.body.id;
+  // Validación estricta de nivelVida
+  if ('nivelVida' in req.body) {
+    const nv = req.body.nivelVida;
+    if (
+      typeof nv !== 'number' ||
+      !Number.isInteger(nv) ||
+      nv <= 0 ||
+      /[.,eE+-]/.test(String(nv)) // previene decimales, notación científica, signos
+    ) {
+      return res.status(400).json({ error: 'El campo nivelVida debe ser un número entero positivo mayor a cero, sin decimales ni caracteres especiales.' });
+    }
+  }
   try {
     const personaje = service.create(req.body);
     res.status(201).json(personaje);
@@ -171,6 +183,18 @@ router.post('/personajes', (req, res) => {
  *         description: Personaje no encontrado
  */
 router.put('/personajes/:id', (req, res) => {
+  // Validación estricta de nivelVida
+  if ('nivelVida' in req.body) {
+    const nv = req.body.nivelVida;
+    if (
+      typeof nv !== 'number' ||
+      !Number.isInteger(nv) ||
+      nv <= 0 ||
+      /[.,eE+-]/.test(String(nv)) // previene decimales, notación científica, signos
+    ) {
+      return res.status(400).json({ error: 'El campo nivelVida debe ser un número entero positivo mayor a cero, sin decimales ni caracteres especiales.' });
+    }
+  }
   const personaje = service.update(req.params.id, req.body);
   if (!personaje) return res.status(404).json({ error: 'No encontrado' });
   res.json(personaje);

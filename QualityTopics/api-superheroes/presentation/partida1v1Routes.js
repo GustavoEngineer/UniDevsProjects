@@ -43,8 +43,18 @@ const PartidaService = require('../application/PartidaService');
  */
 router.post('/partidas/1v1', (req, res) => {
   const { id1, id2 } = req.body;
-  if (!id1 || !id2) {
-    return res.status(400).json({ error: 'Faltan datos' });
+  // Validación estricta: deben ser números enteros positivos
+  if (
+    typeof id1 !== 'number' ||
+    typeof id2 !== 'number' ||
+    !Number.isInteger(id1) ||
+    !Number.isInteger(id2) ||
+    id1 <= 0 ||
+    id2 <= 0 ||
+    /[.,eE+-]/.test(String(id1)) ||
+    /[.,eE+-]/.test(String(id2))
+  ) {
+    return res.status(400).json({ error: 'id1 e id2 deben ser números enteros positivos, sin decimales ni caracteres especiales.' });
   }
   try {
     const partida = PartidaService.iniciarPartida1v1(id1, id2);
