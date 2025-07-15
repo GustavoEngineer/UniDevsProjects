@@ -1,6 +1,6 @@
 [
   {
-    "id": "1",
+    "id": 1,
     "nombre": "Superman",
     "categoria": "Heroe",
     "ciudad": "Metrópolis",
@@ -10,7 +10,7 @@
     "nivelVida": 100
   },
   {
-    "id": "2",
+    "id": 2,
     "nombre": "Batman",
     "categoria": "Heroe",
     "ciudad": "Gotham",
@@ -20,7 +20,7 @@
     "nivelVida": 100
   },
   {
-    "id": "3",
+    "id": 3,
     "nombre": "Joker",
     "categoria": "Villano",
     "ciudad": "Gotham",
@@ -30,7 +30,7 @@
     "nivelVida": 100
   },
   {
-    "id": "4",
+    "id": 4,
     "nombre": "Wonder Woman",
     "categoria": "Heroe",
     "ciudad": "Themyscira",
@@ -40,7 +40,7 @@
     "nivelVida": 100
   },
   {
-    "id": "5",
+    "id": 5,
     "nombre": "Lex Luthor",
     "categoria": "Villano",
     "ciudad": "Metrópolis",
@@ -50,7 +50,7 @@
     "nivelVida": 100
   },
   {
-    "id": "6",
+    "id": 6,
     "nombre": "Harley Quinn",
     "categoria": "Villano",
     "ciudad": "Gotham",
@@ -60,7 +60,7 @@
     "nivelVida": 100
   },
   {
-    "id": "7",
+    "id": 7,
     "nombre": "Flash",
     "categoria": "Heroe",
     "ciudad": "Central City",
@@ -70,7 +70,7 @@
     "nivelVida": 100
   },
   {
-    "id": "8",
+    "id": 8,
     "nombre": "Reverse Flash",
     "categoria": "Villano",
     "ciudad": "Central City",
@@ -80,7 +80,7 @@
     "nivelVida": 100
   },
   {
-    "id": "9",
+    "id": 9,
     "nombre": "Aquaman",
     "categoria": "Heroe",
     "ciudad": "Atlantis",
@@ -90,7 +90,7 @@
     "nivelVida": 100
   },
   {
-    "id": "10",
+    "id": 10,
     "nombre": "Black Manta",
     "categoria": "Villano",
     "ciudad": "Atlantis",
@@ -100,7 +100,7 @@
     "nivelVida": 100
   },
   {
-    "id": "11",
+    "id": 11,
     "nombre": "Catwoman",
     "categoria": "Antivillano",
     "ciudad": "Gotham",
@@ -110,7 +110,7 @@
     "nivelVida": 100
   },
   {
-    "id": "12",
+    "id": 12,
     "nombre": "Deadpool",
     "categoria": "Antiheroe",
     "ciudad": "Nueva York",
@@ -120,7 +120,7 @@
     "nivelVida": 100
   },
   {
-    "id": "13",
+    "id": 13,
     "nombre": "Magneto",
     "categoria": "Villano",
     "ciudad": "Genosha",
@@ -130,7 +130,7 @@
     "nivelVida": 100
   },
   {
-    "id": "14",
+    "id": 14,
     "nombre": "Iron Man",
     "categoria": "Heroe",
     "ciudad": "Nueva York",
@@ -140,7 +140,7 @@
     "nivelVida": 100
   },
   {
-    "id": "15",
+    "id": 15,
     "nombre": "Thanos",
     "categoria": "Villano",
     "ciudad": "Titán",
@@ -150,7 +150,7 @@
     "nivelVida": 100
   },
   {
-    "id": "16",
+    "id": 16,
     "nombre": "Loki",
     "categoria": "Antivillano",
     "ciudad": "Asgard",
@@ -160,7 +160,7 @@
     "nivelVida": 100
   },
   {
-    "id": "17",
+    "id": 17,
     "nombre": "Venom",
     "categoria": "Antivillano",
     "ciudad": "Nueva York",
@@ -170,7 +170,7 @@
     "nivelVida": 100
   },
   {
-    "id": "18",
+    "id": 18,
     "nombre": "Spider-Man",
     "categoria": "Heroe",
     "ciudad": "Nueva York",
@@ -180,7 +180,7 @@
     "nivelVida": 100
   },
   {
-    "id": "19",
+    "id": 19,
     "nombre": "Doctor Octopus",
     "categoria": "Villano",
     "ciudad": "Nueva York",
@@ -190,7 +190,7 @@
     "nivelVida": 100
   },
   {
-    "id": "20",
+    "id": 20,
     "nombre": "Punisher",
     "categoria": "Antiheroe",
     "ciudad": "Nueva York",
@@ -200,7 +200,7 @@
     "nivelVida": 100
   },
   {
-    "id": "21",
+    "id": 21,
     "nombre": "Blue Beetle",
     "categoria": "Heroe",
     "ciudad": "El Paso",

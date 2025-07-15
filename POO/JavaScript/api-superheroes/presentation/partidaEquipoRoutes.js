@@ -31,19 +31,19 @@ const PartidaService = require('../application/PartidaService');
  *                 maxItems: 3
  *                 description: IDs de los 3 personajes del primer equipo
  *                 items:
- *                   type: string
- *                 example: ["id1", "id2", "id3"]
+ *                   type: number
+ *                 example: [1, 2, 3]
  *               equipo2:
  *                 type: array
  *                 minItems: 3
  *                 maxItems: 3
  *                 description: IDs de los 3 personajes del segundo equipo
  *                 items:
- *                   type: string
- *                 example: ["id4", "id5", "id6"]
+ *                   type: number
+ *                 example: [4, 5, 6]
  *           example:
- *             equipo1: ["id1", "id2", "id3"]
- *             equipo2: ["id4", "id5", "id6"]
+ *             equipo1: [1, 2, 3]
+ *             equipo2: [4, 5, 6]
  *     responses:
  *       201:
  *         description: Partida en curso creada
@@ -53,15 +53,15 @@ const PartidaService = require('../application/PartidaService');
  *               type: object
  *               properties:
  *                 partidaId:
- *                   type: string
+ *                   type: number
  *                 equipo1:
  *                   type: array
  *                   items:
- *                     type: string
+ *                     type: number
  *                 equipo2:
  *                   type: array
  *                   items:
- *                     type: string
+ *                     type: number
  *       400:
  *         description: Datos inválidos
  */
@@ -101,14 +101,14 @@ router.post('/partidas/equipos/iniciar', (req, res) => {
  *               - tipoGolpe
  *             properties:
  *               Partida_ID:
- *                 type: string
+ *                 type: number
  *                 description: ID de la partida
  *               idPersonajeAtacante:
- *                 type: string
+ *                 type: number
  *                 description: ID del personaje que ataca (debe ser uno de los primeros de cada equipo)
  *               tipoGolpe:
  *                 type: string
- *                 enum: [golpeBasico, golpeEspecial, golpeCritico]
+ *                 enum: [golpeBasico, golpeEspecial]
  *     responses:
  *       200:
  *         description: Resultado del ataque
@@ -129,14 +129,14 @@ router.post('/partidas/equipos/iniciar', (req, res) => {
  *                       type: object
  *                       properties:
  *                         id:
- *                           type: string
+ *                           type: number
  *                         nombre:
  *                           type: string
  *                     defensor:
  *                       type: object
  *                       properties:
  *                         id:
- *                           type: string
+ *                           type: number
  *                         nombre:
  *                           type: string
  *                     tipoGolpe:
@@ -191,14 +191,14 @@ router.post('/partidas/equipos/round/1', async (req, res) => {
  *               - tipoGolpe
  *             properties:
  *               partidaId:
- *                 type: string
+ *                 type: number
  *                 description: ID de la partida en curso
  *               idPersonajeAtacante:
- *                 type: string
+ *                 type: number
  *                 description: ID del personaje que ataca (debe ser válido para round 2)
  *               tipoGolpe:
  *                 type: string
- *                 enum: [golpeBasico, golpeEspecial, golpeCritico]
+ *                 enum: [golpeBasico, golpeEspecial]
  *                 description: Tipo de golpe a realizar
  *     responses:
  *       200:
@@ -219,14 +219,14 @@ router.post('/partidas/equipos/round/1', async (req, res) => {
  *                       type: object
  *                       properties:
  *                         id:
- *                           type: string
+ *                           type: number
  *                         nombre:
  *                           type: string
  *                     defensor:
  *                       type: object
  *                       properties:
  *                         id:
- *                           type: string
+ *                           type: number
  *                         nombre:
  *                           type: string
  *                     tipoGolpe:
@@ -247,7 +247,7 @@ router.post('/partidas/equipos/round/1', async (req, res) => {
  *                     type: object
  *                     properties:
  *                       id:
- *                         type: string
+ *                         type: number
  *                       nombre:
  *                         type: string
  *                       equipo:
@@ -291,10 +291,10 @@ router.post('/partidas/equipos/round/2', async (req, res) => {
  *               - tipoGolpe
  *             properties:
  *               partidaId:
- *                 type: string
+ *                 type: number
  *                 description: ID de la partida en curso
  *               idPersonajeAtacante:
- *                 type: string
+ *                 type: number
  *                 description: ID del personaje que ataca (debe ser válido para round 3)
  *               tipoGolpe:
  *                 type: string
@@ -320,14 +320,14 @@ router.post('/partidas/equipos/round/2', async (req, res) => {
  *                       type: object
  *                       properties:
  *                         id:
- *                           type: string
+ *                           type: number
  *                         nombre:
  *                           type: string
  *                     defensor:
  *                       type: object
  *                       properties:
  *                         id:
- *                           type: string
+ *                           type: number
  *                         nombre:
  *                           type: string
  *                     tipoGolpe:
@@ -354,7 +354,7 @@ router.post('/partidas/equipos/round/2', async (req, res) => {
  *                     type: object
  *                     properties:
  *                       id:
- *                         type: string
+ *                         type: number
  *                       nombre:
  *                         type: string
  *                       equipo:
@@ -410,7 +410,7 @@ router.get('/partidas/historial/equipos', (req, res) => {
  *         name: Partida_ID
  *         required: true
  *         schema:
- *           type: string
+ *           type: number
  *         description: ID de la partida a obtener
  *     responses:
  *       200:
@@ -421,7 +421,7 @@ router.get('/partidas/historial/equipos', (req, res) => {
  *               type: object
  *               properties:
  *                 Partida_ID:
- *                   type: string
+ *                   type: number
  *                 tipo:
  *                   type: string
  *                 equipo1:
@@ -430,7 +430,7 @@ router.get('/partidas/historial/equipos', (req, res) => {
  *                     type: object
  *                     properties:
  *                       id:
- *                         type: string
+ *                         type: number
  *                       nombre:
  *                         type: string
  *                 equipo2:
@@ -439,7 +439,7 @@ router.get('/partidas/historial/equipos', (req, res) => {
  *                     type: object
  *                     properties:
  *                       id:
- *                         type: string
+ *                         type: number
  *                       nombre:
  *                         type: string
  *                 rounds:
@@ -482,7 +482,7 @@ router.get('/partidas/equipos/:Partida_ID', (req, res) => {
  *         name: Partida_ID
  *         required: true
  *         schema:
- *           type: string
+ *           type: number
  *         description: ID de la partida a eliminar
  *     responses:
  *       200:

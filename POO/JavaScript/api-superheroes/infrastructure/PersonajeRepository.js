@@ -38,7 +38,7 @@ function savePersonajes(personajes) {
 }
 
 let personajes = loadPersonajes();
-let currentId = personajes.length > 0 ? Math.max(...personajes.map(p => parseInt(p.id))) : 0;
+let currentId = personajes.length > 0 ? Math.max(...personajes.map(p => Number(p.id))) : 0;
 
 class PersonajeRepository {
   getAll() {
@@ -46,27 +46,30 @@ class PersonajeRepository {
   }
 
   getById(id) {
-    return personajes.find(p => p.id === id);
+    const numId = Number(id);
+    return personajes.find(p => Number(p.id) === numId);
   }
 
   create(personaje) {
     currentId++;
-    const newPersonaje = { ...personaje, id: String(currentId) };
+    const newPersonaje = { ...personaje, id: currentId };
     personajes.push(newPersonaje);
     savePersonajes(personajes);
     return newPersonaje;
   }
 
   update(id, data) {
-    const index = personajes.findIndex(p => p.id === id);
+    const numId = Number(id);
+    const index = personajes.findIndex(p => Number(p.id) === numId);
     if (index === -1) return null;
-    personajes[index] = { ...personajes[index], ...data, id };
+    personajes[index] = { ...personajes[index], ...data, id: numId };
     savePersonajes(personajes);
     return personajes[index];
   }
 
   delete(id) {
-    const index = personajes.findIndex(p => p.id === id);
+    const numId = Number(id);
+    const index = personajes.findIndex(p => Number(p.id) === numId);
     if (index === -1) return false;
     personajes.splice(index, 1);
     savePersonajes(personajes);

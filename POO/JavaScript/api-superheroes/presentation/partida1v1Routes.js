@@ -26,10 +26,10 @@ const PartidaService = require('../application/PartidaService');
  *               - id2
  *             properties:
  *               id1:
- *                 type: string
+ *                 type: number
  *                 description: ID del primer personaje
  *               id2:
- *                 type: string
+ *                 type: number
  *                 description: ID del segundo personaje
  *     responses:
  *       201:
@@ -85,7 +85,7 @@ router.get('/partidas/historial/1v1', (req, res) => {
  *         name: id
  *         required: true
  *         schema:
- *           type: string
+ *           type: number
  *         description: ID de la partida 1v1
  *     responses:
  *       200:
@@ -121,14 +121,14 @@ router.get('/partidas/1v1/:id', (req, res) => {
  *               - tipoGolpe
  *             properties:
  *               partidaId:
- *                 type: string
+ *                 type: number
  *                 description: ID de la partida 1v1
  *               idPersonajeAtacante:
- *                 type: string
+ *                 type: number
  *                 description: ID del personaje que ataca
  *               tipoGolpe:
  *                 type: string
- *                 enum: [golpeBasico, golpeEspecial, golpeCritico]
+ *                 enum: [golpeBasico, golpeEspecial]
  *                 description: Tipo de golpe a realizar
  *     responses:
  *       200:
@@ -164,7 +164,7 @@ router.post('/partidas/1v1/ataque', (req, res) => {
  *         name: id
  *         required: true
  *         schema:
- *           type: string
+ *           type: number
  *         description: ID de la partida 1v1
  *     responses:
  *       200:

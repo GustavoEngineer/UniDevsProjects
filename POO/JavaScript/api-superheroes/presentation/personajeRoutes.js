@@ -10,7 +10,7 @@ const service = require('../application/PersonajeService');
  *       type: object
  *       properties:
  *         id:
- *           type: string
+ *           type: number
  *           readOnly: true
  *         nombre:
  *           type: string
@@ -93,7 +93,7 @@ router.get('/personajes', (req, res) => {
  *       - in: path
  *         name: id
  *         schema:
- *           type: string
+ *           type: number
  *         required: true
  *         description: ID del personaje
  *     responses:
@@ -151,7 +151,7 @@ router.post('/personajes', (req, res) => {
  *       - in: path
  *         name: id
  *         schema:
- *           type: string
+ *           type: number
  *         required: true
  *         description: ID del personaje
  *     requestBody:
@@ -186,7 +186,7 @@ router.put('/personajes/:id', (req, res) => {
  *       - in: path
  *         name: id
  *         schema:
- *           type: string
+ *           type: number
  *         required: true
  *         description: ID del personaje
  *     responses:

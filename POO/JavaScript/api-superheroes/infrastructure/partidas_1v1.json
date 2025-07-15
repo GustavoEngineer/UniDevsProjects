@@ -2,35 +2,39 @@
   {
     "id": 1,
     "tipo": "1v1",
-    "fechaInicio": "2025-07-15T16:17:56.779Z",
+    "fechaInicio": "2025-07-15T20:22:22.016Z",
     "personajes": [
       {
-        "nombre": "Punisher",
-        "id": "20"
+        "nombre": "Flash",
+        "id": 7,
+        "vidaActual": 100
       },
       {
-        "nombre": "Lex Luthor",
-        "id": "5"
+        "nombre": "Reverse Flash",
+        "id": 8,
+        "vidaActual": 55
       }
     ],
-    "historialAcciones": [],
-    "Partida_ID": "1"
-  },
-  {
-    "id": 2,
-    "tipo": "1v1",
-    "fechaInicio": "2025-07-15T16:18:26.517Z",
-    "personajes": [
+    "historialAcciones": [
       {
-        "nombre": "Blue Beetle",
-        "id": "21"
-      },
-      {
-        "nombre": "Venom",
-        "id": "17"
+        "numeroGolpe": 1,
+        "atacante": {
+          "id": 7,
+          "nombre": "Flash"
+        },
+        "defensor": {
+          "id": 8,
+          "nombre": "Reverse Flash"
+        },
+        "tipoGolpe": "golpeBasico",
+        "danio": 5,
+        "danioCritico": true,
+        "valorDanioCritico": 40,
+        "danioTotal": 45,
+        "vidaRestante": 55,
+        "timestamp": "2025-07-15T20:23:14.182Z"
       }
     ],
-    "historialAcciones": [],
-    "Partida_ID": "2"
+    "Partida_ID": 1
   }
 ]

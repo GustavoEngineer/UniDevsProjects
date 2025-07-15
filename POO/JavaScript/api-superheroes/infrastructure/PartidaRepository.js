@@ -27,12 +27,12 @@ class PartidaRepository {
     if (tipo === 'equipos') {
       const partidas = PartidaRepository.getAllEquipos();
       if (partidas.length === 0) return 1;
-      const maxId = Math.max(...partidas.map(p => parseInt(p.Partida_ID) || 0));
+      const maxId = Math.max(...partidas.map(p => Number(p.Partida_ID) || 0));
       return maxId + 1;
     } else {
       const partidas = PartidaRepository.getAll1v1();
       if (partidas.length === 0) return 1;
-      const maxId = Math.max(...partidas.map(p => parseInt(p.Partida_ID) || 0));
+      const maxId = Math.max(...partidas.map(p => Number(p.Partida_ID) || 0));
       return maxId + 1;
     }
   }
@@ -42,11 +42,11 @@ class PartidaRepository {
       const partidas = PartidaRepository.getAllEquipos();
       // Asignar ID autoincremental si no tiene uno
       if (!partida.Partida_ID) {
-        partida.Partida_ID = PartidaRepository.getNextId('equipos').toString();
+        partida.Partida_ID = PartidaRepository.getNextId('equipos');
       }
       
       // Verificar si ya existe una partida con ese ID
-      const existingIndex = partidas.findIndex(p => p.Partida_ID === partida.Partida_ID);
+      const existingIndex = partidas.findIndex(p => Number(p.Partida_ID) === Number(partida.Partida_ID));
       if (existingIndex !== -1) {
         // Actualizar la partida existente
         partidas[existingIndex] = partida;
@@ -59,11 +59,11 @@ class PartidaRepository {
       const partidas = PartidaRepository.getAll1v1();
       // Asignar ID autoincremental si no tiene uno
       if (!partida.Partida_ID) {
-        partida.Partida_ID = PartidaRepository.getNextId('1v1').toString();
+        partida.Partida_ID = PartidaRepository.getNextId('1v1');
       }
       
       // Verificar si ya existe una partida con ese ID
-      const existingIndex = partidas.findIndex(p => p.Partida_ID === partida.Partida_ID);
+      const existingIndex = partidas.findIndex(p => Number(p.Partida_ID) === Number(partida.Partida_ID));
       if (existingIndex !== -1) {
         // Actualizar la partida existente
         partidas[existingIndex] = partida;
@@ -76,9 +76,10 @@ class PartidaRepository {
   }
 
   static deleteById(id, tipo = 'equipos') {
+    const numId = Number(id);
     if (tipo === 'equipos') {
       const partidas = PartidaRepository.getAllEquipos();
-      const partidaIndex = partidas.findIndex(p => p.Partida_ID === id);
+      const partidaIndex = partidas.findIndex(p => Number(p.Partida_ID) === numId);
       if (partidaIndex === -1) {
         throw new Error('Partida no encontrada');
       }
@@ -87,7 +88,7 @@ class PartidaRepository {
       return true;
     } else {
       const partidas = PartidaRepository.getAll1v1();
-      const partidaIndex = partidas.findIndex(p => p.Partida_ID === id);
+      const partidaIndex = partidas.findIndex(p => Number(p.Partida_ID) === numId);
       if (partidaIndex === -1) {
         throw new Error('Partida no encontrada');
       }
@@ -98,16 +99,17 @@ class PartidaRepository {
   }
 
   static getById(id, tipo = 'equipos') {
+    const numId = Number(id);
     if (tipo === 'equipos') {
       const partidas = PartidaRepository.getAllEquipos();
-      const partida = partidas.find(p => p.Partida_ID === id);
+      const partida = partidas.find(p => Number(p.Partida_ID) === numId);
       if (!partida) {
         throw new Error('Partida no encontrada');
       }
       return partida;
     } else {
       const partidas = PartidaRepository.getAll1v1();
-      const partida = partidas.find(p => p.Partida_ID === id);
+      const partida = partidas.find(p => Number(p.Partida_ID) === numId);
       if (!partida) {
         throw new Error('Partida no encontrada');
       }

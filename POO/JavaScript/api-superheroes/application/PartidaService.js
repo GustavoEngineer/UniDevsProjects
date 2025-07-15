@@ -102,7 +102,7 @@ class PartidaService {
 
     // Obtener siguiente ID autoincremental
     const PartidaRepository = require('../infrastructure/PartidaRepository');
-    const nextId = PartidaRepository.getNextId('equipos').toString();
+    const nextId = PartidaRepository.getNextId('equipos');
 
     // Crear objeto partida
     const partida = {
@@ -187,18 +187,21 @@ class PartidaService {
       case 'golpeEspecial':
         danio = Math.floor(Math.random() * (40 - 30 + 1)) + 30; // Rango 30-40
         break;
-      case 'golpeCritico':
-        danio = Math.floor(Math.random() * (60 - 45 + 1)) + 45; // Rango 45-60
-        break;
       default:
-        throw new Error('Tipo de golpe inválido. Debe ser: golpeBasico, golpeEspecial o golpeCritico');
+        throw new Error('Tipo de golpe inválido. Debe ser: golpeBasico o golpeEspecial');
     }
-
+    // Lógica de golpe crítico automático
+    let danioCritico = false;
+    let valorDanioCritico = 0;
+    if (Math.random() < 0.2) {
+      danioCritico = true;
+      valorDanioCritico = Math.floor(personajeRoundDefensor.vidaActual * 0.4);
+    }
+    const danioTotal = danio + valorDanioCritico;
     // Aplicar daño al defensor
     const vidaAnterior = personajeRoundDefensor.vidaActual;
-    personajeRoundDefensor.vidaActual = Math.max(0, vidaAnterior - danio);
+    personajeRoundDefensor.vidaActual = Math.max(0, vidaAnterior - danioTotal);
     const vidaRestante = personajeRoundDefensor.vidaActual;
-
     // Crear acción del round
     const accion = {
       numeroGolpe: roundActual.acciones.length + 1, // Número secuencial del golpe
@@ -212,6 +215,9 @@ class PartidaService {
       },
       tipoGolpe: tipoGolpe,
       danio: danio,
+      danioCritico: danioCritico,
+      valorDanioCritico: valorDanioCritico,
+      danioTotal: danioTotal,
       vidaRestante: vidaRestante,
       timestamp: new Date().toISOString()
     };
@@ -459,10 +465,17 @@ class PartidaService {
       default:
         throw new Error('Tipo de golpe inválido. Debe ser: golpeBasico, golpeEspecial o golpeCritico');
     }
-
+    // Lógica de golpe crítico automático
+    let danioCritico = false;
+    let valorDanioCritico = 0;
+    if (Math.random() < 0.2) {
+      danioCritico = true;
+      valorDanioCritico = Math.floor(defensor.vidaActual * 0.4);
+    }
+    const danioTotal = danio + valorDanioCritico;
     // Aplicar daño al defensor
     const vidaAnterior = defensor.vidaActual;
-    defensor.vidaActual = Math.max(0, vidaAnterior - danio);
+    defensor.vidaActual = Math.max(0, vidaAnterior - danioTotal);
     const vidaRestante = defensor.vidaActual;
 
     // Crear acción del round
@@ -478,6 +491,9 @@ class PartidaService {
       },
       tipoGolpe: tipoGolpe,
       danio: danio,
+      danioCritico: danioCritico,
+      valorDanioCritico: valorDanioCritico,
+      danioTotal: danioTotal,
       vidaRestante: vidaRestante,
       timestamp: new Date().toISOString()
     };
@@ -697,9 +713,17 @@ class PartidaService {
       default:
         throw new Error('Tipo de golpe inválido. Debe ser: golpeBasico, golpeEspecial o golpeCritico');
     }
+    // Lógica de golpe crítico automático
+    let danioCritico = false;
+    let valorDanioCritico = 0;
+    if (Math.random() < 0.2) {
+      danioCritico = true;
+      valorDanioCritico = Math.floor(defensor.vidaActual * 0.4);
+    }
+    const danioTotal = danio + valorDanioCritico;
     // Aplicar daño al defensor
     const vidaAnterior = defensor.vidaActual;
-    defensor.vidaActual = Math.max(0, vidaAnterior - danio);
+    defensor.vidaActual = Math.max(0, vidaAnterior - danioTotal);
     const vidaRestante = defensor.vidaActual;
     // Crear acción del round
     const accion = {
@@ -714,6 +738,9 @@ class PartidaService {
       },
       tipoGolpe: tipoGolpe,
       danio: danio,
+      danioCritico: danioCritico,
+      valorDanioCritico: valorDanioCritico,
+      danioTotal: danioTotal,
       vidaRestante: vidaRestante,
       timestamp: new Date().toISOString()
     };
@@ -861,9 +888,17 @@ class PartidaService {
       default:
         throw new Error('Tipo de golpe inválido. Debe ser: golpeBasico, golpeEspecial o golpeCritico');
     }
+    // Lógica de golpe crítico automático
+    let danioCritico = false;
+    let valorDanioCritico = 0;
+    if (Math.random() < 0.2) {
+      danioCritico = true;
+      valorDanioCritico = Math.floor(personajeDefensor.vidaActual * 0.4);
+    }
+    const danioTotal = danio + valorDanioCritico;
     // Aplicar daño
     const vidaAnterior = personajeDefensor.vidaActual;
-    personajeDefensor.vidaActual = Math.max(0, vidaAnterior - danio);
+    personajeDefensor.vidaActual = Math.max(0, vidaAnterior - danioTotal);
     const vidaRestante = personajeDefensor.vidaActual;
     // Crear acción
     const accion = {
@@ -872,6 +907,9 @@ class PartidaService {
       defensor: { id: personajeDefensor.id, nombre: personajeDefensor.nombre },
       tipoGolpe,
       danio,
+      danioCritico,
+      valorDanioCritico,
+      danioTotal,
       vidaRestante,
       timestamp: new Date().toISOString()
     };
