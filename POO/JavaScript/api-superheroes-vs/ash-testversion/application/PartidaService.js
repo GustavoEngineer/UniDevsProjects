@@ -124,7 +124,7 @@ class PartidaService {
     return partida;
   }
 
-  static jugarRoundEquipo(round, partidaId, idPersonajeAtacante, tipoGolpe) {
+  static jugarRoundEquipo(round, partidaId, idPersonajeAtacante, tipoGolpe, usarEscudo, tipoEscudo) {
     // Cargar partidas desde partidas_equipos.json
     const partidas = PartidaRepository.getAllEquipos();
     const partida = partidas.find(p => p.Partida_ID === partidaId);
@@ -183,6 +183,15 @@ class PartidaService {
       }
     }
 
+    // --- Lógica de escudo ---
+    let escudoAplicado = null;
+    if (usarEscudo && tipoEscudo && Array.isArray(personajeRoundDefensor.escudos)) {
+      const idx = personajeRoundDefensor.escudos.indexOf(tipoEscudo);
+      if (idx !== -1) {
+        escudoAplicado = tipoEscudo;
+        personajeRoundDefensor.escudos.splice(idx, 1); // Consumir escudo
+      }
+    }
     // Determinar nivel de poder del atacante
     let nivelPoderAtacante = 'omega';
     if (personajeRoundAtacante.vidaActual >= 201) nivelPoderAtacante = 'Alfa'; else if (personajeRoundAtacante.vidaActual >= 101 && personajeRoundAtacante.vidaActual < 201) nivelPoderAtacante = 'beta';
@@ -195,7 +204,29 @@ class PartidaService {
       danioCritico = true;
       valorDanioCritico = Math.floor(personajeRoundDefensor.vidaActual * 0.4);
     }
-    const danioTotal = danio + valorDanioCritico;
+    let danioTotal = danio + valorDanioCritico;
+    // Aplicar efecto de escudo si corresponde
+    if (escudoAplicado === 'dorado') {
+      if (danioCritico) {
+        danioTotal = 0;
+      } else {
+        const reduccion = 0.8 + Math.random() * 0.2;
+        danioTotal = Math.round(danioTotal * (1 - reduccion));
+      }
+    } else if (escudoAplicado === 'azul') {
+      if (danioCritico) {
+        danioTotal = Math.round(danioTotal * 0.75);
+      } else {
+        danioTotal = Math.round(danioTotal * 0.5);
+      }
+    } else if (escudoAplicado === 'verde') {
+      if (danioCritico) {
+        // No protege críticos
+      } else {
+        const reduccion = 0.2 + Math.random() * 0.1;
+        danioTotal = Math.round(danioTotal * (1 - reduccion));
+      }
+    }
     // Aplicar daño al defensor
     const vidaAnterior = personajeRoundDefensor.vidaActual;
     personajeRoundDefensor.vidaActual = Math.max(0, vidaAnterior - danioTotal);
@@ -248,7 +279,8 @@ class PartidaService {
         tipo: 'Participante Round 1',
         vidaActual: p.vidaActual,
         estatus: p.vidaActual > 0 ? 'Vivo' : 'Eliminado',
-        nivelPoder
+        nivelPoder,
+        nivelEnergia: p.nivelEnergia ?? 0
       };
     });
 
@@ -262,7 +294,7 @@ class PartidaService {
     };
   }
 
-  static jugarRound2Equipo(partidaId, idPersonajeAtacante, tipoGolpe) {
+  static jugarRound2Equipo(partidaId, idPersonajeAtacante, tipoGolpe, usarEscudo, tipoEscudo) {
     // Cargar partidas desde partidas_equipos.json
     const partidas = PartidaRepository.getAllEquipos();
     const partida = partidas.find(p => p.Partida_ID === partidaId);
@@ -469,11 +501,77 @@ class PartidaService {
       danioCritico = true;
       valorDanioCritico = Math.floor(defensor.vidaActual * 0.4);
     }
-    const danioTotal = danio + valorDanioCritico;
+    let danioTotal = danio + valorDanioCritico;
+    // --- Lógica de escudo ---
+    let escudoAplicado = null;
+    if (usarEscudo && tipoEscudo && Array.isArray(defensor.escudos)) {
+      const idx = defensor.escudos.indexOf(tipoEscudo);
+      if (idx !== -1) {
+        escudoAplicado = tipoEscudo;
+        defensor.escudos.splice(idx, 1); // Consumir escudo
+      }
+    }
+    // Aplicar efecto de escudo si corresponde
+    if (escudoAplicado === 'dorado') {
+      if (danioCritico) {
+        danioTotal = 0;
+      } else {
+        const reduccion = 0.8 + Math.random() * 0.2;
+        danioTotal = Math.round(danioTotal * (1 - reduccion));
+      }
+    } else if (escudoAplicado === 'azul') {
+      if (danioCritico) {
+        danioTotal = Math.round(danioTotal * 0.75);
+      } else {
+        danioTotal = Math.round(danioTotal * 0.5);
+      }
+    } else if (escudoAplicado === 'verde') {
+      if (danioCritico) {
+        // No protege críticos
+      } else {
+        const reduccion = 0.2 + Math.random() * 0.1;
+        danioTotal = Math.round(danioTotal * (1 - reduccion));
+      }
+    }
     // Aplicar daño al defensor
     const vidaAnterior = defensor.vidaActual;
     defensor.vidaActual = Math.max(0, vidaAnterior - danioTotal);
     const vidaRestante = defensor.vidaActual;
+
+    // Incrementar nivelEnergia del defensor según su nivel de poder
+    let incrementoEnergia = 0;
+    if (nivelPoderDefensor === 'Alfa') incrementoEnergia = 50;
+    else if (nivelPoderDefensor === 'beta') incrementoEnergia = 33;
+    else incrementoEnergia = 25;
+    if (typeof defensor.nivelEnergia !== 'number') defensor.nivelEnergia = 0;
+    defensor.nivelEnergia = Math.min(100, defensor.nivelEnergia + incrementoEnergia);
+
+    // Otorgar escudo si la energía llegó a 100
+    if (defensor.nivelEnergia >= 100) {
+      let escudoObtenido = null;
+      // Determinar nivel de poder actual
+      let nivelPoderDefensor = 'omega';
+      if (defensor.vidaActual >= 201) nivelPoderDefensor = 'Alfa';
+      else if (defensor.vidaActual >= 101) nivelPoderDefensor = 'beta';
+      // Probabilidades y lógica de escudos
+      const rand = Math.random();
+      if (nivelPoderDefensor === 'Alfa') {
+        if (rand < 0.6) escudoObtenido = 'dorado';
+        else if (rand < 0.6 + 0.8) escudoObtenido = 'azul'; // 0.6 + 0.8 = 1.4, pero como 0.6 ya fue, solo 0.8 más
+        else if (rand < 0.6 + 0.8 + 0.85) escudoObtenido = 'verde';
+      } else if (nivelPoderDefensor === 'beta') {
+        if (rand < 0.9) escudoObtenido = 'azul';
+        else if (rand < 0.9 + 0.85) escudoObtenido = 'verde';
+      } else if (nivelPoderDefensor === 'omega') {
+        if (rand < 0.25) escudoObtenido = 'azul';
+        else if (rand < 0.25 + 0.85) escudoObtenido = 'verde';
+      }
+      // Si no se asignó por probabilidad, forzar verde como fallback
+      if (!escudoObtenido) escudoObtenido = 'verde';
+      if (!Array.isArray(defensor.escudos)) defensor.escudos = [];
+      defensor.escudos.push(escudoObtenido);
+      defensor.nivelEnergia = 0;
+    }
 
     // Crear acción del round
     const accion = {
@@ -534,7 +632,8 @@ class PartidaService {
         tipo: (personajeVivoRound1 && p.id === personajeVivoRound1.id) ? 'Sobreviviente Round 1' : 'Siguiente disponible',
         vidaActual: p.vidaActual,
         estatus: p.vidaActual > 0 ? 'Vivo' : 'Eliminado',
-        nivelPoder
+        nivelPoder,
+        nivelEnergia: p.nivelEnergia ?? 0
       };
     });
 
@@ -548,7 +647,7 @@ class PartidaService {
     };
   }
 
-  static jugarRound3Equipo(partidaId, idPersonajeAtacante, tipoGolpe) {
+  static jugarRound3Equipo(partidaId, idPersonajeAtacante, tipoGolpe, usarEscudo, tipoEscudo) {
     // Cargar partidas desde partidas_equipos.json
     const partidas = PartidaRepository.getAllEquipos();
     const partida = partidas.find(p => p.Partida_ID === partidaId);
@@ -712,11 +811,46 @@ class PartidaService {
       danioCritico = true;
       valorDanioCritico = Math.floor(defensor.vidaActual * 0.4);
     }
-    const danioTotal = danio + valorDanioCritico;
+    let danioTotal = danio + valorDanioCritico;
+    // --- Lógica de escudo ---
+    let escudoAplicado = null;
+    if (usarEscudo && tipoEscudo && Array.isArray(defensor.escudos)) {
+      const idx = defensor.escudos.indexOf(tipoEscudo);
+      if (idx !== -1) {
+        escudoAplicado = tipoEscudo;
+        defensor.escudos.splice(idx, 1); // Consumir escudo
+      }
+    }
+    // Aplicar efecto de escudo si corresponde
+    if (escudoAplicado === 'dorado') {
+      if (danioCritico) {
+        danioTotal = 0;
+      } else {
+        const reduccion = 0.8 + Math.random() * 0.2;
+        danioTotal = Math.round(danioTotal * (1 - reduccion));
+      }
+    } else if (escudoAplicado === 'azul') {
+      if (danioCritico) {
+        danioTotal = Math.round(danioTotal * 0.75);
+      } else {
+        danioTotal = Math.round(danioTotal * 0.5);
+      }
+    } else if (escudoAplicado === 'verde') {
+      if (danioCritico) {
+        // No protege críticos
+      } else {
+        const reduccion = 0.2 + Math.random() * 0.1;
+        danioTotal = Math.round(danioTotal * (1 - reduccion));
+      }
+    }
     // Aplicar daño al defensor
     const vidaAnterior = defensor.vidaActual;
     defensor.vidaActual = Math.max(0, vidaAnterior - danioTotal);
     const vidaRestante = defensor.vidaActual;
+    // Incrementar nivelEnergia del defensor (proporcional al daño recibido, tope 100)
+    if (typeof defensor.nivelEnergia !== 'number') defensor.nivelEnergia = 0;
+    const incrementoEnergia = Math.round((danioTotal / 160) * (100 / 3));
+    defensor.nivelEnergia = Math.min(100, defensor.nivelEnergia + incrementoEnergia);
     // Crear acción del round
     const accion = {
       numeroGolpe: round3.acciones.length + 1,
@@ -786,7 +920,8 @@ class PartidaService {
         tipo: (personajeVivoRound2 && p.id === personajeVivoRound2.id) ? 'Sobreviviente Round 2' : 'Siguiente disponible',
         vidaActual: p.vidaActual,
         estatus: p.vidaActual > 0 ? 'Vivo' : 'Eliminado',
-        nivelPoder
+        nivelPoder,
+        nivelEnergia: p.nivelEnergia ?? 0
       };
     });
     return {
@@ -820,7 +955,7 @@ class PartidaService {
   }
 
   // NUEVO: Ataque por ataque para 1v1
-  static ataque1v1(partidaId, idPersonajeAtacante, tipoGolpe) {
+  static ataque1v1(partidaId, idPersonajeAtacante, tipoGolpe, usarEscudo, tipoEscudo) {
     // Buscar la partida
     const partidas = PartidaRepository.getAll1v1();
     const partida = partidas.find(p => p.Partida_ID === partidaId);
@@ -870,9 +1005,21 @@ class PartidaService {
     if (!personajeDefensor || personajeDefensor.vidaActual <= 0) {
       throw new Error('No hay defensor válido.');
     }
+    // --- Lógica de escudo ---
+    let escudoAplicado = null;
+    if (usarEscudo && tipoEscudo) {
+      const escudosArray = Array.isArray(personajeDefensor.escudos) ? personajeDefensor.escudos : [];
+      const idx = escudosArray.findIndex(e => String(e).toLowerCase() === String(tipoEscudo).toLowerCase());
+      if (idx === -1) {
+        return { exito: false, mensaje: 'El personaje no tiene escudos activos de ese tipo.', escudosDisponibles: personajeDefensor.escudos || [] };
+      }
+      escudoAplicado = escudosArray[idx];
+      personajeDefensor.escudos.splice(idx, 1); // Consumir escudo
+    }
     // Determinar nivel de poder del atacante
     let nivelPoderAtacante = 'omega';
-    if (personajeAtacante.vidaActual >= 201) nivelPoderAtacante = 'Alfa'; else if (personajeAtacante.vidaActual >= 101 && personajeAtacante.vidaActual < 201) nivelPoderAtacante = 'beta';
+    if (personajeAtacante.vidaActual >= 201) nivelPoderAtacante = 'Alfa';
+    else if (personajeAtacante.vidaActual >= 101 && personajeAtacante.vidaActual < 201) nivelPoderAtacante = 'beta';
     // Calcular daño según el tipo de golpe y nivel de poder
     let danio = calcularDanio(tipoGolpe, nivelPoderAtacante);
     // Lógica de golpe crítico automático
@@ -882,11 +1029,68 @@ class PartidaService {
       danioCritico = true;
       valorDanioCritico = Math.floor(personajeDefensor.vidaActual * 0.4);
     }
-    const danioTotal = danio + valorDanioCritico;
+    let danioTotal = danio + valorDanioCritico;
+    // Aplicar efecto de escudo si corresponde
+    if (escudoAplicado === 'dorado') {
+      if (danioCritico) {
+        danioTotal = 0; // Anula críticos
+      } else {
+        // Reduce 80-100% daño
+        const reduccion = 0.8 + Math.random() * 0.2; // 80-100%
+        danioTotal = Math.round(danioTotal * (1 - reduccion));
+      }
+    } else if (escudoAplicado === 'azul') {
+      if (danioCritico) {
+        danioTotal = Math.round(danioTotal * 0.75); // Reduce 25% críticos
+      } else {
+        danioTotal = Math.round(danioTotal * 0.5); // Reduce 50% otros golpes
+      }
+    } else if (escudoAplicado === 'verde') {
+      if (danioCritico) {
+        // No protege críticos
+      } else {
+        const reduccion = 0.2 + Math.random() * 0.1; // 20-30%
+        danioTotal = Math.round(danioTotal * (1 - reduccion));
+      }
+    }
     // Aplicar daño
     const vidaAnterior = personajeDefensor.vidaActual;
     personajeDefensor.vidaActual = Math.max(0, vidaAnterior - danioTotal);
     const vidaRestante = personajeDefensor.vidaActual;
+    // Incrementar nivelEnergia del defensor según su nivel de poder
+    let incrementoEnergia = 0;
+    if (nivelPoderAtacante === 'Alfa') incrementoEnergia = 50;
+    else if (nivelPoderAtacante === 'beta') incrementoEnergia = 33;
+    else incrementoEnergia = 25;
+    if (typeof personajeDefensor.nivelEnergia !== 'number') personajeDefensor.nivelEnergia = 0;
+    personajeDefensor.nivelEnergia = Math.min(100, personajeDefensor.nivelEnergia + incrementoEnergia);
+
+    // Otorgar escudo si la energía llegó a 100
+    if (personajeDefensor.nivelEnergia >= 100) {
+      let escudoObtenido = null;
+      // Determinar nivel de poder actual
+      let nivelPoderDefensor = 'omega';
+      if (personajeDefensor.vidaActual >= 201) nivelPoderDefensor = 'Alfa';
+      else if (personajeDefensor.vidaActual >= 101) nivelPoderDefensor = 'beta';
+      // Probabilidades y lógica de escudos
+      const rand = Math.random();
+      if (nivelPoderDefensor === 'Alfa') {
+        if (rand < 0.6) escudoObtenido = 'dorado';
+        else if (rand < 0.6 + 0.8) escudoObtenido = 'azul';
+        else if (rand < 0.6 + 0.8 + 0.85) escudoObtenido = 'verde';
+      } else if (nivelPoderDefensor === 'beta') {
+        if (rand < 0.9) escudoObtenido = 'azul';
+        else if (rand < 0.9 + 0.85) escudoObtenido = 'verde';
+      } else if (nivelPoderDefensor === 'omega') {
+        if (rand < 0.25) escudoObtenido = 'azul';
+        else if (rand < 0.25 + 0.85) escudoObtenido = 'verde';
+      }
+      // Si no se asignó por probabilidad, forzar verde como fallback
+      if (!escudoObtenido) escudoObtenido = 'verde';
+      if (!Array.isArray(personajeDefensor.escudos)) personajeDefensor.escudos = [];
+      personajeDefensor.escudos.push(escudoObtenido);
+      personajeDefensor.nivelEnergia = 0;
+    }
     // Crear acción
     const accion = {
       numeroGolpe: partida.historialAcciones.length + 1,
@@ -946,7 +1150,8 @@ class PartidaService {
         nombre: p.nombre,
         vidaActual: p.vidaActual,
         estatus: p.vidaActual > 0 ? 'Vivo' : 'Eliminado',
-        nivelPoder
+        nivelPoder,
+        nivelEnergia: p.nivelEnergia ?? 0
       };
     });
     // Incluir nivelPoder en la acción
@@ -1001,17 +1206,17 @@ function resumenGanador(partida) {
 
 function calcularDanio(tipoGolpe, nivelPoder) {
   if (nivelPoder === 'Alfa') {
-    if (tipoGolpe === 'golpeBasico') return Math.floor(Math.random() * (45 - 30 + 1)) + 30;
-    if (tipoGolpe === 'golpeEspecial') return Math.floor(Math.random() * (120 - 80 + 1)) + 80;
-    if (tipoGolpe === 'golpeCritico') return Math.floor(Math.random() * (160 - 120 + 1)) + 120;
+    if (tipoGolpe === 'golpeBasico') return Math.floor(Math.random() * (30 - 15 + 1)) + 15; // 15-30
+    if (tipoGolpe === 'golpeEspecial') return Math.floor(Math.random() * (105 - 65 + 1)) + 65; // 65-105
+    if (tipoGolpe === 'golpeCritico') return Math.floor(Math.random() * (135 - 105 + 1)) + 105; // 105-135
   } else if (nivelPoder === 'beta') {
-    if (tipoGolpe === 'golpeBasico') return Math.floor(Math.random() * (30 - 15 + 1)) + 15;
-    if (tipoGolpe === 'golpeEspecial') return Math.floor(Math.random() * (80 - 50 + 1)) + 50;
-    if (tipoGolpe === 'golpeCritico') return Math.floor(Math.random() * (120 - 80 + 1)) + 80;
+    if (tipoGolpe === 'golpeBasico') return Math.floor(Math.random() * (15 - 1 + 1)) + 1; // 1-15
+    if (tipoGolpe === 'golpeEspecial') return Math.floor(Math.random() * (65 - 35 + 1)) + 35; // 35-65
+    if (tipoGolpe === 'golpeCritico') return Math.floor(Math.random() * (105 - 65 + 1)) + 65; // 65-105
   } else if (nivelPoder === 'omega') {
-    if (tipoGolpe === 'golpeBasico') return Math.floor(Math.random() * (18 - 6 + 1)) + 6;
-    if (tipoGolpe === 'golpeEspecial') return Math.floor(Math.random() * (40 - 20 + 1)) + 20;
-    if (tipoGolpe === 'golpeCritico') return Math.floor(Math.random() * (70 - 40 + 1)) + 40;
+    if (tipoGolpe === 'golpeBasico') return Math.floor(Math.random() * (8 - 1 + 1)) + 1; // 1-8
+    if (tipoGolpe === 'golpeEspecial') return Math.floor(Math.random() * (25 - 5 + 1)) + 5; // 5-25
+    if (tipoGolpe === 'golpeCritico') return Math.floor(Math.random() * (55 - 25 + 1)) + 25; // 25-55
   }
   return 0;
 }

@@ -11,6 +11,10 @@ class Personaje {
     this.golpeEspecial = golpeEspecial;
     this.golpeCritico = golpeCritico;
     this.nivelVida = nivelVida;
+    // Nuevo atributo: nivelEnergia (para escudos, inicia en 0, tope 100)
+    this.nivelEnergia = 0;
+    // Inventario de escudos: puede tener varios, pero solo usar uno a la vez
+    this.escudos = [];
   }
 
   get nivelPoder() {

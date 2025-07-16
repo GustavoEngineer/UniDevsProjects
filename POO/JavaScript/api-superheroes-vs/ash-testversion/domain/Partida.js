@@ -2,12 +2,24 @@ class Partida {
   static lastId = 0;
 
   constructor(personaje1, personaje2) {
-    this.id = ++Partida.lastId;
+    this.Partida_ID = ++Partida.lastId; // Solo Partida_ID como identificador
     this.tipo = '1v1';
     this.fechaInicio = new Date().toISOString();
     this.personajes = [
-      { nombre: personaje1.nombre, id: personaje1.id, vida: personaje1.vida, nivelPoder: personaje1.nivelPoder },
-      { nombre: personaje2.nombre, id: personaje2.id, vida: personaje2.vida, nivelPoder: personaje2.nivelPoder }
+      {
+        nombre: personaje1.nombre,
+        id: personaje1.id,
+        vida: personaje1.vida,
+        nivelPoder: personaje1.nivelPoder,
+        escudos: Array.isArray(personaje1.escudos) ? [...personaje1.escudos] : []
+      },
+      {
+        nombre: personaje2.nombre,
+        id: personaje2.id,
+        vida: personaje2.vida,
+        nivelPoder: personaje2.nivelPoder,
+        escudos: Array.isArray(personaje2.escudos) ? [...personaje2.escudos] : []
+      }
     ];
     this.historialAcciones = [];
   }

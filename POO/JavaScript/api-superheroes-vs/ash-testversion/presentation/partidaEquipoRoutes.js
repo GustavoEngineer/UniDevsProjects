@@ -105,10 +105,23 @@ router.post('/partidas/equipos/iniciar', (req, res) => {
  *                 description: ID de la partida
  *               idPersonajeAtacante:
  *                 type: number
- *                 description: ID del personaje que ataca (debe ser uno de los primeros de cada equipo)
+ *                 description: ID del personaje que ataca
  *               tipoGolpe:
  *                 type: string
  *                 enum: [golpeBasico, golpeEspecial]
+ *               usarEscudo:
+ *                 type: boolean
+ *                 description: Indica si el defensor quiere usar un escudo
+ *               tipoEscudo:
+ *                 type: string
+ *                 enum: [dorado, azul, verde]
+ *                 description: Tipo de escudo a usar (si tiene)
+ *           example:
+ *             Partida_ID: 1
+ *             idPersonajeAtacante: 2
+ *             tipoGolpe: golpeBasico
+ *             usarEscudo: true
+ *             tipoEscudo: azul
  *     responses:
  *       200:
  *         description: Resultado del ataque
@@ -116,57 +129,20 @@ router.post('/partidas/equipos/iniciar', (req, res) => {
  *           application/json:
  *             schema:
  *               type: object
- *               properties:
- *                 round:
- *                   type: integer
- *                 accion:
- *                   type: object
- *                   properties:
- *                     numeroGolpe:
- *                       type: integer
- *                       description: Número secuencial del golpe (1, 2, 3, etc.)
- *                     atacante:
- *                       type: object
- *                       properties:
- *                         id:
- *                           type: number
- *                         nombre:
- *                           type: string
- *                     defensor:
- *                       type: object
- *                       properties:
- *                         id:
- *                           type: number
- *                         nombre:
- *                           type: string
- *                     tipoGolpe:
- *                       type: string
- *                       enum: [golpeBasico, golpeEspecial, golpeCritico]
- *                     danio:
- *                       type: integer
- *                     vidaRestante:
- *                       type: integer
- *                     timestamp:
- *                       type: string
- *                       format: date-time
- *                 defensorPerdio:
- *                   type: boolean
- *                 ganador:
- *                   type: string
  *       400:
  *         description: Datos inválidos
  */
 router.post('/partidas/equipos/round/1', async (req, res) => {
-  // Compatibilidad: aceptar partidaId o Partida_ID
   const partidaId = req.body.partidaId || req.body.Partida_ID;
   const idPersonajeAtacante = req.body.idPersonajeAtacante;
   const tipoGolpe = req.body.tipoGolpe;
-  // Validación de datos obligatorios igual que en round 2
+  const usarEscudo = req.body.usarEscudo;
+  const tipoEscudo = req.body.tipoEscudo;
   if (!partidaId || !idPersonajeAtacante || !tipoGolpe) {
     return res.status(400).json({ error: 'Faltan datos obligatorios: partidaId, idPersonajeAtacante, tipoGolpe' });
   }
   try {
-    const result = await PartidaService.jugarRoundEquipo(1, partidaId, idPersonajeAtacante, tipoGolpe);
+    const result = await PartidaService.jugarRoundEquipo(1, partidaId, idPersonajeAtacante, tipoGolpe, usarEscudo, tipoEscudo);
     res.json(result);
   } catch (e) {
     res.status(400).json({ error: e.message });
@@ -195,11 +171,23 @@ router.post('/partidas/equipos/round/1', async (req, res) => {
  *                 description: ID de la partida en curso
  *               idPersonajeAtacante:
  *                 type: number
- *                 description: ID del personaje que ataca (debe ser válido para round 2)
+ *                 description: ID del personaje que ataca
  *               tipoGolpe:
  *                 type: string
  *                 enum: [golpeBasico, golpeEspecial]
- *                 description: Tipo de golpe a realizar
+ *               usarEscudo:
+ *                 type: boolean
+ *                 description: Indica si el defensor quiere usar un escudo
+ *               tipoEscudo:
+ *                 type: string
+ *                 enum: [dorado, azul, verde]
+ *                 description: Tipo de escudo a usar (si tiene)
+ *           example:
+ *             partidaId: 1
+ *             idPersonajeAtacante: 3
+ *             tipoGolpe: golpeEspecial
+ *             usarEscudo: true
+ *             tipoEscudo: verde
  *     responses:
  *       200:
  *         description: Resultado del round 2
@@ -207,54 +195,6 @@ router.post('/partidas/equipos/round/1', async (req, res) => {
  *           application/json:
  *             schema:
  *               type: object
- *               properties:
- *                 round:
- *                   type: integer
- *                 accion:
- *                   type: object
- *                   properties:
- *                     numeroGolpe:
- *                       type: integer
- *                     atacante:
- *                       type: object
- *                       properties:
- *                         id:
- *                           type: number
- *                         nombre:
- *                           type: string
- *                     defensor:
- *                       type: object
- *                       properties:
- *                         id:
- *                           type: number
- *                         nombre:
- *                           type: string
- *                     tipoGolpe:
- *                       type: string
- *                     danio:
- *                       type: integer
- *                     vidaRestante:
- *                       type: integer
- *                     timestamp:
- *                       type: string
- *                 defensorPerdio:
- *                   type: boolean
- *                 ganador:
- *                   type: string
- *                 personajesDisponiblesRound2:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: number
- *                       nombre:
- *                         type: string
- *                       equipo:
- *                         type: string
- *                       tipo:
- *                         type: string
- *                         enum: [Sobreviviente Round 1, Siguiente disponible]
  *       400:
  *         description: Datos inválidos o round 1 no completado
  */
@@ -262,11 +202,13 @@ router.post('/partidas/equipos/round/2', async (req, res) => {
   const partidaId = req.body.partidaId || req.body.Partida_ID;
   const idPersonajeAtacante = req.body.idPersonajeAtacante;
   const tipoGolpe = req.body.tipoGolpe;
+  const usarEscudo = req.body.usarEscudo;
+  const tipoEscudo = req.body.tipoEscudo;
   if (!partidaId || !idPersonajeAtacante || !tipoGolpe) {
     return res.status(400).json({ error: 'Faltan datos obligatorios: partidaId, idPersonajeAtacante, tipoGolpe' });
   }
   try {
-    const result = await PartidaService.jugarRound2Equipo(partidaId, idPersonajeAtacante, tipoGolpe);
+    const result = await PartidaService.jugarRound2Equipo(partidaId, idPersonajeAtacante, tipoGolpe, usarEscudo, tipoEscudo);
     res.json(result);
   } catch (e) {
     res.status(400).json({ error: e.message });
@@ -295,11 +237,23 @@ router.post('/partidas/equipos/round/2', async (req, res) => {
  *                 description: ID de la partida en curso
  *               idPersonajeAtacante:
  *                 type: number
- *                 description: ID del personaje que ataca (debe ser válido para round 3)
+ *                 description: ID del personaje que ataca
  *               tipoGolpe:
  *                 type: string
  *                 enum: [golpeBasico, golpeEspecial, golpeCritico]
- *                 description: Tipo de golpe a realizar
+ *               usarEscudo:
+ *                 type: boolean
+ *                 description: Indica si el defensor quiere usar un escudo
+ *               tipoEscudo:
+ *                 type: string
+ *                 enum: [dorado, azul, verde]
+ *                 description: Tipo de escudo a usar (si tiene)
+ *           example:
+ *             partidaId: 1
+ *             idPersonajeAtacante: 4
+ *             tipoGolpe: golpeCritico
+ *             usarEscudo: true
+ *             tipoEscudo: dorado
  *     responses:
  *       200:
  *         description: Resultado del round 3
@@ -307,60 +261,6 @@ router.post('/partidas/equipos/round/2', async (req, res) => {
  *           application/json:
  *             schema:
  *               type: object
- *               properties:
- *                 round:
- *                   type: integer
- *                 accion:
- *                   type: object
- *                   properties:
- *                     numeroGolpe:
- *                       type: integer
- *                       description: Número secuencial del golpe (1, 2, 3, etc.)
- *                     atacante:
- *                       type: object
- *                       properties:
- *                         id:
- *                           type: number
- *                         nombre:
- *                           type: string
- *                     defensor:
- *                       type: object
- *                       properties:
- *                         id:
- *                           type: number
- *                         nombre:
- *                           type: string
- *                     tipoGolpe:
- *                       type: string
- *                       enum: [golpeBasico, golpeEspecial, golpeCritico]
- *                     danio:
- *                       type: integer
- *                     vidaRestante:
- *                       type: integer
- *                     timestamp:
- *                       type: string
- *                       format: date-time
- *                 defensorPerdio:
- *                   type: boolean
- *                 ganador:
- *                   type: string
- *                 partidaFinalizada:
- *                   type: boolean
- *                 ganadorFinal:
- *                   type: string
- *                 personajesDisponiblesRound3:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: number
- *                       nombre:
- *                         type: string
- *                       equipo:
- *                         type: string
- *                       tipo:
- *                         type: string
  *       400:
  *         description: Datos inválidos
  */
@@ -368,11 +268,13 @@ router.post('/partidas/equipos/round/3', async (req, res) => {
   const partidaId = req.body.partidaId || req.body.Partida_ID;
   const idPersonajeAtacante = req.body.idPersonajeAtacante;
   const tipoGolpe = req.body.tipoGolpe;
+  const usarEscudo = req.body.usarEscudo;
+  const tipoEscudo = req.body.tipoEscudo;
   if (!partidaId || !idPersonajeAtacante || !tipoGolpe) {
     return res.status(400).json({ error: 'Faltan datos obligatorios: partidaId, idPersonajeAtacante, tipoGolpe' });
   }
   try {
-    const result = await PartidaService.jugarRound3Equipo(partidaId, idPersonajeAtacante, tipoGolpe);
+    const result = await PartidaService.jugarRound3Equipo(partidaId, idPersonajeAtacante, tipoGolpe, usarEscudo, tipoEscudo);
     res.json(result);
   } catch (e) {
     res.status(400).json({ error: e.message });

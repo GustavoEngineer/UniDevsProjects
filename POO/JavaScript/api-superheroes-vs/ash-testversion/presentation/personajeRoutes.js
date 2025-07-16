@@ -205,4 +205,70 @@ router.delete('/personajes/:id', (req, res) => {
   res.status(204).send();
 });
 
+// Nuevo endpoint: obtener info de personaje en partida 1v1 pendiente
+router.get('/personajes/:id/partida', (req, res) => {
+  const personajeId = parseInt(req.params.id);
+  // Buscar en partidas 1v1 pendientes
+  const partidas1v1 = require('../infrastructure/PartidaRepository').getAll1v1();
+  const partida1v1 = partidas1v1.find(p => !p.finalizada && p.personajes && p.personajes.some(per => per.id === personajeId));
+  if (partida1v1) {
+    const personaje = partida1v1.personajes.find(per => per.id === personajeId);
+    // Asegurar que siempre tenga el array escudos
+    if (!Array.isArray(personaje.escudos)) personaje.escudos = [];
+    return res.json({
+      enPartida: true,
+      tipo: '1v1',
+      partidaId: partida1v1.Partida_ID,
+      personaje
+    });
+  }
+  // No está en ninguna partida 1v1 pendiente
+  return res.json({
+    enPartida: false,
+    mensaje: 'El personaje no está en ninguna partida 1v1 pendiente.'
+  });
+});
+
+/**
+ * @swagger
+ * /personajes/{id}/partida:
+ *   get:
+ *     summary: Obtener la información actualizada de un personaje si está en una partida pendiente
+ *     tags: [Personajes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: ID del personaje
+ *     responses:
+ *       200:
+ *         description: Información del personaje en partida o mensaje si no está en ninguna
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     enPartida:
+ *                       type: boolean
+ *                       example: true
+ *                     tipo:
+ *                       type: string
+ *                       enum: ["1v1", "equipos"]
+ *                     partidaId:
+ *                       type: number
+ *                     personaje:
+ *                       $ref: '#/components/schemas/Personaje'
+ *                 - type: object
+ *                   properties:
+ *                     enPartida:
+ *                       type: boolean
+ *                       example: false
+ *                     mensaje:
+ *                       type: string
+ *                       example: "El personaje no está en ninguna partida pendiente."
+ */
+
 module.exports = router; 

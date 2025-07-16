@@ -130,6 +130,19 @@ router.get('/partidas/1v1/:id', (req, res) => {
  *                 type: string
  *                 enum: [golpeBasico, golpeEspecial]
  *                 description: Tipo de golpe a realizar
+ *               usarEscudo:
+ *                 type: boolean
+ *                 description: Indica si el defensor quiere usar un escudo
+ *               tipoEscudo:
+ *                 type: string
+ *                 enum: [dorado, azul, verde]
+ *                 description: Tipo de escudo a usar (si tiene)
+ *           example:
+ *             partidaId: 1
+ *             idPersonajeAtacante: 2
+ *             tipoGolpe: golpeBasico
+ *             usarEscudo: true
+ *             tipoEscudo: dorado
  *     responses:
  *       200:
  *         description: Resultado del ataque
@@ -141,12 +154,12 @@ router.get('/partidas/1v1/:id', (req, res) => {
  *         description: Datos inválidos
  */
 router.post('/partidas/1v1/ataque', (req, res) => {
-  const { partidaId, idPersonajeAtacante, tipoGolpe } = req.body;
+  const { partidaId, idPersonajeAtacante, tipoGolpe, usarEscudo, tipoEscudo } = req.body;
   if (!partidaId || !idPersonajeAtacante || !tipoGolpe) {
     return res.status(400).json({ error: 'Faltan datos obligatorios: partidaId, idPersonajeAtacante, tipoGolpe' });
   }
   try {
-    const result = PartidaService.ataque1v1(partidaId, idPersonajeAtacante, tipoGolpe);
+    const result = PartidaService.ataque1v1(partidaId, idPersonajeAtacante, tipoGolpe, usarEscudo, tipoEscudo);
     res.json(result);
   } catch (e) {
     res.status(400).json({ error: e.message });
@@ -177,5 +190,47 @@ router.delete('/partidas/1v1/:id', (req, res) => {
   if (!deleted) return res.status(404).json({ error: 'Partida no encontrada' });
   res.json({ mensaje: 'Partida eliminada correctamente' });
 });
+
+/**
+ * @swagger
+ * /personajes/{id}/partida:
+ *   get:
+ *     summary: Consultar el estado actualizado de un personaje en una partida 1v1 pendiente
+ *     tags: [Partidas1v1]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: ID del personaje
+ *     responses:
+ *       200:
+ *         description: Información del personaje en partida 1v1 o mensaje si no está en ninguna
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     enPartida:
+ *                       type: boolean
+ *                       example: true
+ *                     tipo:
+ *                       type: string
+ *                       enum: ["1v1"]
+ *                     partidaId:
+ *                       type: number
+ *                     personaje:
+ *                       $ref: '#/components/schemas/Personaje'
+ *                 - type: object
+ *                   properties:
+ *                     enPartida:
+ *                       type: boolean
+ *                       example: false
+ *                     mensaje:
+ *                       type: string
+ *                       example: "El personaje no está en ninguna partida 1v1 pendiente."
+ */
 
 module.exports = router; 
