@@ -1,0 +1,205 @@
+[
+  {
+    "id": 1,
+    "tipo": "1v1",
+    "fechaInicio": "2025-07-16T03:40:16.295Z",
+    "personajes": [
+      {
+        "nombre": "Superman",
+        "id": 1,
+        "nivelPoder": "Alfa",
+        "vidaActual": 0
+      },
+      {
+        "nombre": "Batman",
+        "id": 2,
+        "nivelPoder": "Alfa",
+        "vidaActual": 156
+      }
+    ],
+    "historialAcciones": [
+      {
+        "numeroGolpe": 1,
+        "atacante": {
+          "id": 1,
+          "nombre": "Superman"
+        },
+        "defensor": {
+          "id": 2,
+          "nombre": "Batman"
+        },
+        "tipoGolpe": "golpeBasico",
+        "danio": 43,
+        "danioCritico": false,
+        "valorDanioCritico": 0,
+        "danioTotal": 43,
+        "vidaRestante": 257,
+        "timestamp": "2025-07-16T03:40:30.028Z"
+      },
+      {
+        "numeroGolpe": 2,
+        "atacante": {
+          "id": 2,
+          "nombre": "Batman"
+        },
+        "defensor": {
+          "id": 1,
+          "nombre": "Superman"
+        },
+        "tipoGolpe": "golpeEspecial",
+        "danio": 116,
+        "danioCritico": false,
+        "valorDanioCritico": 0,
+        "danioTotal": 116,
+        "vidaRestante": 184,
+        "timestamp": "2025-07-16T03:40:45.987Z"
+      },
+      {
+        "numeroGolpe": 3,
+        "atacante": {
+          "id": 1,
+          "nombre": "Superman"
+        },
+        "defensor": {
+          "id": 2,
+          "nombre": "Batman"
+        },
+        "tipoGolpe": "golpeEspecial",
+        "danio": 56,
+        "danioCritico": false,
+        "valorDanioCritico": 0,
+        "danioTotal": 56,
+        "vidaRestante": 201,
+        "timestamp": "2025-07-16T03:41:37.392Z"
+      },
+      {
+        "numeroGolpe": 4,
+        "atacante": {
+          "id": 2,
+          "nombre": "Batman"
+        },
+        "defensor": {
+          "id": 1,
+          "nombre": "Superman"
+        },
+        "tipoGolpe": "golpeEspecial",
+        "danio": 118,
+        "danioCritico": false,
+        "valorDanioCritico": 0,
+        "danioTotal": 118,
+        "vidaRestante": 66,
+        "timestamp": "2025-07-16T03:41:47.722Z"
+      },
+      {
+        "numeroGolpe": 5,
+        "atacante": {
+          "id": 1,
+          "nombre": "Superman"
+        },
+        "defensor": {
+          "id": 2,
+          "nombre": "Batman"
+        },
+        "tipoGolpe": "golpeBasico",
+        "danio": 17,
+        "danioCritico": false,
+        "valorDanioCritico": 0,
+        "danioTotal": 17,
+        "vidaRestante": 184,
+        "timestamp": "2025-07-16T03:44:19.421Z"
+      },
+      {
+        "numeroGolpe": 6,
+        "atacante": {
+          "id": 2,
+          "nombre": "Batman"
+        },
+        "defensor": {
+          "id": 1,
+          "nombre": "Superman"
+        },
+        "tipoGolpe": "golpeBasico",
+        "danio": 25,
+        "danioCritico": false,
+        "valorDanioCritico": 0,
+        "danioTotal": 25,
+        "vidaRestante": 41,
+        "timestamp": "2025-07-16T03:44:26.516Z"
+      },
+      {
+        "numeroGolpe": 7,
+        "atacante": {
+          "id": 1,
+          "nombre": "Superman"
+        },
+        "defensor": {
+          "id": 2,
+          "nombre": "Batman"
+        },
+        "tipoGolpe": "golpeBasico",
+        "danio": 17,
+        "danioCritico": false,
+        "valorDanioCritico": 0,
+        "danioTotal": 17,
+        "vidaRestante": 167,
+        "timestamp": "2025-07-16T03:44:35.708Z"
+      },
+      {
+        "numeroGolpe": 8,
+        "atacante": {
+          "id": 2,
+          "nombre": "Batman"
+        },
+        "defensor": {
+          "id": 1,
+          "nombre": "Superman"
+        },
+        "tipoGolpe": "golpeBasico",
+        "danio": 28,
+        "danioCritico": false,
+        "valorDanioCritico": 0,
+        "danioTotal": 28,
+        "vidaRestante": 13,
+        "timestamp": "2025-07-16T03:44:40.903Z"
+      },
+      {
+        "numeroGolpe": 9,
+        "atacante": {
+          "id": 1,
+          "nombre": "Superman"
+        },
+        "defensor": {
+          "id": 2,
+          "nombre": "Batman"
+        },
+        "tipoGolpe": "golpeBasico",
+        "danio": 11,
+        "danioCritico": false,
+        "valorDanioCritico": 0,
+        "danioTotal": 11,
+        "vidaRestante": 156,
+        "timestamp": "2025-07-16T03:44:45.668Z"
+      },
+      {
+        "numeroGolpe": 10,
+        "atacante": {
+          "id": 2,
+          "nombre": "Batman"
+        },
+        "defensor": {
+          "id": 1,
+          "nombre": "Superman"
+        },
+        "tipoGolpe": "golpeBasico",
+        "danio": 22,
+        "danioCritico": true,
+        "valorDanioCritico": 5,
+        "danioTotal": 27,
+        "vidaRestante": 0,
+        "timestamp": "2025-07-16T03:48:45.898Z"
+      }
+    ],
+    "Partida_ID": 1,
+    "finalizada": true
+  }
+]

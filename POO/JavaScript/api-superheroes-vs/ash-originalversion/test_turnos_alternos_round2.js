@@ -1,0 +1,159 @@
+const fetch = require('node-fetch');
+
+const BASE_URL = 'http://localhost:3000';
+
+async function testTurnosAlternosRound2() {
+  console.log('🧪 Probando turnos alternos en Round 2...\n');
+
+  try {
+    // 1. Crear nueva partida
+    console.log('1️⃣ Creando nueva partida...');
+    const partidaResponse = await fetch(`${BASE_URL}/partidas/equipos/iniciar`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        equipo1: ['1', '2', '3'],
+        equipo2: ['4', '5', '6']
+      })
+    });
+
+    if (!partidaResponse.ok) {
+      const error = await partidaResponse.text();
+      throw new Error(`Error creando partida: ${error}`);
+    }
+
+    const partida = await partidaResponse.json();
+    console.log('✅ Partida creada:', partida.Partida_ID);
+
+    // 2. Jugar round 1 completo
+    console.log('\n2️⃣ Jugando round 1 completo...');
+    let round1Terminado = false;
+    let turno = 0;
+    let atacanteId = partida.equipo1[0].id;
+    let defensorId = partida.equipo2[0].id;
+    
+    while (!round1Terminado) {
+      const tipoGolpe = turno % 2 === 0 ? 'golpeBasico' : 'golpeEspecial';
+      const idPersonajeAtacante = turno % 2 === 0 ? atacanteId : defensorId;
+      
+      const response = await fetch(`${BASE_URL}/partidas/equipos/round/1`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          Partida_ID: partida.Partida_ID,
+          idPersonajeAtacante,
+          tipoGolpe
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Error en ataque round 1: ${error}`);
+      }
+      
+      const resultadoAtaque = await response.json();
+      console.log(`Ataque #${turno + 1}:`, resultadoAtaque.accion.atacante.nombre, '->', resultadoAtaque.accion.defensor.nombre, '| Daño:', resultadoAtaque.accion.danio, '| Vida restante:', resultadoAtaque.accion.vidaRestante);
+      
+      if (resultadoAtaque.defensorPerdio) {
+        round1Terminado = true;
+        console.log('🏆 Round 1 completado! Ganador:', resultadoAtaque.ganador);
+      }
+      turno++;
+    }
+
+    // 3. Probar turnos alternos en round 2
+    console.log('\n3️⃣ Probando turnos alternos en round 2...');
+    
+    // Primer ataque: Equipo 2 (Lex Luthor)
+    console.log('\n📤 Primer ataque: Lex Luthor (Equipo 2)');
+    const round2Ataque1 = await fetch(`${BASE_URL}/partidas/equipos/round/2`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        partidaId: partida.Partida_ID,
+        idPersonajeAtacante: "5", // Lex Luthor
+        tipoGolpe: "golpeBasico"
+      })
+    });
+
+    if (!round2Ataque1.ok) {
+      const error = await round2Ateque1.text();
+      console.log('❌ Error en primer ataque round 2:', error);
+    } else {
+      const resultado1 = await round2Ataque1.json();
+      console.log('✅ Primer ataque exitoso:');
+      console.log('- Atacante:', resultado1.accion.atacante.nombre, '(Equipo 2)');
+      console.log('- Defensor:', resultado1.accion.defensor.nombre, '(Equipo 1)');
+      console.log('- Daño:', resultado1.accion.danio);
+      console.log('- Vida restante:', resultado1.accion.vidaRestante);
+      console.log('- Personajes disponibles:', resultado1.personajesDisponiblesRound2.map(p => p.nombre));
+    }
+
+    // Segundo ataque: Equipo 1 (Batman) - debe atacar al mismo personaje que lo atacó
+    console.log('\n📤 Segundo ataque: Batman (Equipo 1)');
+    const round2Ataque2 = await fetch(`${BASE_URL}/partidas/equipos/round/2`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        partidaId: partida.Partida_ID,
+        idPersonajeAtacante: "2", // Batman
+        tipoGolpe: "golpeCritico"
+      })
+    });
+
+    if (!round2Ataque2.ok) {
+      const error = await round2Ataque2.text();
+      console.log('❌ Error en segundo ataque round 2:', error);
+    } else {
+      const resultado2 = await round2Ataque2.json();
+      console.log('✅ Segundo ataque exitoso:');
+      console.log('- Atacante:', resultado2.accion.atacante.nombre, '(Equipo 1)');
+      console.log('- Defensor:', resultado2.accion.defensor.nombre, '(Equipo 2)');
+      console.log('- Daño:', resultado2.accion.danio);
+      console.log('- Vida restante:', resultado2.accion.vidaRestante);
+      console.log('- Personajes disponibles:', resultado2.personajesDisponiblesRound2.map(p => p.nombre));
+    }
+
+    // Tercer ataque: Equipo 2 (Wonder Woman) - debe atacar al mismo personaje que lo atacó
+    console.log('\n📤 Tercer ataque: Wonder Woman (Equipo 2)');
+    const round2Ataque3 = await fetch(`${BASE_URL}/partidas/equipos/round/2`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        partidaId: partida.Partida_ID,
+        idPersonajeAtacante: "4", // Wonder Woman
+        tipoGolpe: "golpeEspecial"
+      })
+    });
+
+    if (!round2Ataque3.ok) {
+      const error = await round2Ataque3.text();
+      console.log('❌ Error en tercer ataque round 2:', error);
+    } else {
+      const resultado3 = await round2Ataque3.json();
+      console.log('✅ Tercer ataque exitoso:');
+      console.log('- Atacante:', resultado3.accion.atacante.nombre, '(Equipo 2)');
+      console.log('- Defensor:', resultado3.accion.defensor.nombre, '(Equipo 1)');
+      console.log('- Daño:', resultado3.accion.danio);
+      console.log('- Vida restante:', resultado3.accion.vidaRestante);
+      console.log('- Personajes disponibles:', resultado3.personajesDisponiblesRound2.map(p => p.nombre));
+    }
+
+    console.log('\n🎉 Prueba completada!');
+
+  } catch (error) {
+    console.error('❌ Error en la prueba:', error.message);
+  }
+}
+
+testTurnosAlternosRound2(); 
