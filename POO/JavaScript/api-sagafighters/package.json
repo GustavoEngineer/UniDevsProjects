@@ -1,0 +1,26 @@
+{
+  "name": "api-sagafighters",
+  "version": "1.0.0",
+  "description": "WebAPI con arquitectura Onion y documentación Swagger.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "onion",
+    "api",
+    "swagger",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
