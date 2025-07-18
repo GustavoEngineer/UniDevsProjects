@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const BatallaRepo = require('../../infrastructure/repositories/BatallaRepository');
+const BatallaMongo = require('../../domain/models/BatallaMongo');
+const mongoose = require('mongoose');
 const PersonajeRepo = require('../../infrastructure/repositories/PersonajeRepository');
 
 /**
@@ -10,22 +11,50 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  *     Batalla:
  *       type: object
  *       properties:
- *         BatallaID:
- *           type: integer
+ *         id:
+ *           type: string
+ *           description: ID único generado por MongoDB (ObjectId)
  *         Personaje1:
- *           type: string
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *               description: ID de MongoDB (ObjectId) del personaje 1
+ *             nombre:
+ *               type: string
+ *               description: Nombre del personaje 1
  *         Personaje2:
- *           type: string
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *               description: ID de MongoDB (ObjectId) del personaje 2
+ *             nombre:
+ *               type: string
+ *               description: Nombre del personaje 2
  *         Estado:
  *           type: string
- *           enum: [En curso, Finalizada]
  *         Ganador:
  *           type: string
  *           nullable: true
  *         TurnoActual:
  *           type: integer
- *           enum: [1, 2]
- *       required: [BatallaID, Personaje1, Personaje2, Estado, TurnoActual]
+ *         historial:
+ *           type: array
+ *           items:
+ *             type: object
+ *       example:
+ *         id: "665b1e2f8b3c2a0012a4d123"
+ *         Personaje1:
+ *           id: "665b1e2f8b3c2a0012a4d111"
+ *           nombre: "Vegeta"
+ *         Personaje2:
+ *           id: "665b1e2f8b3c2a0012a4d112"
+ *           nombre: "Goku"
+ *         Estado: "En curso"
+ *         Ganador: null
+ *         TurnoActual: 1
+ *         historial: []
  *     CrearBatallaInput:
  *       type: object
  *       properties:
@@ -91,7 +120,22 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CrearBatallaInput'
+ *             type: object
+ *             properties:
+ *               personaje1Id:
+ *                 type: string
+ *                 pattern: '^[a-fA-F0-9]{24}$'
+ *                 description: ID de MongoDB (ObjectId) del primer personaje
+ *               personaje2Id:
+ *                 type: string
+ *                 pattern: '^[a-fA-F0-9]{24}$'
+ *                 description: ID de MongoDB (ObjectId) del segundo personaje
+ *             required:
+ *               - personaje1Id
+ *               - personaje2Id
+ *           example:
+ *             personaje1Id: "687950b99358be9dc62e544d"
+ *             personaje2Id: "687950b99358be9dc62e5452"
  *     responses:
  *       201:
  *         description: Batalla creada
@@ -128,7 +172,27 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/AccionBatallaInput'
+ *             type: object
+ *             properties:
+ *               batallaId:
+ *                 type: string
+ *                 pattern: '^[a-fA-F0-9]{24}$'
+ *                 description: ID de MongoDB (ObjectId) de la batalla
+ *               personajeId:
+ *                 type: string
+ *                 pattern: '^[a-fA-F0-9]{24}$'
+ *                 description: ID de MongoDB (ObjectId) del personaje
+ *               accion:
+ *                 type: string
+ *                 description: Acción a ejecutar (solo letras y espacios)
+ *             required:
+ *               - batallaId
+ *               - personajeId
+ *               - accion
+ *           example:
+ *             batallaId: "687a5fcdbaf8f1148368f9f0"
+ *             personajeId: "687a5d6ac573beebde5ef374"
+ *             accion: "Ataque Básico"
  *     responses:
  *       200:
  *         description: Resultado de la acción y estado actualizado de la batalla
@@ -188,6 +252,27 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
 /**
  * @swagger
  * /api/batallas/{id}:
+ *   get:
+ *     summary: Obtener una batalla por ID
+ *     tags: [Batalla]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^[a-fA-F0-9]{24}$'
+ *           description: ID de MongoDB (ObjectId)
+ *         description: ID de la batalla
+ *     responses:
+ *       200:
+ *         description: Batalla encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Batalla'
+ *       404:
+ *         description: Batalla no encontrada
  *   delete:
  *     summary: Eliminar una batalla por ID
  *     tags: [Batalla]
@@ -196,7 +281,9 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           pattern: '^[a-fA-F0-9]{24}$'
+ *           description: ID de MongoDB (ObjectId)
  *         description: ID de la batalla
  *     responses:
  *       200:
@@ -208,15 +295,11 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  *               properties:
  *                 mensaje:
  *                   type: string
+ *                 id:
+ *                   type: string
+ *                   description: ID de MongoDB (ObjectId)
  *       404:
  *         description: Batalla no encontrada
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
  */
 
 /**
@@ -230,7 +313,9 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           pattern: '^[a-fA-F0-9]{24}$'
+ *           description: ID de MongoDB (ObjectId)
  *         description: ID de la batalla
  *     responses:
  *       200:
@@ -321,57 +406,113 @@ function esStringLetras(valor) {
   return typeof valor === 'string' && /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/.test(valor.trim());
 }
 
+function toPublicBatalla(batalla) {
+  if (!batalla) return null;
+  const obj = batalla.toObject ? batalla.toObject() : batalla;
+  return {
+    id: obj._id,
+    Personaje1: obj.personaje1 || obj.Personaje1,
+    Personaje2: obj.personaje2 || obj.Personaje2,
+    Estado: obj.estado || obj.Estado,
+    Ganador: obj.ganador || obj.Ganador,
+    TurnoActual: obj.turnoActual || obj.TurnoActual,
+    historial: obj.historial || []
+  };
+}
+
 // POST /api/batallas - Crear nueva batalla
-router.post('/api/batallas', (req, res) => {
+router.post('/api/batallas', async (req, res) => {
   try {
     const { personaje1Id, personaje2Id } = req.body;
-    if (!esEnteroPositivo(personaje1Id) || !esEnteroPositivo(personaje2Id)) {
-      return res.status(400).json({ error: '⚠️ IDs de personajes requeridos y deben ser enteros positivos.' });
+    if (!mongoose.Types.ObjectId.isValid(personaje1Id) || !mongoose.Types.ObjectId.isValid(personaje2Id)) {
+      return res.status(400).json({ error: 'IDs de personajes requeridos y deben ser ObjectId válidos de MongoDB.' });
     }
     if (personaje1Id === personaje2Id) {
       return res.status(400).json({ error: '⚠️ No se puede iniciar una batalla con el mismo personaje.' });
     }
-    const p1 = PersonajeRepo.getById(personaje1Id);
-    const p2 = PersonajeRepo.getById(personaje2Id);
+    // Buscar personajes en MongoDB
+    const PersonajeMongo = require('../../domain/models/PersonajeMongo');
+    const p1 = await PersonajeMongo.findById(personaje1Id);
+    const p2 = await PersonajeMongo.findById(personaje2Id);
     if (!p1 || !p2) {
       return res.status(404).json({ error: '⚠️ Uno o ambos personajes no existen.' });
     }
     // Turno inicial aleatorio
     const turno = Math.random() < 0.5 ? 1 : 2;
-    const batalla = BatallaRepo.create({
-      Personaje1: estadoBase(p1),
-      Personaje2: estadoBase(p2),
-      Estado: 'En curso',
-      TurnoActual: turno,
-      Ganador: null,
-      Activa: true,
-      historial: []
+    const nuevaBatalla = new BatallaMongo({
+      personaje1: p1._id,
+      personaje2: p2._id,
+      estado: 'En curso',
+      turnoActual: turno,
+      ganador: null,
+      activa: true,
+      historial: [],
+      estadoPersonaje1: {
+        ID: p1._id,
+        Nombre: p1.Nombre,
+        HP: 100,
+        Energia: 50,
+        Combo: 0,
+        Ultra: 0,
+        Estado: 'Normal',
+        UltraUsado: false
+      },
+      estadoPersonaje2: {
+        ID: p2._id,
+        Nombre: p2.Nombre,
+        HP: 100,
+        Energia: 50,
+        Combo: 0,
+        Ultra: 0,
+        Estado: 'Normal',
+        UltraUsado: false
+      }
     });
-    res.status(201).json({
-      BatallaID: batalla.BatallaID,
-      Personaje1: batalla.Personaje1.Nombre,
-      Personaje2: batalla.Personaje2.Nombre,
-      Estado: batalla.Estado,
-      TurnoActual: batalla.TurnoActual
-    });
+    await nuevaBatalla.save();
+    res.status(201).json(toPublicBatalla(nuevaBatalla));
   } catch (err) {
     res.status(500).json({ error: '⚠️ Error al crear batalla', message: err.message });
   }
 });
 
 // GET /api/batallas - Listar todas las batallas
-router.get('/api/batallas', (req, res) => {
+router.get('/api/batallas', async (req, res) => {
   try {
-    const batallas = BatallaRepo.getAll().map(b => ({
-      BatallaID: b.BatallaID,
-      Personaje1: { id: b.Personaje1.ID, nombre: b.Personaje1.Nombre },
-      Personaje2: { id: b.Personaje2.ID, nombre: b.Personaje2.Nombre },
-      Estado: b.Estado,
-      Ganador: b.Ganador
-    }));
-    res.json(batallas);
+    const batallas = await BatallaMongo.find().populate('personaje1 personaje2');
+    res.json(batallas.map(b => ({
+      id: b._id,
+      Personaje1: {
+        id: b.personaje1?._id,
+        nombre: b.personaje1?.Nombre
+      },
+      Personaje2: {
+        id: b.personaje2?._id,
+        nombre: b.personaje2?.Nombre
+      },
+      Estado: b.estado || b.Estado,
+      Ganador: b.ganador || b.Ganador,
+      TurnoActual: b.turnoActual || b.TurnoActual,
+      historial: b.historial || []
+    })));
   } catch (err) {
     res.status(500).json({ error: '⚠️ Error al obtener batallas', message: err.message });
+  }
+});
+
+// GET /api/batallas/:id - Obtener una batalla por ID
+router.get('/api/batallas/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'ID de batalla inválido. Debe ser un ObjectId de MongoDB.' });
+    }
+    const batalla = await BatallaMongo.findById(id).populate('personaje1 personaje2');
+    if (!batalla) {
+      return res.status(404).json({ error: 'Batalla no encontrada' });
+    }
+    res.json(toPublicBatalla(batalla));
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener batalla', message: err.message });
   }
 });
 
@@ -433,41 +574,41 @@ router.get('/api/batallas/reglas', (req, res) => {
 });
 
 // POST /api/batallas/accion - Ejecutar acción en batalla
-router.post('/api/batallas/accion', (req, res) => {
+router.post('/api/batallas/accion', async (req, res) => {
   try {
     const { batallaId, personajeId, accion } = req.body;
-    if (!esEnteroPositivo(batallaId) || !esEnteroPositivo(personajeId) || !esStringLetras(accion)) {
-      return res.status(400).json({ error: '⚠️ Datos requeridos: batallaId y personajeId (enteros positivos), accion (solo letras y espacios).', posiblesAcciones: [] });
+    if (!mongoose.Types.ObjectId.isValid(batallaId) || !mongoose.Types.ObjectId.isValid(personajeId) || !esStringLetras(accion)) {
+      return res.status(400).json({ error: 'Datos requeridos: batallaId y personajeId (ObjectId válidos), accion (solo letras y espacios).', posiblesAcciones: [] });
     }
-    const batalla = BatallaRepo.getById(batallaId);
+    const batalla = await BatallaMongo.findById(batallaId);
     if (!batalla) {
       return res.status(404).json({ error: '⚠️ Batalla no encontrada.', posiblesAcciones: [] });
     }
     // Buscar personaje válido en la batalla
-    const idsValidos = [batalla.Personaje1.ID, batalla.Personaje2.ID];
-    if (!idsValidos.includes(personajeId)) {
+    const idsValidos = [String(batalla.estadoPersonaje1.ID), String(batalla.estadoPersonaje2.ID)];
+    if (!idsValidos.includes(String(personajeId))) {
       // Listar personajes válidos de la batalla
       const personajesDisponibles = [
-        { id: batalla.Personaje1.ID, nombre: batalla.Personaje1.Nombre },
-        { id: batalla.Personaje2.ID, nombre: batalla.Personaje2.Nombre }
+        { id: batalla.estadoPersonaje1.ID, nombre: batalla.estadoPersonaje1.Nombre },
+        { id: batalla.estadoPersonaje2.ID, nombre: batalla.estadoPersonaje2.Nombre }
       ];
       return res.status(400).json({ error: '⚠️ El personaje no participa en esta batalla.', personajesDisponibles, posiblesAcciones: [] });
     }
-    if (!batalla.Activa || batalla.Estado === 'Finalizada') {
+    if (!batalla.activa || batalla.estado === 'Finalizada') {
       return res.status(400).json({ error: '⚠️ La batalla ya ha finalizado.', posiblesAcciones: [] });
     }
     // Determinar jugador actual y oponente
     let jugador, oponente, turnoJugador;
-    if (batalla.TurnoActual === 1) {
-      jugador = batalla.Personaje1;
-      oponente = batalla.Personaje2;
+    if (batalla.turnoActual === 1) {
+      jugador = batalla.estadoPersonaje1;
+      oponente = batalla.estadoPersonaje2;
       turnoJugador = 1;
     } else {
-      jugador = batalla.Personaje2;
-      oponente = batalla.Personaje1;
+      jugador = batalla.estadoPersonaje2;
+      oponente = batalla.estadoPersonaje1;
       turnoJugador = 2;
     }
-    if (jugador.ID !== personajeId) {
+    if (String(jugador.ID) !== String(personajeId)) {
       return res.status(400).json({ error: '⚠️ No es el turno de este personaje.', posiblesAcciones: [] });
     }
     // Resetear estados de defensa/vulnerabilidad al inicio del turno
@@ -599,20 +740,20 @@ router.post('/api/batallas/accion', (req, res) => {
     // Verificar si la batalla termina
     let ganador = null;
     if (oponente.HP <= 0) {
-      batalla.Estado = 'Finalizada';
-      batalla.Activa = false;
-      batalla.Ganador = jugador.Nombre;
+      batalla.estado = 'Finalizada';
+      batalla.activa = false;
+      batalla.ganador = jugador.Nombre;
       ganador = jugador.Nombre;
       mensaje = `🏆 ${jugador.Nombre} ha derrotado a ${oponente.Nombre}! ¡Gana la batalla!`;
     }
     // Cambiar turno si la batalla sigue
-    if (batalla.Estado !== 'Finalizada') {
-      batalla.TurnoActual = turnoJugador === 1 ? 2 : 1;
+    if (batalla.estado !== 'Finalizada') {
+      batalla.turnoActual = turnoJugador === 1 ? 2 : 1;
     }
     // Determinar el ID del personaje que sigue por atacar
     let idTurnoSiguiente = null;
-    if (batalla.Estado !== 'Finalizada') {
-      idTurnoSiguiente = (turnoJugador === 1) ? batalla.Personaje2.ID : batalla.Personaje1.ID;
+    if (batalla.estado !== 'Finalizada') {
+      idTurnoSiguiente = (turnoJugador === 1) ? batalla.estadoPersonaje2.ID : batalla.estadoPersonaje1.ID;
     }
     // Inicializar historial si no existe
     if (!Array.isArray(batalla.historial)) batalla.historial = [];
@@ -636,8 +777,11 @@ router.post('/api/batallas/accion', (req, res) => {
       };
     }
     batalla.historial.push(registroHistorial);
-    // Guardar cambios
-    BatallaRepo.update(batalla.BatallaID, batalla);
+    // Guardar cambios correctamente usando .save()
+    batalla.markModified('historial');
+    batalla.markModified('estadoPersonaje1');
+    batalla.markModified('estadoPersonaje2');
+    await batalla.save();
     // Respuesta detallada
     res.json({
       mensaje,
@@ -654,59 +798,53 @@ router.post('/api/batallas/accion', (req, res) => {
   }
 });
 
-router.delete('/api/batallas/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  if (!esEnteroPositivo(id)) {
-    return res.status(400).json({ error: '⚠️ El ID debe ser un entero positivo.' });
+router.delete('/api/batallas/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'ID de batalla inválido. Debe ser un ObjectId de MongoDB.' });
+    }
+    const eliminado = await BatallaMongo.findByIdAndDelete(id);
+    if (!eliminado) {
+      return res.status(404).json({ error: 'Batalla no encontrada' });
+    }
+    res.json({ mensaje: 'Batalla eliminada', id });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al eliminar batalla', message: err.message });
   }
-  const BatallaRepo = require('../../infrastructure/repositories/BatallaRepository');
-  const exito = BatallaRepo.batallas && Array.isArray(BatallaRepo.batallas)
-    ? (() => {
-        const idx = BatallaRepo.batallas.findIndex(b => b.BatallaID === id);
-        if (idx === -1) return false;
-        BatallaRepo.batallas.splice(idx, 1);
-        BatallaRepo.currentId = BatallaRepo.currentId; // mantener el currentId
-        // Guardar cambios
-        const fs = require('fs');
-        const path = require('path');
-        const DATA_PATH = path.join(__dirname, '../../infrastructure/repositories/batallas.json');
-        fs.writeFileSync(DATA_PATH, JSON.stringify({ batallas: BatallaRepo.batallas, currentId: BatallaRepo.currentId }, null, 2));
-        return true;
-      })()
-    : false;
-  if (!exito) {
-    return res.status(404).json({ error: '⚠️ Batalla no encontrada' });
-  }
-  res.json({ mensaje: '⚠️ Batalla eliminada' });
 });
 
 // Nuevo endpoint para consultar el historial
-router.get('/api/batallas/:id/historial', (req, res) => {
-  const id = parseInt(req.params.id);
-  if (!esEnteroPositivo(id)) {
-    return res.status(400).json({ error: '⚠️ El ID debe ser un entero positivo.' });
-  }
-  const batalla = BatallaRepo.getById(id);
-  if (!batalla) {
-    return res.status(404).json({ error: '⚠️ Batalla no encontrada' });
-  }
-  // Al mostrar el historial, incluir nombreCombo/nombreUltra si existen
-  const historial = (batalla.historial || []).map(entry => {
-    const registro = { ...entry };
-    if (entry.nombreCombo) registro.nombreCombo = entry.nombreCombo;
-    if (entry.nombreUltra) registro.nombreUltra = entry.nombreUltra;
-    return registro;
-  });
-  res.json({
-    historial,
-    resumen: {
-      ganador: batalla.Ganador || null,
-      estadoFinal: {
-        [batalla.Personaje1.Nombre]: { ...batalla.Personaje1 },
-        [batalla.Personaje2.Nombre]: { ...batalla.Personaje2 }
-      }
+router.get('/api/batallas/:id/historial', async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'ID de batalla inválido.' });
     }
-  });
+    const batalla = await BatallaMongo.findById(id);
+    if (!batalla) {
+      return res.status(404).json({ error: 'Batalla no encontrada' });
+    }
+    // Al mostrar el historial, incluir nombreCombo/nombreUltra si existen
+    const historial = (batalla.historial || []).map(entry => {
+      const registro = { ...entry };
+      if (entry.nombreCombo) registro.nombreCombo = entry.nombreCombo;
+      if (entry.nombreUltra) registro.nombreUltra = entry.nombreUltra;
+      return registro;
+    });
+    res.json({
+      historial,
+      resumen: {
+        ganador: batalla.ganador || null,
+        estadoFinal: {
+          [batalla.estadoPersonaje1?.Nombre]: { ...batalla.estadoPersonaje1 },
+          [batalla.estadoPersonaje2?.Nombre]: { ...batalla.estadoPersonaje2 }
+        }
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener historial', message: err.message });
+  }
 });
 
 module.exports = router; 

@@ -1,6 +1,10 @@
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
+const connectDB = require('./src/config/database');
+const Test = require('./src/domain/models/Test');
+
+connectDB();
 
 const app = express();
 const port = process.env.PORT || 3000;

@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const repo = require('../../infrastructure/repositories/PersonajeRepository');
+const PersonajeMongo = require('../../domain/models/PersonajeMongo');
+const mongoose = require('mongoose');
 
 /**
  * @swagger
@@ -9,9 +11,9 @@ const repo = require('../../infrastructure/repositories/PersonajeRepository');
  *     Personaje:
  *       type: object
  *       properties:
- *         PersonajeID:
- *           type: integer
- *           description: ID único autoincremental
+ *         id:
+ *           type: string
+ *           description: ID único generado por MongoDB (ObjectId)
  *         Nombre:
  *           type: string
  *         Ciudad:
@@ -56,6 +58,7 @@ const repo = require('../../infrastructure/repositories/PersonajeRepository');
  *           type: string
  *           description: Nombre del ultra, el movimiento más poderoso
  *       required:
+ *         - id
  *         - Nombre
  *         - Ciudad
  *         - Categoria
@@ -140,13 +143,24 @@ const repo = require('../../infrastructure/repositories/PersonajeRepository');
  *               items:
  *                 $ref: '#/components/schemas/Personaje'
  */
-function publicPersonajeView(personaje) {
+function toPublicPersonaje(personaje) {
+  if (!personaje) return null;
+  const obj = personaje.toObject ? personaje.toObject() : personaje;
   return {
-    PersonajeID: personaje.PersonajeID,
-    Nombre: personaje.Nombre,
-    Ciudad: personaje.Ciudad,
-    Categoria: personaje.Categoria,
-    Saga: personaje.Saga
+    id: obj._id,
+    Nombre: obj.Nombre,
+    Ciudad: obj.Ciudad,
+    Categoria: obj.Categoria,
+    Saga: obj.Saga,
+    Vida: obj.Vida,
+    Energia: obj.Energia,
+    Combo: obj.Combo,
+    Ultra: obj.Ultra,
+    Estado: obj.Estado,
+    combo1Name: obj.combo1Name,
+    combo2Name: obj.combo2Name,
+    combo3Name: obj.combo3Name,
+    ultraName: obj.ultraName
   };
 }
 
@@ -159,11 +173,15 @@ function esStringLetras(valor) {
   return typeof valor === 'string' && /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/.test(valor.trim());
 }
 
-router.get('/api/personajes', (req, res) => {
+// GET /api/personajes
+router.get('/api/personajes', async (req, res) => {
   try {
     const { Categoria, Saga } = req.query;
-    const personajes = repo.getAll({ Categoria, Saga }).map(publicPersonajeView);
-    res.json(personajes);
+    const filtro = {};
+    if (Categoria) filtro.Categoria = Categoria;
+    if (Saga) filtro.Saga = Saga;
+    const personajes = await PersonajeMongo.find(filtro);
+    res.json(personajes.map(toPublicPersonaje));
   } catch (err) {
     res.status(500).json({ error: 'Error al obtener personajes', message: err.message });
   }
@@ -185,13 +203,29 @@ router.get('/api/personajes', (req, res) => {
  *               items:
  *                 type: string
  */
-router.get('/api/personajes/sagas', (req, res) => {
+router.get('/api/personajes/sagas', async (req, res) => {
   try {
-    const personajes = repo.getAll();
-    const sagas = [...new Set(personajes.map(p => p.Saga))].filter(Boolean);
-    res.json(sagas);
+    const sagas = await PersonajeMongo.distinct('Saga');
+    res.json(sagas.filter(Boolean));
   } catch (err) {
     res.status(500).json({ error: 'Error al obtener sagas', message: err.message });
+  }
+});
+
+// GET /api/personajes/:id
+router.get('/api/personajes/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'ID de personaje inválido. Debe ser un ObjectId de MongoDB.' });
+    }
+    const personaje = await PersonajeMongo.findById(id);
+    if (!personaje) {
+      return res.status(404).json({ error: 'Personaje no encontrado' });
+    }
+    res.json(toPublicPersonaje(personaje));
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener personaje', message: err.message });
   }
 });
 
@@ -206,7 +240,9 @@ router.get('/api/personajes/sagas', (req, res) => {
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           pattern: '^[a-fA-F0-9]{24}$'
+ *           description: ID de MongoDB (ObjectId)
  *         description: ID del personaje
  *     responses:
  *       200:
@@ -217,20 +253,63 @@ router.get('/api/personajes/sagas', (req, res) => {
  *               $ref: '#/components/schemas/Personaje'
  *       404:
  *         description: Personaje no encontrado
+ *   put:
+ *     summary: Actualizar un personaje existente
+ *     tags: [Personaje]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^[a-fA-F0-9]{24}$'
+ *           description: ID de MongoDB (ObjectId)
+ *         description: ID del personaje
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/PersonajeInput'
+ *     responses:
+ *       200:
+ *         description: Personaje actualizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Personaje'
+ *       400:
+ *         description: Error de validación
+ *       404:
+ *         description: Personaje no encontrado
+ *   delete:
+ *     summary: Eliminar un personaje por ID
+ *     tags: [Personaje]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^[a-fA-F0-9]{24}$'
+ *           description: ID de MongoDB (ObjectId)
+ *         description: ID del personaje
+ *     responses:
+ *       200:
+ *         description: Personaje eliminado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensaje:
+ *                   type: string
+ *                 id:
+ *                   type: string
+ *                   description: ID de MongoDB (ObjectId)
+ *       404:
+ *         description: Personaje no encontrado
  */
-router.get('/api/personajes/:id', (req, res) => {
-  try {
-    const id = parseInt(req.params.id);
-    const personaje = repo.getById(id);
-    if (!personaje) {
-      return res.status(404).json({ error: 'Personaje no encontrado' });
-    }
-    res.json(publicPersonajeView(personaje));
-  } catch (err) {
-    res.status(500).json({ error: 'Error al obtener personaje', message: err.message });
-  }
-});
-
 /**
  * @swagger
  * /api/personajes:
@@ -253,97 +332,87 @@ router.get('/api/personajes/:id', (req, res) => {
  *       400:
  *         description: Error de validación
  */
-router.post('/api/personajes', (req, res) => {
+router.post('/api/personajes', async (req, res) => {
   try {
     const { Nombre, Ciudad, Categoria, Saga, combo1Name, combo2Name, combo3Name, ultraName } = req.body;
     if (!esStringLetras(Nombre) || !esStringLetras(Ciudad) || !esStringLetras(Categoria) || !esStringLetras(Saga) || !esStringLetras(combo1Name) || !esStringLetras(combo2Name) || !esStringLetras(combo3Name) || !esStringLetras(ultraName)) {
       return res.status(400).json({ error: 'Todos los campos deben ser solo letras y espacios.' });
     }
-    const personaje = repo.create(req.body);
-    res.status(201).json(personaje);
+    // Validar categoría permitida
+    const categoriasPermitidas = ['Héroe', 'Villano', 'Antihéroe', 'Antivillano'];
+    if (!categoriasPermitidas.includes(Categoria)) {
+      return res.status(400).json({ error: `Categoría inválida. Debe ser una de: ${categoriasPermitidas.join(', ')}` });
+    }
+    // Validar que no exista un personaje con el mismo nombre
+    const existe = await PersonajeMongo.findOne({ Nombre });
+    if (existe) {
+      return res.status(400).json({ error: 'Ya existe un personaje con ese nombre.' });
+    }
+    // Crear personaje en MongoDB
+    const nuevoPersonaje = new PersonajeMongo({
+      Nombre,
+      Ciudad,
+      Categoria,
+      Saga,
+      combo1Name,
+      combo2Name,
+      combo3Name,
+      ultraName,
+      Vida: 100,
+      Energia: 50,
+      Combo: 0,
+      Ultra: 0,
+      Estado: 'Normal'
+    });
+    await nuevoPersonaje.save();
+    res.status(201).json(toPublicPersonaje(nuevoPersonaje));
   } catch (err) {
     res.status(400).json({ error: 'Error al crear personaje', message: err.message });
   }
 });
 
-/**
- * @swagger
- * /api/personajes/{id}:
- *   put:
- *     summary: Actualizar un personaje existente
- *     tags: [Personaje]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID del personaje
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Personaje'
- *     responses:
- *       200:
- *         description: Personaje actualizado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Personaje'
- *       400:
- *         description: Error de validación
- *       404:
- *         description: Personaje no encontrado
- */
-router.put('/api/personajes/:id', (req, res) => {
+// PUT /api/personajes/:id
+router.put('/api/personajes/:id', async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
-    const { Nombre, Ciudad, Categoria, Saga, combo1Name, combo2Name, combo3Name, ultraName } = req.body;
-    if (!esEnteroPositivo(id)) {
-      return res.status(400).json({ error: 'El ID debe ser un entero positivo.' });
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'ID de personaje inválido. Debe ser un ObjectId de MongoDB.' });
     }
+    const { Nombre, Ciudad, Categoria, Saga, combo1Name, combo2Name, combo3Name, ultraName } = req.body;
     if (!esStringLetras(Nombre) || !esStringLetras(Ciudad) || !esStringLetras(Categoria) || !esStringLetras(Saga) || !esStringLetras(combo1Name) || !esStringLetras(combo2Name) || !esStringLetras(combo3Name) || !esStringLetras(ultraName)) {
       return res.status(400).json({ error: 'Todos los campos deben ser solo letras y espacios.' });
     }
-    const personaje = repo.update(id, req.body);
-    if (!personaje) {
+    const categoriasPermitidas = ['Héroe', 'Villano', 'Antihéroe', 'Antivillano'];
+    if (!categoriasPermitidas.includes(Categoria)) {
+      return res.status(400).json({ error: `Categoría inválida. Debe ser una de: ${categoriasPermitidas.join(', ')}` });
+    }
+    // Validar que no exista otro personaje con el mismo nombre
+    const existe = await PersonajeMongo.findOne({ Nombre, _id: { $ne: id } });
+    if (existe) {
+      return res.status(400).json({ error: 'Ya existe un personaje con ese nombre.' });
+    }
+    const actualizado = await PersonajeMongo.findByIdAndUpdate(id, req.body, { new: true });
+    if (!actualizado) {
       return res.status(404).json({ error: 'Personaje no encontrado' });
     }
-    res.json(personaje);
+    res.json(toPublicPersonaje(actualizado));
   } catch (err) {
     res.status(400).json({ error: 'Error al actualizar personaje', message: err.message });
   }
 });
 
-/**
- * @swagger
- * /api/personajes/{id}:
- *   delete:
- *     summary: Eliminar un personaje por ID
- *     tags: [Personaje]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID del personaje
- *     responses:
- *       200:
- *         description: Personaje eliminado
- *       404:
- *         description: Personaje no encontrado
- */
-router.delete('/api/personajes/:id', (req, res) => {
+// DELETE /api/personajes/:id
+router.delete('/api/personajes/:id', async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
-    const ok = repo.delete(id);
-    if (!ok) {
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'ID de personaje inválido. Debe ser un ObjectId de MongoDB.' });
+    }
+    const eliminado = await PersonajeMongo.findByIdAndDelete(id);
+    if (!eliminado) {
       return res.status(404).json({ error: 'Personaje no encontrado' });
     }
-    res.json({ mensaje: 'Personaje eliminado' });
+    res.json({ mensaje: 'Personaje eliminado', id });
   } catch (err) {
     res.status(500).json({ error: 'Error al eliminar personaje', message: err.message });
   }
