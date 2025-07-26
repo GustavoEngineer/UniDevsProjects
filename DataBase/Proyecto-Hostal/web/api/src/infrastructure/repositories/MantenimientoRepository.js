@@ -3,12 +3,23 @@ const Mantenimiento = require('../../domain/models/Mantenimiento');
 
 class MantenimientoRepository {
   async findAll() {
-    const [rows] = await db.query('SELECT * FROM mantenimiento');
+    const [rows] = await db.query(`
+      SELECT m.*, em.nombre_estado, hab.numero_habitacion
+      FROM mantenimiento m
+      LEFT JOIN estado_mantenimiento em ON m.id_estado_mantenimiento = em.id_estado_mantenimiento
+      LEFT JOIN habitacion hab ON m.id_habitacion = hab.id_habitacion
+    `);
     return rows.map(row => new Mantenimiento(row));
   }
 
   async findById(id) {
-    const [rows] = await db.query('SELECT * FROM mantenimiento WHERE id_mantenimiento = ?', [id]);
+    const [rows] = await db.query(`
+      SELECT m.*, em.nombre_estado, hab.numero_habitacion
+      FROM mantenimiento m
+      LEFT JOIN estado_mantenimiento em ON m.id_estado_mantenimiento = em.id_estado_mantenimiento
+      LEFT JOIN habitacion hab ON m.id_habitacion = hab.id_habitacion
+      WHERE m.id_mantenimiento = ?
+    `, [id]);
     return rows[0] ? new Mantenimiento(rows[0]) : null;
   }
 

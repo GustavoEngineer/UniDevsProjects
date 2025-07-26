@@ -308,13 +308,39 @@ h1 {
 }
 
 .card-header {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-bottom: 1px solid #e0e7ef;
+  justify-content: flex-start;
+  padding: 12px 16px 8px 16px;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.edit-btn, .delete-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 1.1rem;
   cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.edit-btn:hover {
+  background: #e0e7ef;
+  color: #23408e;
+}
+
+.delete-btn:hover {
+  background: #ffeaea;
+  color: #e11d48;
 }
 
 .card-rank {
@@ -456,4 +482,179 @@ h1 {
     height: 28px;
     font-size: 0.9rem;
   }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+  padding: 32px 28px 24px 28px;
+  min-width: 320px;
+  max-width: 90vw;
+  text-align: center;
+  position: relative;
+}
+.modal-content p {
+  font-size: 1.1rem;
+  margin-bottom: 18px;
+  color: #23408e;
+}
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 10px;
+}
+.modal-actions button {
+  padding: 8px 22px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #e0e7ef;
+  color: #23408e;
+  transition: background 0.15s, color 0.15s;
+}
+.modal-actions button:hover {
+  background: #23408e;
+  color: #fff;
+}
+#deletePassword {
+  width: 80%;
+  padding: 8px 10px;
+  border: 1.5px solid #e0e7ef;
+  border-radius: 5px;
+  font-size: 1rem;
+  margin-bottom: 8px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+#deletePassword:focus {
+  border-color: #23408e;
+}
+
+/* Estilos para el modal de edición */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #23408e;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+#closeEditModal {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+#closeEditModal:hover {
+  background-color: #f1f5f9;
+  color: #23408e;
+}
+
+.form-field {
+  margin-bottom: 15px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.form-field input,
+.form-field textarea,
+.form-field select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+  outline: none;
+  border-color: #23408e;
+  box-shadow: 0 0 0 2px rgba(35, 64, 142, 0.2);
+}
+
+.form-field textarea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+#editError {
+  color: #dc2626;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+#saveEditBtn {
+  background-color: #23408e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+#saveEditBtn:hover {
+  background-color: #1e3a8a;
+}
+
+#cancelEditBtn {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+#cancelEditBtn:hover {
+  background-color: #4b5563;
 }

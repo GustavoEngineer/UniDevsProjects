@@ -3,12 +3,23 @@ const Empleado = require('../../domain/models/Empleado');
 
 class EmpleadoRepository {
   async findAll() {
-    const [rows] = await db.query('SELECT * FROM empleado');
+    const [rows] = await db.query(`
+      SELECT e.*, r.nombre_rol, t.nombre_turno
+      FROM empleado e
+      LEFT JOIN rol_empleado r ON e.id_rol_empleado = r.id_rol_empleado
+      LEFT JOIN turno_empleado t ON e.id_turno_empleado = t.id_turno_empleado
+    `);
     return rows.map(row => new Empleado(row));
   }
 
   async findById(id) {
-    const [rows] = await db.query('SELECT * FROM empleado WHERE id_empleado = ?', [id]);
+    const [rows] = await db.query(`
+      SELECT e.*, r.nombre_rol, t.nombre_turno
+      FROM empleado e
+      LEFT JOIN rol_empleado r ON e.id_rol_empleado = r.id_rol_empleado
+      LEFT JOIN turno_empleado t ON e.id_turno_empleado = t.id_turno_empleado
+      WHERE e.id_empleado = ?
+    `, [id]);
     return rows[0] ? new Empleado(rows[0]) : null;
   }
 

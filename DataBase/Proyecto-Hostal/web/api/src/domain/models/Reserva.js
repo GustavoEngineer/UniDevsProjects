@@ -9,7 +9,11 @@ class Reserva {
     id_tipo_reserva,
     precio_total_estimado,
     fecha_creacion,
-    fecha_modificacion
+    fecha_modificacion,
+    nombre_tipo_reserva,
+    nombre_huesped,
+    apellido_huesped,
+    numero_habitacion
   }) {
     this.id_reserva = id_reserva;
     this.id_huesped = id_huesped;
@@ -21,6 +25,10 @@ class Reserva {
     this.precio_total_estimado = precio_total_estimado;
     this.fecha_creacion = fecha_creacion;
     this.fecha_modificacion = fecha_modificacion;
+    this.nombre_tipo_reserva = nombre_tipo_reserva || null;
+    this.nombre_huesped = nombre_huesped || null;
+    this.apellido_huesped = apellido_huesped || null;
+    this.numero_habitacion = numero_habitacion || null;
   }
 }
 

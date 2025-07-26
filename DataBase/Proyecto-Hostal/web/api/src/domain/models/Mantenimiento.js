@@ -7,7 +7,9 @@ class Mantenimiento {
     fecha_inicio,
     fecha_fin,
     fecha_creacion,
-    fecha_modificacion
+    fecha_modificacion,
+    nombre_estado,
+    numero_habitacion
   }) {
     this.id_mantenimiento = id_mantenimiento;
     this.id_habitacion = id_habitacion;
@@ -17,6 +19,8 @@ class Mantenimiento {
     this.fecha_fin = fecha_fin;
     this.fecha_creacion = fecha_creacion;
     this.fecha_modificacion = fecha_modificacion;
+    this.nombre_estado = nombre_estado;
+    this.numero_habitacion = numero_habitacion;
   }
 }
 

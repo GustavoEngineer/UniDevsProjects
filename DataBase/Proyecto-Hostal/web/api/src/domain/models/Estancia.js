@@ -9,7 +9,10 @@ class Estancia {
     numero_personas,
     vehiculo_registrado,
     placa_vehiculo,
-    requiere_factura
+    requiere_factura,
+    nombre_estado,
+    nombre_huesped,
+    apellido_huesped
   }) {
     this.id_estancia = id_estancia;
     this.id_reserva = id_reserva;
@@ -21,6 +24,9 @@ class Estancia {
     this.vehiculo_registrado = vehiculo_registrado;
     this.placa_vehiculo = placa_vehiculo;
     this.requiere_factura = requiere_factura;
+    this.nombre_estado = nombre_estado;
+    this.nombre_huesped = nombre_huesped;
+    this.apellido_huesped = apellido_huesped;
   }
 }
 

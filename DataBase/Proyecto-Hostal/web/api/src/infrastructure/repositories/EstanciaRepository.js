@@ -3,12 +3,23 @@ const Estancia = require('../../domain/models/Estancia');
 
 class EstanciaRepository {
   async findAll() {
-    const [rows] = await db.query('SELECT * FROM estancia');
+    const [rows] = await db.query(`
+      SELECT e.*, ee.nombre_estado, h.nombre as nombre_huesped, h.apellido_paterno as apellido_huesped
+      FROM estancia e
+      LEFT JOIN estado_estancia ee ON e.id_estado_estancia = ee.id_estado_estancia
+      LEFT JOIN huesped h ON e.id_huesped = h.id_huesped
+    `);
     return rows.map(row => new Estancia(row));
   }
 
   async findById(id) {
-    const [rows] = await db.query('SELECT * FROM estancia WHERE id_estancia = ?', [id]);
+    const [rows] = await db.query(`
+      SELECT e.*, ee.nombre_estado, h.nombre as nombre_huesped, h.apellido_paterno as apellido_huesped
+      FROM estancia e
+      LEFT JOIN estado_estancia ee ON e.id_estado_estancia = ee.id_estado_estancia
+      LEFT JOIN huesped h ON e.id_huesped = h.id_huesped
+      WHERE e.id_estancia = ?
+    `, [id]);
     return rows[0] ? new Estancia(rows[0]) : null;
   }
 

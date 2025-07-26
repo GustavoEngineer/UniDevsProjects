@@ -10,7 +10,9 @@ class Empleado {
     id_rol_empleado,
     id_turno_empleado,
     fecha_creacion,
-    fecha_modificacion
+    fecha_modificacion,
+    nombre_rol,
+    nombre_turno
   }) {
     this.id_empleado = id_empleado;
     this.nombre = nombre;
@@ -23,6 +25,8 @@ class Empleado {
     this.id_turno_empleado = id_turno_empleado;
     this.fecha_creacion = fecha_creacion;
     this.fecha_modificacion = fecha_modificacion;
+    this.nombre_rol = nombre_rol;
+    this.nombre_turno = nombre_turno;
   }
 }
 
