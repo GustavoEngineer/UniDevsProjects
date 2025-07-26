@@ -21,6 +21,9 @@ class PagoRepository {
   }
 
   async update(id, data) {
+    // NOTA: Las fechas de auditoría (fecha_creacion, fecha_modificacion) NO se incluyen aquí
+    // para evitar que se modifiquen manualmente. La fecha_modificacion se actualiza automáticamente
+    // por la base de datos con ON UPDATE CURRENT_TIMESTAMP
     await db.query(
       'UPDATE pago SET id_reserva=?, id_metodo_pago=?, monto=?, fecha_pago=?, referencia=? WHERE id_pago=?',
       [data.id_reserva, data.id_metodo_pago, data.monto, data.fecha_pago, data.referencia, id]

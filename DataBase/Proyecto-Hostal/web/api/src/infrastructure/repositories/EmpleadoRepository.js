@@ -32,6 +32,9 @@ class EmpleadoRepository {
   }
 
   async update(id, data) {
+    // NOTA: Las fechas de auditoría (fecha_creacion, fecha_modificacion) NO se incluyen aquí
+    // para evitar que se modifiquen manualmente. La fecha_modificacion se actualiza automáticamente
+    // por la base de datos con ON UPDATE CURRENT_TIMESTAMP
     await db.query(
       'UPDATE empleado SET nombre=?, apellido_paterno=?, apellido_materno=?, telefono=?, email=?, fecha_contratacion=?, id_rol_empleado=?, id_turno_empleado=? WHERE id_empleado=?',
       [data.nombre, data.apellido_paterno, data.apellido_materno, data.telefono, data.email, data.fecha_contratacion, data.id_rol_empleado, data.id_turno_empleado, id]

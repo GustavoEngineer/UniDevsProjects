@@ -29,6 +29,9 @@ class HuespedRepository {
   }
 
   async update(id, data) {
+    // NOTA: Las fechas de auditoría (fecha_creacion, fecha_modificacion) NO se incluyen aquí
+    // para evitar que se modifiquen manualmente. La fecha_modificacion se actualiza automáticamente
+    // por la base de datos con ON UPDATE CURRENT_TIMESTAMP
     await db.query(
       'UPDATE huesped SET nombre=?, apellido_paterno=?, apellido_materno=?, numero_celular=?, correo=?, fecha_nacimiento=?, nacionalidad=? WHERE id_huesped=?',
       [

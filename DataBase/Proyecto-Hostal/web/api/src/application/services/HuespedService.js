@@ -1,4 +1,5 @@
 const HuespedRepository = require('../../infrastructure/repositories/HuespedRepository');
+const { filterAuditFields } = require('../utils/auditUtils');
 
 class HuespedService {
   async getAll() {
@@ -14,7 +15,9 @@ class HuespedService {
   }
 
   async update(id, data) {
-    return await HuespedRepository.update(id, data);
+    // Filtrar campos que no deben modificarse (fechas de auditoría)
+    const updateData = filterAuditFields(data);
+    return await HuespedRepository.update(id, updateData);
   }
 
   async delete(id) {

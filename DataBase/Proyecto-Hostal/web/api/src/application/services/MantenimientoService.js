@@ -1,4 +1,5 @@
 const MantenimientoRepository = require('../../infrastructure/repositories/MantenimientoRepository');
+const { filterAuditFields } = require('../utils/auditUtils');
 
 class MantenimientoService {
   async getAll() {
@@ -14,7 +15,9 @@ class MantenimientoService {
   }
 
   async update(id, data) {
-    return await MantenimientoRepository.update(id, data);
+    // Filtrar campos que no deben modificarse (fechas de auditoría)
+    const updateData = filterAuditFields(data);
+    return await MantenimientoRepository.update(id, updateData);
   }
 
   async delete(id) {

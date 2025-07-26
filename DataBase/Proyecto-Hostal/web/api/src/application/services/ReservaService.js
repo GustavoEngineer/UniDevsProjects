@@ -1,4 +1,5 @@
 const ReservaRepository = require('../../infrastructure/repositories/ReservaRepository');
+const { filterAuditFields } = require('../utils/auditUtils');
 
 class ReservaService {
   async getAll() {
@@ -14,7 +15,9 @@ class ReservaService {
   }
 
   async update(id, data) {
-    return await ReservaRepository.update(id, data);
+    // Filtrar campos que no deben modificarse (fechas de auditoría)
+    const updateData = filterAuditFields(data);
+    return await ReservaRepository.update(id, updateData);
   }
 
   async delete(id) {

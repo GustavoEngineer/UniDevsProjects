@@ -32,6 +32,9 @@ class MantenimientoRepository {
   }
 
   async update(id, data) {
+    // NOTA: Las fechas de auditoría (fecha_creacion, fecha_modificacion) NO se incluyen aquí
+    // para evitar que se modifiquen manualmente. La fecha_modificacion se actualiza automáticamente
+    // por la base de datos con ON UPDATE CURRENT_TIMESTAMP
     await db.query(
       'UPDATE mantenimiento SET id_habitacion=?, id_estado_mantenimiento=?, descripcion=?, fecha_inicio=?, fecha_fin=? WHERE id_mantenimiento=?',
       [data.id_habitacion, data.id_estado_mantenimiento, data.descripcion, data.fecha_inicio, data.fecha_fin, id]

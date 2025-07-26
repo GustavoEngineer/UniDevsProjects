@@ -1,4 +1,5 @@
 const PagoRepository = require('../../infrastructure/repositories/PagoRepository');
+const { filterAuditFields } = require('../utils/auditUtils');
 
 class PagoService {
   async getAll() {
@@ -14,7 +15,9 @@ class PagoService {
   }
 
   async update(id, data) {
-    return await PagoRepository.update(id, data);
+    // Filtrar campos que no deben modificarse (fechas de auditoría)
+    const updateData = filterAuditFields(data);
+    return await PagoRepository.update(id, updateData);
   }
 
   async delete(id) {
