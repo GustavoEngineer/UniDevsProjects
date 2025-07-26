@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostal - Inicio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/homePage.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <i class="fa-solid fa-hotel"></i>
+      Hostal<span>Pro</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="homePage.html" class="active"><i class="fa-solid fa-house"></i> <span>Inicio</span></a>
+      <a href="#" id="registrosBtn" onclick="return false;"><i class="fa-solid fa-table-list"></i> <span>Registros</span></a>
+      <a href="crear.html"><i class="fa-solid fa-plus"></i> <span>Crear</span></a>
+      <div class="sidebar-separator"></div>
+      <a href="Authentication.html"><i class="fa-solid fa-right-from-bracket"></i> <span>Cerrar sesión</span></a>
+    </nav>
+    <div class="sidebar-bottom">
+      <!-- Aquí puedes agregar más enlaces o información si lo deseas -->
+    </div>
+  </div>
+  <div class="dropdown-container" id="dropdownContainer">
+    <ul style="list-style:none; margin:0; padding:10px 0;">
+      <li style="padding:8px 20px; cursor:pointer;">Huésped</li>
+      <li style="padding:8px 20px; cursor:pointer;">Habitación</li>
+      <li style="padding:8px 20px; cursor:pointer;">Empleado</li>
+      <li style="padding:8px 20px; cursor:pointer;">Reservas</li>
+      <li style="padding:8px 20px; cursor:pointer;">Estancia</li>
+      <li style="padding:8px 20px; cursor:pointer;">Mantenimiento</li>
+    </ul>
+  </div>
+  <div class="main-content">
+    <div id="entityTitle" style="font-size:2rem; font-weight:700; color:#23408e; margin-bottom:24px;"></div>
+    <div id="searchFilterContainer" style="margin-bottom:20px; display:none;">
+      <div style="position:relative; max-width:400px;">
+        <input 
+          type="text" 
+          id="searchFilter" 
+          placeholder="Buscar por nombre, fecha, email, etc. (ej: '8 de julio de 2024')" 
+          style="
+            width:100%; 
+            padding:12px 16px; 
+            padding-left:40px; 
+            border:2px solid #e2e8f0; 
+            border-radius:8px; 
+            font-size:14px; 
+            outline:none; 
+            transition:border-color 0.2s;
+          "
+          onfocus="this.style.borderColor='#23408e'"
+          onblur="this.style.borderColor='#e2e8f0'"
+        >
+        <i class="fa-solid fa-search" style="
+          position:absolute; 
+          left:12px; 
+          top:50%; 
+          transform:translateY(-50%); 
+          color:#64748b;
+        "></i>
+      </div>
+    </div>
+    <div id="entityTableContainer"></div>
+  </div>
+</body>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const registrosBtn = document.getElementById('registrosBtn');
+  const dropdown = document.getElementById('dropdownContainer');
+  const entityTitle = document.getElementById('entityTitle');
+  const entityTableContainer = document.getElementById('entityTableContainer');
+  const searchFilterContainer = document.getElementById('searchFilterContainer');
+  const searchFilter = document.getElementById('searchFilter');
+  
+  // Variable para almacenar los datos originales
+  let originalData = [];
+  let huespedesData = {};
+  let reservasData = {};
+
+  // Configuración de la API
+  const API_BASE_URL = window.location.protocol === 'file:' 
+    ? 'http://localhost:3000' 
+    : '';
+  
+  const entityApiMap = {
+    'Huésped': `${API_BASE_URL}/api/huesped`,
+    'Habitación': `${API_BASE_URL}/api/habitacion`,
+    'Empleado': `${API_BASE_URL}/api/empleado`,
+    'Reservas': `${API_BASE_URL}/api/reserva`,
+    'Estancia': `${API_BASE_URL}/api/estancia`,
+    'Mantenimiento': `${API_BASE_URL}/api/mantenimiento`
+  };
+
+  function toggleDropdown() {
+    dropdown.classList.toggle('show');
+  }
+
+  registrosBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleDropdown();
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!dropdown.contains(e.target) && e.target !== registrosBtn) {
+      dropdown.classList.remove('show');
+    }
+  });
+
+  // Mostrar entidad seleccionada y cargar tabla
+  dropdown.querySelectorAll('li').forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      const entity = this.textContent;
+      entityTitle.textContent = entity;
+      dropdown.classList.remove('show');
+      searchFilterContainer.style.display = 'block';
+      searchFilter.value = '';
+      // Limpiar datos adicionales al cambiar de entidad
+      huespedesData = {};
+      reservasData = {};
+      loadEntityTable(entity);
+    });
+  });
+  
+  // Evento para el filtro de búsqueda
+  searchFilter.addEventListener('input', function() {
+    filterData();
+  });
+
+  async function loadEntityTable(entity) {
+    entityTableContainer.innerHTML = '<div style="color:#64748b;">Cargando...</div>';
+    const apiUrl = entityApiMap[entity];
+    if (!apiUrl) {
+      entityTableContainer.innerHTML = '<div style="color:red;">Entidad no soportada</div>';
+      return;
+    }
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error('Error al consultar la API');
+      const data = await response.json();
+      if (!Array.isArray(data) || data.length === 0) {
+        entityTableContainer.innerHTML = '<div style="color:#64748b;">No hay datos para mostrar</div>';
+        originalData = [];
+        return;
+      }
+
+      // Si es Reservas, obtener datos de huéspedes
+      huespedesData = {};
+      if (entity === 'Reservas') {
+        try {
+          const huespedesResponse = await fetch(`${API_BASE_URL}/api/huesped`);
+          if (huespedesResponse.ok) {
+            const huespedes = await huespedesResponse.json();
+            huespedes.forEach(huesped => {
+              huespedesData[huesped.id_huesped] = huesped;
+            });
+          }
+        } catch (err) {
+          console.log('No se pudieron cargar los datos de huéspedes');
+        }
+        
+        // Ordenar reservas por fecha de check-in (más próximas primero)
+        data.sort((a, b) => {
+          const fechaA = new Date(a.fecha_inicio || a.fecha_checkin || '');
+          const fechaB = new Date(b.fecha_inicio || b.fecha_checkin || '');
+          
+          // Si las fechas son válidas, ordenar de más próxima a más lejana
+          if (!isNaN(fechaA.getTime()) && !isNaN(fechaB.getTime())) {
+            return fechaA - fechaB;
+          }
+          
+          // Si alguna fecha no es válida, mantener el orden original
+          return 0;
+        });
+      }
+      
+      // Si es Estancia, obtener datos de reservas y huéspedes
+      reservasData = {};
+      if (entity === 'Estancia') {
+        try {
+          // Obtener reservas
+          const reservasResponse = await fetch(`${API_BASE_URL}/api/reserva`);
+          if (reservasResponse.ok) {
+            const reservas = await reservasResponse.json();
+            reservas.forEach(reserva => {
+              reservasData[reserva.id_reserva] = reserva;
+            });
+          }
+          
+          // Obtener huéspedes
+          const huespedesResponse = await fetch(`${API_BASE_URL}/api/huesped`);
+          if (huespedesResponse.ok) {
+            const huespedes = await huespedesResponse.json();
+            huespedes.forEach(huesped => {
+              huespedesData[huesped.id_huesped] = huesped;
+            });
+          }
+        } catch (err) {
+          console.log('No se pudieron cargar los datos de reservas o huéspedes');
+        }
+      }
+      
+      // Guardar los datos originales para el filtrado (después de todo el procesamiento)
+      originalData = [...data];
+      
+      // Generar diseño de cartas
+      const columns = Object.keys(data[0]);
+      let cardsHtml = '<div class="cards-container">';
+      
+      // Agregar header con título y botón "View all"
+      cardsHtml += `
+        <div class="cards-header">
+          <button class="view-all-btn" onclick="toggleAllCards()">
+            View all
+          </button>
+        </div>
+      `;
+      
+      data.forEach((row, index) => {
+        cardsHtml += '<div class="data-card">';
+        cardsHtml += '<div class="card-header">';
+        cardsHtml += `<div class="card-rank">#${index + 1}</div>`;
+        cardsHtml += `<div class="card-identifier">${getCardIdentifier(row, entity, huespedesData, reservasData)}</div>`;
+        cardsHtml += `<button class="expand-btn" onclick="toggleCard(${index})">
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>`;
+        cardsHtml += '</div>';
+        cardsHtml += `<div class="card-content" id="card-content-${index}">`;
+        
+        columns.forEach(col => {
+          // Omitir campos de ID (claves primarias)
+          if (col.startsWith('id_') && col !== 'id_tipo_habitacion' && col !== 'id_estado_habitacion' && 
+              col !== 'id_rol_empleado' && col !== 'id_turno_empleado' && col !== 'id_tipo_reserva' && 
+              col !== 'id_metodo_pago' && col !== 'id_estado_estancia' && col !== 'id_estado_mantenimiento') {
+            return; // Saltar este campo
+          }
+          
+          const value = row[col];
+          const displayName = getDisplayName(col);
+          const formattedValue = formatFieldValue(value, col);
+          cardsHtml += `
+            <div class="card-field">
+              <span class="field-label">${displayName}:</span>
+              <span class="field-value">${formattedValue}</span>
+            </div>
+          `;
+        });
+        
+        cardsHtml += '</div></div>';
+      });
+      
+      cardsHtml += '</div>';
+      entityTableContainer.innerHTML = cardsHtml;
+    } catch (err) {
+      entityTableContainer.innerHTML = '<div style="color:red;">Error al cargar los datos</div>';
+    }
+  }
+
+  // Función para obtener nombres más amigables para los campos
+  function getDisplayName(fieldName) {
+    const displayNames = {
+      // Huésped
+      'id_huesped': 'ID',
+      'nombre': 'Nombre',
+      'apellido': 'Apellido',
+      'email': 'Email',
+      'telefono': 'Teléfono',
+      'fecha_nacimiento': 'Fecha de Nacimiento',
+      'documento': 'Documento',
+      
+      // Habitación
+      'id_habitacion': 'ID Habitación',
+      'numero': 'Número',
+      'piso': 'Piso',
+      'id_tipo_habitacion': 'Tipo',
+      'id_estado_habitacion': 'Estado',
+      
+      // Empleado
+      'id_empleado': 'ID Empleado',
+      'id_rol_empleado': 'Rol',
+      'id_turno_empleado': 'Turno',
+      
+      // Reserva
+      'id_reserva': 'ID Reserva',
+      'fecha_inicio': 'Fecha Inicio',
+      'fecha_fin': 'Fecha Fin',
+      'id_tipo_reserva': 'Tipo Reserva',
+      'id_metodo_pago': 'Método Pago',
+      
+      // Estancia
+      'id_estancia': 'ID Estancia',
+      'fecha_entrada': 'Fecha Entrada',
+      'fecha_salida': 'Fecha Salida',
+      'id_estado_estancia': 'Estado',
+      
+      // Mantenimiento
+      'id_mantenimiento': 'ID Mantenimiento',
+      'descripcion': 'Descripción',
+      'fecha_inicio_mantenimiento': 'Fecha Inicio',
+      'fecha_fin_mantenimiento': 'Fecha Fin',
+      'id_estado_mantenimiento': 'Estado'
+    };
+    
+    return displayNames[fieldName] || fieldName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  }
+
+  // Función para obtener el identificador de la carta según la entidad
+  function getCardIdentifier(row, entity, huespedesData, reservasData) {
+    switch(entity) {
+      case 'Huésped':
+        const nombreHuesped = row.nombre || '';
+        const apellidoHuesped = row.apellido || row.apellido_paterno || '';
+        const nombreCompletoHuesped = `${nombreHuesped} ${apellidoHuesped}`.trim();
+        return nombreCompletoHuesped || nombreHuesped || 'Sin nombre';
+      case 'Habitación':
+        const numeroHabitacion = row.numero || row.numero_habitacion || '';
+        return numeroHabitacion ? `Habitación ${numeroHabitacion}` : 'Habitación sin número';
+      case 'Empleado':
+        const nombreEmpleado = row.nombre || '';
+        const apellidoEmpleado = row.apellido || row.apellido_paterno || '';
+        const nombreCompletoEmpleado = `${nombreEmpleado} ${apellidoEmpleado}`.trim();
+        return nombreCompletoEmpleado || nombreEmpleado || 'Sin nombre';
+      case 'Reservas':
+        const idHuesped = row.id_huesped || '';
+        const huespedInfo = huespedesData[idHuesped] || {};
+        const nombreHuespedReserva = huespedInfo.nombre || row.nombre_huesped || row.nombre || '';
+        const apellidoHuespedReserva = huespedInfo.apellido_paterno || huespedInfo.apellido || row.apellido_paterno || row.apellido || '';
+        const nombreCompletoHuespedReserva = `${nombreHuespedReserva} ${apellidoHuespedReserva}`.trim();
+        return nombreCompletoHuespedReserva || `ID: ${idHuesped}`;
+      case 'Estancia':
+        const idReserva = row.id_reserva || '';
+        const reservaInfo = reservasData[idReserva] || {};
+        const idHuespedEstancia = reservaInfo.id_huesped || '';
+        const huespedInfoEstancia = huespedesData[idHuespedEstancia] || {};
+        const nombreHuespedEstancia = huespedInfoEstancia.nombre || row.nombre_huesped || row.nombre || '';
+        const apellidoHuespedEstancia = huespedInfoEstancia.apellido_paterno || huespedInfoEstancia.apellido || row.apellido_paterno || row.apellido || '';
+        const nombreCompletoHuespedEstancia = `${nombreHuespedEstancia} ${apellidoHuespedEstancia}`.trim();
+        return nombreCompletoHuespedEstancia || `ID: ${idReserva}`;
+      case 'Mantenimiento':
+        const descripcion = row.descripcion || '';
+        return descripcion ? descripcion.substring(0, 50) + (descripcion.length > 50 ? '...' : '') : 'Sin descripción';
+      default:
+        return 'Registro';
+    }
+  }
+
+  // Función para formatear el valor del campo
+  function formatFieldValue(value, fieldName) {
+    if (value === null || value === undefined) {
+      return 'N/A';
+    }
+
+    // Para campos de hora en estancias, mostrar solo la hora en formato 12 horas
+    if (fieldName.includes('hora_') || fieldName.includes('Hora')) {
+      const date = new Date(value);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleTimeString('en-US', { 
+          hour: 'numeric', 
+          minute: '2-digit',
+          hour12: true 
+        });
+      }
+    }
+
+    if (fieldName.includes('fecha_') || fieldName.includes('fecha_inicio') || fieldName.includes('fecha_fin')) {
+      const date = new Date(value);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleDateString(); // Formato de fecha: DD/MM/YYYY
+      }
+    }
+    return value;
+  }
+
+  // Función para expandir/contraer cartas
+  window.toggleCard = function(index) {
+    const content = document.getElementById(`card-content-${index}`);
+    const btn = content.previousElementSibling.querySelector('.expand-btn i');
+    const card = content.parentElement;
+    
+    // Remover borde azul de todas las cartas
+    document.querySelectorAll('.data-card').forEach(c => {
+      c.classList.remove('active-card');
+    });
+    
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+      btn.className = 'fa-solid fa-chevron-up';
+      // Agregar borde azul a la carta activa
+      card.classList.add('active-card');
+    } else {
+      content.style.display = 'none';
+      btn.className = 'fa-solid fa-chevron-down';
+      // Remover borde azul si se contrae
+      card.classList.remove('active-card');
+    }
+  };
+
+  // Función para expandir/contraer todas las cartas
+  window.toggleAllCards = function() {
+    const allContents = document.querySelectorAll('.card-content');
+    const allButtons = document.querySelectorAll('.expand-btn i');
+    const allCards = document.querySelectorAll('.data-card');
+    const viewAllBtn = document.querySelector('.view-all-btn');
+    
+    // Verificar si todas están cerradas o si al menos una está abierta
+    const allClosed = Array.from(allContents).every(content => 
+      content.style.display === 'none' || content.style.display === ''
+    );
+    
+    allContents.forEach((content, index) => {
+      const btn = allButtons[index];
+      const card = allCards[index];
+      
+      if (allClosed) {
+        // Abrir todas
+        content.style.display = 'block';
+        btn.className = 'fa-solid fa-chevron-up';
+        viewAllBtn.textContent = 'Collapse all';
+        // Agregar borde azul a todas las cartas expandidas
+        card.classList.add('active-card');
+      } else {
+        // Cerrar todas
+        content.style.display = 'none';
+        btn.className = 'fa-solid fa-chevron-down';
+        viewAllBtn.textContent = 'View all';
+        // Remover borde azul de todas las cartas
+        card.classList.remove('active-card');
+      }
+    });
+  };
+  
+  // Función para normalizar texto (eliminar acentos, mayúsculas, caracteres especiales)
+  function normalizeText(text) {
+    if (!text) return '';
+    
+    return text.toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
+      .replace(/[^a-z0-9\s]/g, '') // Solo letras, números y espacios
+      .replace(/\s+/g, ' ') // Múltiples espacios a uno solo
+      .trim();
+  }
+
+  // Función para convertir texto de fecha a formato de búsqueda
+  function normalizeDateText(text) {
+    const normalized = normalizeText(text);
+    
+    // Mapeo de meses en español
+    const monthMap = {
+      'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04',
+      'mayo': '05', 'junio': '06', 'julio': '07', 'agosto': '08',
+      'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12',
+      'ene': '01', 'feb': '02', 'mar': '03', 'abr': '04',
+      'may': '05', 'jun': '06', 'jul': '07', 'ago': '08',
+      'sep': '09', 'oct': '10', 'nov': '11', 'dic': '12'
+    };
+    
+    // Mapeo de números escritos
+    const numberMap = {
+      'uno': '1', 'dos': '2', 'tres': '3', 'cuatro': '4', 'cinco': '5',
+      'seis': '6', 'siete': '7', 'ocho': '8', 'nueve': '9', 'diez': '10',
+      'once': '11', 'doce': '12', 'trece': '13', 'catorce': '14', 'quince': '15',
+      'dieciseis': '16', 'diecisiete': '17', 'dieciocho': '18', 'diecinueve': '19', 'veinte': '20',
+      'veintiuno': '21', 'veintidos': '22', 'veintitres': '23', 'veinticuatro': '24', 'veinticinco': '25',
+      'veintiseis': '26', 'veintisiete': '27', 'veintiocho': '28', 'veintinueve': '29', 'treinta': '30', 'treintayuno': '31'
+    };
+    
+    let result = normalized;
+    
+    // Reemplazar meses
+    Object.keys(monthMap).forEach(month => {
+      result = result.replace(new RegExp(month, 'g'), monthMap[month]);
+    });
+    
+    // Reemplazar números escritos
+    Object.keys(numberMap).forEach(number => {
+      result = result.replace(new RegExp(number, 'g'), numberMap[number]);
+    });
+    
+    // Reemplazar "de" y "del" por espacios
+    result = result.replace(/\b(de|del)\b/g, ' ');
+    
+    return result;
+  }
+
+  // Función para verificar si un valor coincide con el término de búsqueda
+  function valueMatchesSearch(value, searchTerm) {
+    if (value === null || value === undefined) return false;
+    
+    const valueStr = value.toString();
+    const normalizedValue = normalizeText(valueStr);
+    const normalizedSearch = normalizeDateText(searchTerm);
+    
+    // Búsqueda directa normalizada
+    if (normalizedValue.includes(normalizedSearch)) {
+      return true;
+    }
+    
+    // Búsqueda específica para fechas
+    if (isDateField(valueStr)) {
+      const dateMatches = searchInDate(valueStr, normalizedSearch);
+      if (dateMatches) return true;
+    }
+    
+    return false;
+  }
+
+  // Función para verificar si un campo es de fecha
+  function isDateField(value) {
+    if (!value) return false;
+    
+    // Verificar si es una fecha válida
+    const date = new Date(value);
+    return !isNaN(date.getTime());
+  }
+
+  // Función para buscar en fechas
+  function searchInDate(dateValue, searchTerm) {
+    try {
+      const date = new Date(dateValue);
+      if (isNaN(date.getTime())) return false;
+      
+      // Extraer componentes de la fecha
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear().toString();
+      const monthName = date.toLocaleDateString('es-ES', { month: 'long' });
+      
+      // Crear diferentes formatos de búsqueda
+      const searchFormats = [
+        day, month, year,
+        `${day}/${month}`, `${month}/${year}`,
+        `${day} ${month}`, `${month} ${year}`,
+        normalizeText(monthName),
+        `${day} de ${normalizeText(monthName)}`,
+        `${day} de ${normalizeText(monthName)} de ${year}`
+      ];
+      
+      // Verificar si el término de búsqueda coincide con algún formato
+      return searchFormats.some(format => 
+        normalizeText(format).includes(searchTerm) || 
+        searchTerm.includes(normalizeText(format))
+      );
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // Función para filtrar los datos
+  function filterData() {
+    const searchTerm = searchFilter.value.trim();
+    
+    if (!originalData || originalData.length === 0) {
+      return;
+    }
+    
+    let filteredData = originalData;
+    
+    if (searchTerm !== '') {
+      filteredData = originalData.filter(item => {
+        // Buscar en todos los campos del objeto
+        return Object.values(item).some(value => {
+          return valueMatchesSearch(value, searchTerm);
+        });
+      });
+    }
+    
+    // Renderizar los datos filtrados
+    renderFilteredData(filteredData);
+  }
+  
+  // Función para renderizar los datos filtrados
+  function renderFilteredData(data) {
+    const entity = entityTitle.textContent;
+    
+    if (data.length === 0) {
+      entityTableContainer.innerHTML = '<div style="color:#64748b;">No se encontraron resultados</div>';
+      return;
+    }
+    
+    const columns = Object.keys(data[0]);
+    let cardsHtml = '<div class="cards-container">';
+    
+    // Agregar header con título y botón "View all"
+    cardsHtml += `
+      <div class="cards-header">
+        <button class="view-all-btn" onclick="toggleAllCards()">
+          View all
+        </button>
+      </div>
+    `;
+    
+    data.forEach((row, index) => {
+      cardsHtml += '<div class="data-card">';
+      cardsHtml += '<div class="card-header">';
+      cardsHtml += `<div class="card-rank">#${index + 1}</div>`;
+      cardsHtml += `<div class="card-identifier">${getCardIdentifier(row, entity, huespedesData, reservasData)}</div>`;
+      cardsHtml += `<button class="expand-btn" onclick="toggleCard(${index})">
+        <i class="fa-solid fa-chevron-down"></i>
+      </button>`;
+      cardsHtml += '</div>';
+      cardsHtml += `<div class="card-content" id="card-content-${index}">`;
+      
+      columns.forEach(col => {
+        // Omitir campos de ID (claves primarias)
+        if (col.startsWith('id_') && col !== 'id_tipo_habitacion' && col !== 'id_estado_habitacion' && 
+            col !== 'id_rol_empleado' && col !== 'id_turno_empleado' && col !== 'id_tipo_reserva' && 
+            col !== 'id_metodo_pago' && col !== 'id_estado_estancia' && col !== 'id_estado_mantenimiento') {
+          return; // Saltar este campo
+        }
+        
+        const value = row[col];
+        const displayName = getDisplayName(col);
+        const formattedValue = formatFieldValue(value, col);
+        cardsHtml += `
+          <div class="card-field">
+            <span class="field-label">${displayName}:</span>
+            <span class="field-value">${formattedValue}</span>
+          </div>
+        `;
+      });
+      
+      cardsHtml += '</div></div>';
+    });
+    
+    cardsHtml += '</div>';
+    entityTableContainer.innerHTML = cardsHtml;
+  }
+});
+</script>
+</html> 
