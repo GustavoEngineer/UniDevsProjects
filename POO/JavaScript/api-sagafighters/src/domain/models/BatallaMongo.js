@@ -9,7 +9,8 @@ const BatallaSchema = new mongoose.Schema({
   activa: Boolean,
   historial: Array,
   estadoPersonaje1: Object,
-  estadoPersonaje2: Object
+  estadoPersonaje2: Object,
+  usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true }
   // Agrega aquí otros campos según tu JSON
 });
 

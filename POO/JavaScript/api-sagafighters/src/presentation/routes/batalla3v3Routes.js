@@ -3,6 +3,7 @@ const router = express.Router();
 const Batalla3v3Mongo = require('../../domain/models/Batalla3v3Mongo');
 const mongoose = require('mongoose');
 const PersonajeRepo = require('../../infrastructure/repositories/PersonajeRepository');
+const authMiddleware = require('../../shared/authMiddleware');
 
 /**
  * @swagger
@@ -191,6 +192,8 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  * /api/batallas3v3:
  *   post:
  *     summary: Crear una nueva batalla 3vs3
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla3v3]
  *     description: |
  *       Crea una batalla 3v3 entre dos equipos. Cada equipo debe estar compuesto por exactamente 3 personajes diferentes (IDs únicos por equipo y entre equipos).
@@ -231,7 +234,9 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  *       404:
  *         description: Personaje no encontrado
  *   get:
- *     summary: Obtener todas las batallas 3v3
+ *     summary: Obtener todas las batallas 3v3 del usuario autenticado
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla3v3]
  *     responses:
  *       200:
@@ -249,6 +254,8 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  * /api/batallas3v3/accion:
  *   post:
  *     summary: Ejecutar una acción en una batalla 3vs3 por turnos
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla3v3]
  *     requestBody:
  *       required: true
@@ -302,6 +309,8 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  * /api/batallas3v3/reglas:
  *   get:
  *     summary: Obtener las reglas básicas del juego y los movimientos posibles para 3v3
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla3v3]
  *     responses:
  *       200:
@@ -344,6 +353,8 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  * /api/batallas3v3/{id}:
  *   get:
  *     summary: Obtener una batalla 3v3 por ID
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla3v3]
  *     parameters:
  *       - in: path
@@ -365,6 +376,8 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  *         description: Batalla 3v3 no encontrada
  *   delete:
  *     summary: Eliminar una batalla 3v3 por ID
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla3v3]
  *     parameters:
  *       - in: path
@@ -397,6 +410,8 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  * /api/batallas3v3/{id}/historial:
  *   get:
  *     summary: Obtener el historial de acciones de una batalla 3v3 (todas las rondas o una ronda específica)
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla3v3]
  *     parameters:
  *       - in: path
@@ -481,6 +496,8 @@ function toPublicBatalla3v3(batalla) {
   };
 }
 
+router.use(authMiddleware);
+
 // POST /api/batallas3v3 - Crear nueva batalla 3v3
 router.post('/api/batallas3v3', async (req, res) => {
   try {
@@ -532,7 +549,8 @@ router.post('/api/batallas3v3', async (req, res) => {
     }],
       rondaActual: 1,
       historial: [],
-      ganador: null
+      ganador: null,
+      usuario: req.user.id
     });
     await nuevaBatalla.save();
     res.status(201).json(toPublicBatalla3v3(nuevaBatalla));
@@ -541,10 +559,10 @@ router.post('/api/batallas3v3', async (req, res) => {
   }
 });
 
-// GET /api/batallas3v3 - Listar todas las batallas 3v3
+// GET /api/batallas3v3 - Listar todas las batallas 3v3 del usuario autenticado
 router.get('/api/batallas3v3', async (req, res) => {
   try {
-    const batallas = await Batalla3v3Mongo.find().populate('equipo1 equipo2');
+    const batallas = await Batalla3v3Mongo.find({ usuario: req.user.id }).populate('equipo1 equipo2');
     const mapEquipo = (equipo) => {
       return equipo.map(p => ({
         id: p._id,
@@ -580,6 +598,9 @@ router.get('/api/batallas3v3/:id', async (req, res) => {
     const batalla = await Batalla3v3Mongo.findById(id);
     if (!batalla) {
       return res.status(404).json({ error: 'Batalla 3v3 no encontrada' });
+    }
+    if (String(batalla.usuario) !== String(req.user.id)) {
+      return res.status(403).json({ error: 'No tienes permiso para ver esta batalla 3v3' });
     }
     res.json(toPublicBatalla3v3(batalla));
   } catch (err) {
@@ -922,6 +943,9 @@ router.get('/api/batallas3v3/:id/historial', async (req, res) => {
     const batalla = await Batalla3v3Mongo.findById(id);
   if (!batalla) {
       return res.status(404).json({ error: 'Batalla 3v3 no encontrada' });
+    }
+    if (String(batalla.usuario) !== String(req.user.id)) {
+      return res.status(403).json({ error: 'No tienes permiso para ver el historial de esta batalla 3v3' });
     }
     res.json({ historial: batalla.historial || [], rondas: batalla.rondas || [], ganador: batalla.ganador || null });
   } catch (err) {

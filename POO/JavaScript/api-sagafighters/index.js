@@ -37,6 +37,8 @@ app.use(express.json());
 const personajeRoutes = require('./src/presentation/routes/personajeRoutes');
 const batallaRoutes = require('./src/presentation/routes/batallaRoutes');
 const batalla3v3Routes = require('./src/presentation/routes/batalla3v3Routes');
+const authRoutes = require('./src/presentation/routes/authRoutes');
+app.use('/auth', authRoutes);
 app.use(personajeRoutes);
 app.use(batallaRoutes);
 app.use(batalla3v3Routes);

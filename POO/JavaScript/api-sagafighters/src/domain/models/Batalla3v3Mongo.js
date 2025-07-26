@@ -10,7 +10,8 @@ const Batalla3v3Schema = new mongoose.Schema({
   idxActivo2: Number,
   rondas: Array,
   rondaActual: Number,
-  historial: Array
+  historial: Array,
+  usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
   // Agrega aquí otros campos según tu JSON
 });
 

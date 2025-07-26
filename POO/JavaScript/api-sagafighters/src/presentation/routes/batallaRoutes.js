@@ -3,6 +3,7 @@ const router = express.Router();
 const BatallaMongo = require('../../domain/models/BatallaMongo');
 const mongoose = require('mongoose');
 const PersonajeRepo = require('../../infrastructure/repositories/PersonajeRepository');
+const authMiddleware = require('../../shared/authMiddleware');
 
 /**
  * @swagger
@@ -114,6 +115,8 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  * /api/batallas:
  *   post:
  *     summary: Crear una nueva batalla 1vs1
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla]
  *     requestBody:
  *       required: true
@@ -148,7 +151,9 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  *       404:
  *         description: Personaje no encontrado
  *   get:
- *     summary: Obtener todas las batallas
+ *     summary: Obtener todas las batallas del usuario autenticado
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla]
  *     responses:
  *       200:
@@ -166,6 +171,8 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  * /api/batallas/accion:
  *   post:
  *     summary: Ejecutar una acción en una batalla 1vs1 por turnos
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla]
  *     requestBody:
  *       required: true
@@ -219,6 +226,8 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  * /api/batallas/reglas:
  *   get:
  *     summary: Obtener las reglas básicas del juego y los movimientos posibles
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla]
  *     responses:
  *       200:
@@ -254,6 +263,8 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  * /api/batallas/{id}:
  *   get:
  *     summary: Obtener una batalla por ID
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla]
  *     parameters:
  *       - in: path
@@ -275,6 +286,8 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  *         description: Batalla no encontrada
  *   delete:
  *     summary: Eliminar una batalla por ID
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla]
  *     parameters:
  *       - in: path
@@ -307,6 +320,8 @@ const PersonajeRepo = require('../../infrastructure/repositories/PersonajeReposi
  * /api/batallas/{id}/historial:
  *   get:
  *     summary: Obtener el historial de una partida por ID
+ *     security:
+ *       - BearerAuth: []
  *     tags: [Batalla]
  *     parameters:
  *       - in: path
@@ -420,6 +435,8 @@ function toPublicBatalla(batalla) {
   };
 }
 
+router.use(authMiddleware);
+
 // POST /api/batallas - Crear nueva batalla
 router.post('/api/batallas', async (req, res) => {
   try {
@@ -466,7 +483,8 @@ router.post('/api/batallas', async (req, res) => {
         Ultra: 0,
         Estado: 'Normal',
         UltraUsado: false
-      }
+      },
+      usuario: req.user.id
     });
     await nuevaBatalla.save();
     res.status(201).json(toPublicBatalla(nuevaBatalla));
@@ -475,27 +493,13 @@ router.post('/api/batallas', async (req, res) => {
   }
 });
 
-// GET /api/batallas - Listar todas las batallas
+// GET /api/batallas - Listar todas las batallas del usuario autenticado
 router.get('/api/batallas', async (req, res) => {
   try {
-    const batallas = await BatallaMongo.find().populate('personaje1 personaje2');
-    res.json(batallas.map(b => ({
-      id: b._id,
-      Personaje1: {
-        id: b.personaje1?._id,
-        nombre: b.personaje1?.Nombre
-      },
-      Personaje2: {
-        id: b.personaje2?._id,
-        nombre: b.personaje2?.Nombre
-      },
-      Estado: b.estado || b.Estado,
-      Ganador: b.ganador || b.Ganador,
-      TurnoActual: b.turnoActual || b.TurnoActual,
-      historial: b.historial || []
-    })));
+    const batallas = await BatallaMongo.find({ usuario: req.user.id });
+    res.json(batallas);
   } catch (err) {
-    res.status(500).json({ error: '⚠️ Error al obtener batallas', message: err.message });
+    res.status(500).json({ error: 'Error al obtener batallas', message: err.message });
   }
 });
 
@@ -509,6 +513,9 @@ router.get('/api/batallas/:id', async (req, res) => {
     const batalla = await BatallaMongo.findById(id).populate('personaje1 personaje2');
     if (!batalla) {
       return res.status(404).json({ error: 'Batalla no encontrada' });
+    }
+    if (String(batalla.usuario) !== String(req.user.id)) {
+      return res.status(403).json({ error: 'No tienes permiso para ver esta batalla' });
     }
     res.json(toPublicBatalla(batalla));
   } catch (err) {
@@ -824,6 +831,9 @@ router.get('/api/batallas/:id/historial', async (req, res) => {
     const batalla = await BatallaMongo.findById(id);
     if (!batalla) {
       return res.status(404).json({ error: 'Batalla no encontrada' });
+    }
+    if (String(batalla.usuario) !== String(req.user.id)) {
+      return res.status(403).json({ error: 'No tienes permiso para ver el historial de esta batalla' });
     }
     // Al mostrar el historial, incluir nombreCombo/nombreUltra si existen
     const historial = (batalla.historial || []).map(entry => {
