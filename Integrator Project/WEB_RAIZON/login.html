@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar sesión | RaizOn</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:wght@400;700&family=Inter:wght@400;600&family=Lato:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/global.css">
+</head>
+<body style="background: var(--color-crema);">
+  <main style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+    <section class="shadow-soft rounded-2xl borde-artesanal bg-blanco" style="display: flex; overflow: hidden; max-width: 700px; width: 100%;">
+      <div style="background: var(--color-primario); color: var(--color-blanco); flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2.5rem 1.5rem;">
+        <h2 style="font-family: 'DM Serif Display', serif; font-size: 2rem; margin-bottom: 1rem;">¡Bienvenido de nuevo!</h2>
+        <p style="font-size: 1.1rem;">Conecta con lo hecho a mano en México</p>
+      </div>
+      <form style="flex: 1.2; display: flex; flex-direction: column; gap: 1.2rem; padding: 2.5rem 2rem; background: var(--color-blanco);">
+        <h3 style="font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--color-primario-oscuro);">Iniciar sesión</h3>
+        <label for="login-email">Correo electrónico</label>
+        <input id="login-email" type="email" placeholder="correo@ejemplo.com" required>
+        <label for="login-password">Contraseña</label>
+        <input id="login-password" type="password" placeholder="Tu contraseña" required>
+        <button type="submit" class="rounded-2xl shadow-soft" style="margin-top: 1rem;">Iniciar sesión</button>
+        <p style="font-size: 0.95rem; text-align: center; margin-top: 1rem;">¿No tienes cuenta? <a href="register.html" style="color: var(--color-primario); text-decoration: underline;">Regístrate</a></p>
+      </form>
+    </section>
+  </main>
+</body>
+</html> 

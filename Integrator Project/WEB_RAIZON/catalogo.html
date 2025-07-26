@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo | RaizOn</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:wght@400;700&family=Inter:wght@400;600&family=Lato:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/global.css">
+</head>
+<body style="background: var(--color-crema);">
+  <main class="max-w-screen-lg mx-auto p-4" style="display: flex; gap: 2.5rem; min-height: 100vh;">
+    <!-- Filtros laterales -->
+    <aside class="shadow-soft rounded-2xl borde-artesanal bg-blanco p-4" style="min-width: 220px;">
+      <h3 style="font-family: 'DM Serif Display', serif; color: var(--color-primario-oscuro); margin-bottom: 1.2rem;">Filtrar</h3>
+      <div style="margin-bottom: 1rem;">
+        <label for="filtro-categoria">Categoría</label>
+        <select id="filtro-categoria" style="width: 100%; margin-top: 0.3rem;">
+          <option>Todos</option>
+          <option>Textiles</option>
+          <option>Cerámica</option>
+          <option>Joyería</option>
+          <option>Decoración</option>
+        </select>
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label for="filtro-region">Región</label>
+        <select id="filtro-region" style="width: 100%; margin-top: 0.3rem;">
+          <option>Todos</option>
+          <option>Yucatán</option>
+          <option>Oaxaca</option>
+          <option>Chiapas</option>
+        </select>
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label for="filtro-artesano">Artesano</label>
+        <input id="filtro-artesano" type="text" placeholder="Nombre" style="width: 100%; margin-top: 0.3rem;">
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label for="filtro-precio">Precio máx.</label>
+        <input id="filtro-precio" type="number" placeholder="$" style="width: 100%; margin-top: 0.3rem;">
+      </div>
+      <button class="rounded-2xl shadow-soft" style="width: 100%; margin-top: 1rem;">Aplicar filtros</button>
+    </aside>
+    <!-- Galería de productos -->
+    <section style="flex: 1;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 style="font-family: 'DM Serif Display', serif; color: var(--color-primario-oscuro);">Catálogo</h2>
+        <input type="search" placeholder="Buscar producto..." style="padding: 0.7rem 1.2rem; border-radius: 1rem; border: 1px solid var(--color-gris-claro); min-width: 220px;">
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem;">
+        <div class="producto-card shadow-soft rounded-2xl p-2 bg-blanco borde-artesanal">
+          <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Jarra de barro" style="height: 160px; width: 100%; object-fit: cover; border-radius: 1rem; margin-bottom: 1rem;">
+          <h3>Jarra de barro</h3>
+          <p style="color: var(--color-primario); font-weight: bold;">$350 MXN</p>
+        </div>
+        <div class="producto-card shadow-soft rounded-2xl p-2 bg-blanco borde-artesanal">
+          <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Hamaca yucateca" style="height: 160px; width: 100%; object-fit: cover; border-radius: 1rem; margin-bottom: 1rem;">
+          <h3>Hamaca yucateca</h3>
+          <p style="color: var(--color-primario); font-weight: bold;">$1,200 MXN</p>
+        </div>
+        <div class="producto-card shadow-soft rounded-2xl p-2 bg-blanco borde-artesanal">
+          <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Sombrero de palma" style="height: 160px; width: 100%; object-fit: cover; border-radius: 1rem; margin-bottom: 1rem;">
+          <h3>Sombrero de palma</h3>
+          <p style="color: var(--color-primario); font-weight: bold;">$480 MXN</p>
+        </div>
+        <div class="producto-card shadow-soft rounded-2xl p-2 bg-blanco borde-artesanal">
+          <img src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=400&q=80" alt="Collar de jade" style="height: 160px; width: 100%; object-fit: cover; border-radius: 1rem; margin-bottom: 1rem;">
+          <h3>Collar de jade</h3>
+          <p style="color: var(--color-primario); font-weight: bold;">$650 MXN</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html> 

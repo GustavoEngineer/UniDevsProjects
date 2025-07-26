@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RaizOn - Marketplace Artesanal Mexicano</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:wght@400;700&family=Inter:wght@400;600&family=Lato:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/global.css">
+</head>
+<body>
+  <!-- Header -->
+  <nav class="header-nav shadow-soft bg-primario rounded-2xl p-2 mx-auto max-w-screen-lg borde-artesanal" style="display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; margin-top: 1.5rem;">
+    <div class="header-logo" style="font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--color-blanco); letter-spacing: 2px;">RaizOn</div>
+    <ul class="nav-menu" style="display: flex; gap: 2rem; list-style: none;">
+      <li><a href="#" class="nav-link">Inicio</a></li>
+      <li><a href="catalogo.html" class="nav-link">Catálogo</a></li>
+      <li><a href="artesanos.html" class="nav-link">Artesanos</a></li>
+      <li><a href="login.html" class="nav-link">Iniciar sesión</a></li>
+      <li><a href="register.html" class="nav-link">Registrarse</a></li>
+    </ul>
+    <div class="header-icons" style="display: flex; gap: 1.2rem; align-items: center;">
+      <a href="carrito.html" title="Carrito" style="font-size: 1.5rem; cursor: pointer; text-decoration: none;">🛒</a>
+      <a href="favoritos.html" title="Favoritos" style="font-size: 1.5rem; cursor: pointer; text-decoration: none;">❤️</a>
+      <a href="perfil.html" title="Perfil" style="font-size: 1.5rem; cursor: pointer; text-decoration: none;">👤</a>
+    </div>
+  </nav>
+
+  <!-- Home -->
+  <main>
+    <section class="hero bg-primario rounded-2xl shadow-soft p-4 mx-auto max-w-screen-lg decoracion-mex text-center" style="margin-top: 2rem;">
+      <h1 style="font-size: 2.5rem;">Conecta con lo hecho a mano en México</h1>
+      <p style="font-size: 1.25rem; margin: 1rem 0 2rem 0;">Descubre productos únicos y apoya a los artesanos mexicanos.</p>
+      <button class="rounded-2xl shadow-soft" style="font-size: 1.1rem; padding: 0.9rem 2.2rem;">Explorar productos</button>
+    </section>
+    <section class="destacados mx-auto max-w-screen-lg" style="margin-top: 3rem;">
+      <h2 class="text-center" style="margin-bottom: 2rem;">Productos destacados</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem;">
+        <div class="producto-card shadow-soft rounded-2xl p-2 bg-blanco borde-artesanal">
+          <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Jarra de barro" style="height: 160px; width: 100%; object-fit: cover; border-radius: 1rem; margin-bottom: 1rem;">
+          <h3>Jarra de barro</h3>
+          <p style="color: var(--color-primario); font-weight: bold;">$350 MXN</p>
+        </div>
+        <div class="producto-card shadow-soft rounded-2xl p-2 bg-blanco borde-artesanal">
+          <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Hamaca yucateca" style="height: 160px; width: 100%; object-fit: cover; border-radius: 1rem; margin-bottom: 1rem;">
+          <h3>Hamaca yucateca</h3>
+          <p style="color: var(--color-primario); font-weight: bold;">$1,200 MXN</p>
+        </div>
+        <div class="producto-card shadow-soft rounded-2xl p-2 bg-blanco borde-artesanal">
+          <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Sombrero de palma" style="height: 160px; width: 100%; object-fit: cover; border-radius: 1rem; margin-bottom: 1rem;">
+          <h3>Sombrero de palma</h3>
+          <p style="color: var(--color-primario); font-weight: bold;">$480 MXN</p>
+        </div>
+      </div>
+    </section>
+    <section class="artesanos mx-auto max-w-screen-lg" style="margin-top: 3rem;">
+      <h2 class="text-center" style="margin-bottom: 2rem;">Conoce a nuestros artesanos</h2>
+      <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+        <div class="artesano-card shadow-soft rounded-2xl p-2 bg-blanco borde-artesanal" style="min-width: 200px; max-width: 240px;">
+          <div style="height: 80px; width: 80px; background: var(--color-verde-jade); border-radius: 50%; margin: 0 auto 1rem auto;"></div>
+          <h3>María Uc</h3>
+          <p style="color: var(--color-azul-profundo); font-size: 0.95rem;">Mérida, Yucatán</p>
+        </div>
+        <div class="artesano-card shadow-soft rounded-2xl p-2 bg-blanco borde-artesanal" style="min-width: 200px; max-width: 240px;">
+          <div style="height: 80px; width: 80px; background: var(--color-verde-jade); border-radius: 50%; margin: 0 auto 1rem auto;"></div>
+          <h3>Juan Canul</h3>
+          <p style="color: var(--color-azul-profundo); font-size: 0.95rem;">Valladolid, Yucatán</p>
+        </div>
+        <div class="artesano-card shadow-soft rounded-2xl p-2 bg-blanco borde-artesanal" style="min-width: 200px; max-width: 240px;">
+          <div style="height: 80px; width: 80px; background: var(--color-verde-jade); border-radius: 50%; margin: 0 auto 1rem auto;"></div>
+          <h3>Lucía Pech</h3>
+          <p style="color: var(--color-azul-profundo); font-size: 0.95rem;">Izamal, Yucatán</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer bg-crema shadow-soft rounded-2xl p-4 mx-auto max-w-screen-lg borde-artesanal" style="margin-top: 3rem;">
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 2rem;">
+      <div>
+        <h3 style="font-family: 'DM Serif Display', serif; color: var(--color-primario);">RaizOn</h3>
+        <p style="font-size: 1rem; color: var(--color-azul-profundo);">Conecta con lo hecho a mano en México</p>
+      </div>
+      <div>
+        <h4>Enlaces rápidos</h4>
+        <ul style="list-style: none; padding: 0;">
+          <li><a href="#">Inicio</a></li>
+          <li><a href="#">Catálogo</a></li>
+          <li><a href="#">Contacto</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul style="list-style: none; padding: 0;">
+          <li><a href="#">Aviso de privacidad</a></li>
+          <li><a href="#">Términos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Síguenos</h4>
+        <div style="display: flex; gap: 1rem; font-size: 1.5rem;">
+          <a href="#" title="Instagram">📸</a>
+          <a href="#" title="Facebook">📘</a>
+          <a href="#" title="Twitter">🐦</a>
+        </div>
+      </div>
+    </div>
+    <div style="text-align: center; margin-top: 2rem; color: var(--color-azul-profundo); font-size: 0.9rem;">
+      © 2024 RaizOn. Todos los derechos reservados.
+    </div>
+  </footer>
+</body>
+</html> 

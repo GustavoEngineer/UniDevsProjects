@@ -1,0 +1,289 @@
+/* Paleta de colores */
+:root {
+  --color-primario: #D36B00;
+  --color-primario-oscuro: #B7410E;
+  --color-verde-jade: #3A6B35;
+  --color-azul-profundo: #2C3E50;
+  --color-crema: #FFF5E1;
+  --color-gris-claro: #F5F5F5;
+  --color-blanco: #FFFFFF;
+  --color-texto: #2C3E50;
+}
+
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Lato', 'Poppins', Arial, sans-serif;
+  background: var(--color-crema);
+  color: var(--color-texto);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'DM Serif Display', 'Playfair Display', serif;
+  color: var(--color-primario-oscuro);
+  letter-spacing: 0.5px;
+}
+
+.rounded-2xl {
+  border-radius: 1.5rem;
+}
+
+.shadow-soft {
+  box-shadow: 0 4px 24px rgba(44, 62, 80, 0.08), 0 1.5px 6px rgba(211, 107, 0, 0.08);
+}
+
+.p-4 {
+  padding: 1.5rem;
+}
+
+.p-2 {
+  padding: 0.75rem;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.max-w-screen-lg {
+  max-width: 1200px;
+}
+
+.bg-primario {
+  background: var(--color-primario);
+  color: var(--color-blanco);
+}
+
+.bg-crema {
+  background: var(--color-crema);
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Detalles artesanales */
+.borde-artesanal {
+  border: 4px double var(--color-verde-jade);
+  border-radius: 1.5rem 0.5rem 1.5rem 0.5rem;
+  box-shadow: 0 2px 8px rgba(58, 107, 53, 0.08);
+}
+
+.decoracion-mex {
+  background-image: repeating-linear-gradient(90deg, var(--color-primario) 0 8px, transparent 8px 16px), repeating-linear-gradient(180deg, var(--color-verde-jade) 0 8px, transparent 8px 16px);
+  background-size: 16px 16px;
+  background-position: left top;
+  background-repeat: repeat-x, repeat-y;
+}
+
+input, select, textarea, button {
+  font-family: inherit;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-gris-claro);
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-primario);
+}
+
+button {
+  background: var(--color-primario);
+  color: var(--color-blanco);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: var(--color-primario-oscuro);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  background: var(--color-crema);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-primario);
+  border-radius: 8px;
+} 
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 900px) {
+  .max-w-screen-lg {
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .header-nav {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0.5rem;
+    margin-top: 0.5rem !important;
+  }
+  .nav-menu {
+    flex-direction: column !important;
+    gap: 1rem !important;
+    align-items: center;
+    width: 100%;
+  }
+  .header-icons {
+    justify-content: center;
+    width: 100%;
+  }
+  .perfil-section {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1.2rem !important;
+  }
+  .perfil-section > div, .perfil-section > section {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+  }
+  .perfil-section table {
+    font-size: 0.95rem;
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: auto;
+    display: block;
+  }
+  .perfil-section .producto-favorito {
+    margin: 0 auto 1rem auto !important;
+    min-width: 120px !important;
+    max-width: 180px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .max-w-screen-lg,
+  .mx-auto {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .header-nav {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.7rem 0.2rem;
+  }
+  .nav-menu {
+    flex-direction: column !important;
+    gap: 0.7rem !important;
+    align-items: center;
+    width: 100%;
+  }
+  .header-icons {
+    justify-content: center;
+    width: 100%;
+  }
+  .footer {
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+    text-align: center;
+  }
+  .hero, .destacados, .artesanos, .footer, main, section, aside {
+    padding: 1rem !important;
+  }
+  .producto-card, .artesano-card, .producto-favorito, .producto-carrito {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  .producto-card img, .producto-favorito img, .producto-carrito img {
+    height: 120px !important;
+  }
+  .artesano-card img {
+    height: 70px !important;
+    width: 70px !important;
+  }
+  .borde-artesanal {
+    border-width: 2px;
+  }
+  h1 { font-size: 1.5rem !important; }
+  h2 { font-size: 1.2rem !important; }
+  h3, h4 { font-size: 1rem !important; }
+  .perfil-section {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.7rem !important;
+    padding: 0.7rem 0.2rem !important;
+  }
+  .perfil-section > div, .perfil-section > section {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+  }
+  .perfil-section table {
+    font-size: 0.9rem;
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: auto;
+    display: block;
+  }
+  .perfil-section .producto-favorito {
+    margin: 0 auto 0.7rem auto !important;
+    min-width: 100px !important;
+    max-width: 140px !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .header-nav, .footer, main, section, aside {
+    padding: 0.3rem !important;
+  }
+  .producto-card img, .producto-favorito img, .producto-carrito img {
+    height: 80px !important;
+  }
+  .artesano-card img {
+    height: 50px !important;
+    width: 50px !important;
+  }
+  h1, h2, h3, h4 { font-size: 1rem !important; }
+}
+
+/* Grids a 1 columna en móvil */
+@media (max-width: 700px) {
+  .destacados > div,
+  .artesanos > div,
+  .producto-card,
+  .artesano-card,
+  .producto-favorito,
+  .producto-carrito {
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: 1.2rem;
+  }
+  .destacados > div,
+  .artesanos > div {
+    grid-template-columns: 1fr !important;
+  }
+} 
+
+@media (max-width: 700px) {
+  .header-nav {
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.15rem 0.1rem !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+  .header-logo {
+    font-size: 1rem !important;
+    margin-bottom: 0.1rem;
+  }
+  .header-icons {
+    font-size: 0.8rem !important;
+    margin-top: 0.1rem;
+  }
+} 

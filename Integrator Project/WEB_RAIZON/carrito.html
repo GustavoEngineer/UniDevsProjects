@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrito | RaizOn</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:wght@400;700&family=Inter:wght@400;600&family=Lato:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/global.css">
+</head>
+<body style="background: var(--color-crema);">
+  <main class="max-w-screen-lg mx-auto p-4" style="min-height: 100vh;">
+    <h2 style="font-family: 'DM Serif Display', serif; color: var(--color-primario-oscuro); text-align: center; margin-bottom: 2.5rem;">Carrito de compras</h2>
+    <div style="display: flex; flex-direction: column; gap: 2rem;">
+      <!-- Producto en carrito -->
+      <div class="producto-carrito shadow-soft rounded-2xl p-4 bg-blanco borde-artesanal" style="display: flex; align-items: center; gap: 1.5rem;">
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=200&q=80" alt="Jarra de barro" style="width: 90px; height: 90px; object-fit: cover; border-radius: 1rem;">
+        <div style="flex: 1;">
+          <h3>Jarra de barro</h3>
+          <p style="color: var(--color-primario); font-weight: bold;">$350 MXN</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <button class="rounded-2xl shadow-soft" style="width: 2rem; height: 2rem;">-</button>
+          <span>1</span>
+          <button class="rounded-2xl shadow-soft" style="width: 2rem; height: 2rem;">+</button>
+        </div>
+        <button class="rounded-2xl shadow-soft" style="background: var(--color-azul-profundo); color: var(--color-blanco); margin-left: 1rem;">Eliminar</button>
+      </div>
+      <div class="producto-carrito shadow-soft rounded-2xl p-4 bg-blanco borde-artesanal" style="display: flex; align-items: center; gap: 1.5rem;">
+        <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=200&q=80" alt="Hamaca yucateca" style="width: 90px; height: 90px; object-fit: cover; border-radius: 1rem;">
+        <div style="flex: 1;">
+          <h3>Hamaca yucateca</h3>
+          <p style="color: var(--color-primario); font-weight: bold;">$1,200 MXN</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <button class="rounded-2xl shadow-soft" style="width: 2rem; height: 2rem;">-</button>
+          <span>2</span>
+          <button class="rounded-2xl shadow-soft" style="width: 2rem; height: 2rem;">+</button>
+        </div>
+        <button class="rounded-2xl shadow-soft" style="background: var(--color-azul-profundo); color: var(--color-blanco); margin-left: 1rem;">Eliminar</button>
+      </div>
+    </div>
+    <!-- Total y acciones -->
+    <div class="shadow-soft rounded-2xl p-4 bg-blanco borde-artesanal" style="margin-top: 2.5rem; max-width: 400px; margin-left: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; margin-bottom: 1.2rem;">
+        <span>Total:</span>
+        <span style="color: var(--color-primario); font-weight: bold;">$2,750 MXN</span>
+      </div>
+      <button class="rounded-2xl shadow-soft" style="width: 100%; font-size: 1.1rem;">Proceder al pago</button>
+    </div>
+  </main>
+</body>
+</html> 

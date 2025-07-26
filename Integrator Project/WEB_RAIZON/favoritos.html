@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Favoritos | RaizOn</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:wght@400;700&family=Inter:wght@400;600&family=Lato:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/global.css">
+</head>
+<body style="background: var(--color-crema);">
+  <main class="max-w-screen-lg mx-auto p-4" style="min-height: 100vh;">
+    <h2 style="font-family: 'DM Serif Display', serif; color: var(--color-primario-oscuro); text-align: center; margin-bottom: 2.5rem;">Mis favoritos</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem;">
+      <div class="producto-favorito shadow-soft rounded-2xl p-2 bg-blanco borde-artesanal" style="position: relative;">
+        <button title="Eliminar de favoritos" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-primario);">✖️</button>
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Jarra de barro" style="height: 160px; width: 100%; object-fit: cover; border-radius: 1rem; margin-bottom: 1rem;">
+        <h3>Jarra de barro</h3>
+        <p style="color: var(--color-primario); font-weight: bold;">$350 MXN</p>
+      </div>
+      <div class="producto-favorito shadow-soft rounded-2xl p-2 bg-blanco borde-artesanal" style="position: relative;">
+        <button title="Eliminar de favoritos" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-primario);">✖️</button>
+        <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Hamaca yucateca" style="height: 160px; width: 100%; object-fit: cover; border-radius: 1rem; margin-bottom: 1rem;">
+        <h3>Hamaca yucateca</h3>
+        <p style="color: var(--color-primario); font-weight: bold;">$1,200 MXN</p>
+      </div>
+      <div class="producto-favorito shadow-soft rounded-2xl p-2 bg-blanco borde-artesanal" style="position: relative;">
+        <button title="Eliminar de favoritos" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-primario);">✖️</button>
+        <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Sombrero de palma" style="height: 160px; width: 100%; object-fit: cover; border-radius: 1rem; margin-bottom: 1rem;">
+        <h3>Sombrero de palma</h3>
+        <p style="color: var(--color-primario); font-weight: bold;">$480 MXN</p>
+      </div>
+    </div>
+  </main>
+</body>
+</html> 
