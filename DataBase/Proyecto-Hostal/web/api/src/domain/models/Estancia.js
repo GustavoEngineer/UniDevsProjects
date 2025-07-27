@@ -12,7 +12,10 @@ class Estancia {
     requiere_factura,
     nombre_estado,
     nombre_huesped,
-    apellido_huesped
+    apellido_huesped,
+    fecha_checkin_prevista,
+    fecha_checkout_prevista,
+    nombre_completo_huesped
   }) {
     this.id_estancia = id_estancia;
     this.id_reserva = id_reserva;
@@ -27,6 +30,9 @@ class Estancia {
     this.nombre_estado = nombre_estado;
     this.nombre_huesped = nombre_huesped;
     this.apellido_huesped = apellido_huesped;
+    this.fecha_checkin_prevista = fecha_checkin_prevista;
+    this.fecha_checkout_prevista = fecha_checkout_prevista;
+    this.nombre_completo_huesped = nombre_completo_huesped;
   }
 }
 

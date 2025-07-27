@@ -12,10 +12,19 @@
 function filterAuditFields(data) {
   const { fecha_creacion, fecha_modificacion, ...updateData } = data;
   
+  // Función auxiliar para verificar si un valor es "vacío" o no válido
+  const isEmptyValue = (value) => {
+    return value === undefined || 
+           value === null || 
+           value === '' || 
+           value === 'null' || 
+           value === 'undefined' ||
+           (typeof value === 'string' && value.trim() === '');
+  };
+  
   // Validar que no se intenten modificar las fechas de auditoría
-  // Solo lanzar error si realmente se están enviando valores válidos
-  if ((fecha_creacion !== undefined && fecha_creacion !== null && fecha_creacion !== '') || 
-      (fecha_modificacion !== undefined && fecha_modificacion !== null && fecha_modificacion !== '')) {
+  // Solo lanzar error si realmente se están enviando valores válidos y no vacíos
+  if (!isEmptyValue(fecha_creacion) || !isEmptyValue(fecha_modificacion)) {
     throw new Error('No se permite modificar las fechas de creación o modificación');
   }
   

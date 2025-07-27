@@ -20,6 +20,13 @@ class EstanciaService {
   async delete(id) {
     return await EstanciaRepository.delete(id);
   }
+
+  /**
+   * Obtiene todas las reservas con información del huésped para el selector
+   */
+  async obtenerReservasConHuesped() {
+    return await EstanciaRepository.obtenerReservasConHuesped();
+  }
 }
 
 module.exports = new EstanciaService(); 

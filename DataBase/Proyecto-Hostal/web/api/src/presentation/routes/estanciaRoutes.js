@@ -11,6 +11,16 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Endpoint para obtener reservas con información del huésped (DEBE ir antes de /:id)
+router.get('/reservas-con-huesped', async (req, res) => {
+  try {
+    const reservas = await EstanciaService.obtenerReservasConHuesped();
+    res.json(reservas);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const item = await EstanciaService.getById(req.params.id);

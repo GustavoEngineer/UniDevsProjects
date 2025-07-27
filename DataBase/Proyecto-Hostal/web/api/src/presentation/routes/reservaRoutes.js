@@ -11,6 +11,35 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Endpoint para verificar disponibilidad de habitación (DEBE ir antes de /:id)
+router.get('/verificar-disponibilidad/:habitacionId', async (req, res) => {
+  try {
+    const { habitacionId } = req.params;
+    const { fecha_checkin, fecha_checkout, reserva_id } = req.query;
+    
+    if (!fecha_checkin || !fecha_checkout) {
+      return res.status(400).json({ error: 'Se requieren fecha_checkin y fecha_checkout' });
+    }
+    
+    const conflictos = await ReservaService.verificarDisponibilidadHabitacion(
+      parseInt(habitacionId), 
+      fecha_checkin, 
+      fecha_checkout, 
+      reserva_id ? parseInt(reserva_id) : null
+    );
+    
+    res.json({
+      disponible: conflictos.length === 0,
+      conflictos: conflictos,
+      mensaje: conflictos.length === 0 
+        ? 'Habitación disponible en las fechas seleccionadas' 
+        : `La habitación no está disponible. ${conflictos.length} conflicto(s) encontrado(s)`
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const item = await ReservaService.getById(req.params.id);

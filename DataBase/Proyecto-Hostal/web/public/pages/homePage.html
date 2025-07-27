@@ -7,6 +7,80 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/homePage.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    
+    .modal-actions button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .modal-actions button[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .modal-actions button[type="button"] {
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    
+    /* Estilos específicos para el dropdown de crear */
+    #crearDropdownContainer {
+      top: 130px !important;
+      left: 240px !important;
+      position: absolute !important;
+      z-index: 1000 !important;
+    }
+    
+    #crearDropdownContainer.show {
+      display: block !important;
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+      pointer-events: auto !important;
+    }
+  </style>
 </head>
 <body>
   <div class="sidebar">
@@ -15,9 +89,9 @@
       Hostal<span>Pro</span>
     </div>
     <nav class="sidebar-nav">
-      <a href="homePage.html" class="active"><i class="fa-solid fa-house"></i> <span>Inicio</span></a>
+                  <a href="#" id="inicioBtn" class="active"><i class="fa-solid fa-house"></i> <span>Inicio</span></a>
       <a href="#" id="registrosBtn" onclick="return false;"><i class="fa-solid fa-table-list"></i> <span>Registros</span></a>
-      <a href="crear.html"><i class="fa-solid fa-plus"></i> <span>Crear</span></a>
+      <a href="#" id="crearBtn" onclick="return false;"><i class="fa-solid fa-plus"></i> <span>Crear</span></a>
       <div class="sidebar-separator"></div>
       <a href="Authentication.html"><i class="fa-solid fa-right-from-bracket"></i> <span>Cerrar sesión</span></a>
     </nav>
@@ -26,6 +100,17 @@
     </div>
   </div>
   <div class="dropdown-container" id="dropdownContainer">
+    <ul style="list-style:none; margin:0; padding:10px 0;">
+      <li style="padding:8px 20px; cursor:pointer;">Huésped</li>
+      <li style="padding:8px 20px; cursor:pointer;">Habitación</li>
+      <li style="padding:8px 20px; cursor:pointer;">Empleado</li>
+      <li style="padding:8px 20px; cursor:pointer;">Reservas</li>
+      <li style="padding:8px 20px; cursor:pointer;">Estancia</li>
+      <li style="padding:8px 20px; cursor:pointer;">Mantenimiento</li>
+    </ul>
+  </div>
+  
+  <div class="dropdown-container" id="crearDropdownContainer" style="display:none; top: 130px;">
     <ul style="list-style:none; margin:0; padding:10px 0;">
       <li style="padding:8px 20px; cursor:pointer;">Huésped</li>
       <li style="padding:8px 20px; cursor:pointer;">Habitación</li>
@@ -66,16 +151,27 @@
       </div>
     </div>
     <div id="entityTableContainer"></div>
+    <div id="dashboardContainer" style="display:none;"></div>
   </div>
 </body>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  const inicioBtn = document.getElementById('inicioBtn');
   const registrosBtn = document.getElementById('registrosBtn');
+  const crearBtn = document.getElementById('crearBtn');
   const dropdown = document.getElementById('dropdownContainer');
+  const crearDropdown = document.getElementById('crearDropdownContainer');
+  
+  console.log('🔍 Elementos encontrados:', {
+    crearBtn: crearBtn,
+    crearDropdown: crearDropdown,
+    dropdown: dropdown
+  });
   const entityTitle = document.getElementById('entityTitle');
   const entityTableContainer = document.getElementById('entityTableContainer');
   const searchFilterContainer = document.getElementById('searchFilterContainer');
   const searchFilter = document.getElementById('searchFilter');
+  const dashboardContainer = document.getElementById('dashboardContainer');
   
   // Variable para almacenar los datos originales
   let originalData = [];
@@ -100,14 +196,58 @@ document.addEventListener('DOMContentLoaded', function() {
     dropdown.classList.toggle('show');
   }
 
+  function toggleCrearDropdown() {
+    console.log('🔧 toggleCrearDropdown llamado');
+    console.log('🔧 crearDropdown antes:', crearDropdown.classList.contains('show'));
+    crearDropdown.classList.toggle('show');
+    console.log('🔧 crearDropdown después:', crearDropdown.classList.contains('show'));
+    // Ocultar el dropdown de registros si está abierto
+    dropdown.classList.remove('show');
+  }
+
   registrosBtn.addEventListener('click', function(e) {
     e.stopPropagation();
     toggleDropdown();
+    // Ocultar el dropdown de crear si está abierto
+    crearDropdown.classList.remove('show');
+    
+    // Actualizar clases activas
+    document.querySelectorAll('.sidebar-nav a').forEach(link => link.classList.remove('active'));
+    registrosBtn.classList.add('active');
+  });
+
+  inicioBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Ocultar dropdowns
+    dropdown.classList.remove('show');
+    crearDropdown.classList.remove('show');
+    
+    // Cargar dashboard
+    loadDashboard();
+    
+    // Actualizar clases activas
+    document.querySelectorAll('.sidebar-nav a').forEach(link => link.classList.remove('active'));
+    inicioBtn.classList.add('active');
+  });
+
+  crearBtn.addEventListener('click', function(e) {
+    console.log('🔘 Botón Crear clickeado');
+    e.stopPropagation();
+    toggleCrearDropdown();
+    
+    // Actualizar clases activas
+    document.querySelectorAll('.sidebar-nav a').forEach(link => link.classList.remove('active'));
+    crearBtn.classList.add('active');
   });
 
   document.addEventListener('click', function(e) {
     if (!dropdown.contains(e.target) && e.target !== registrosBtn) {
       dropdown.classList.remove('show');
+    }
+    if (!crearDropdown.contains(e.target) && e.target !== crearBtn) {
+      crearDropdown.classList.remove('show');
     }
   });
 
@@ -123,6 +263,28 @@ document.addEventListener('DOMContentLoaded', function() {
       huespedesData = {};
       reservasData = {};
       loadEntityTable(entity);
+      
+      // Actualizar clases activas
+      document.querySelectorAll('.sidebar-nav a').forEach(link => link.classList.remove('active'));
+      registrosBtn.classList.add('active');
+    });
+  });
+
+  // Mostrar formulario de creación cuando se seleccione una entidad
+  crearDropdown.querySelectorAll('li').forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      const entity = this.textContent;
+      entityTitle.textContent = `Crear ${entity}`;
+      crearDropdown.classList.remove('show');
+      searchFilterContainer.style.display = 'none';
+      // Limpiar datos adicionales al cambiar de entidad
+      huespedesData = {};
+      reservasData = {};
+      loadCreateForm(entity);
+      
+      // Actualizar clases activas
+      document.querySelectorAll('.sidebar-nav a').forEach(link => link.classList.remove('active'));
+      crearBtn.classList.add('active');
     });
   });
   
@@ -132,6 +294,9 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   async function loadEntityTable(entity) {
+    // Ocultar dashboard y mostrar tabla
+    dashboardContainer.style.display = 'none';
+    entityTableContainer.style.display = 'block';
     entityTableContainer.innerHTML = '<div style="color:#64748b;">Cargando...</div>';
     const apiUrl = entityApiMap[entity];
     if (!apiUrl) {
@@ -321,9 +486,12 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Mantenimiento
       'id_mantenimiento': 'ID Mantenimiento',
+      'id_habitacion': 'Habitación',
+      'id_empleado': 'Empleado de Limpieza',
       'descripcion': 'Descripción',
-      'fecha_inicio_mantenimiento': 'Fecha Inicio',
-      'fecha_fin_mantenimiento': 'Fecha Fin',
+      'fecha_solicitud': 'Fecha de Solicitud',
+      'fecha_inicio': 'Fecha Inicio',
+      'fecha_fin': 'Fecha Fin',
       'id_estado_mantenimiento': 'Estado'
     };
     
@@ -388,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    if (fieldName.includes('fecha_') || fieldName.includes('fecha_inicio') || fieldName.includes('fecha_fin')) {
+    if (fieldName.includes('fecha_') || fieldName.includes('fecha_inicio') || fieldName.includes('fecha_fin') || fieldName.includes('fecha_solicitud')) {
       const date = new Date(value);
       if (!isNaN(date.getTime())) {
         return date.toLocaleDateString(); // Formato de fecha: DD/MM/YYYY
@@ -416,6 +584,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if (fieldName === 'id_estado_mantenimiento' && row.nombre_estado) {
       return row.nombre_estado;
+    }
+    if (fieldName === 'id_habitacion' && row.numero_habitacion) {
+      return `Habitación ${row.numero_habitacion}`;
+    }
+    if (fieldName === 'id_empleado' && row.nombre_empleado) {
+      return `${row.nombre_empleado} ${row.apellido_empleado || ''}`;
     }
 
     return value;
@@ -700,7 +874,7 @@ document.addEventListener('DOMContentLoaded', function() {
     entityTableContainer.innerHTML = cardsHtml;
   }
 
-  // MODALES PARA BORRADO Y EDICIÓN
+  // MODALES PARA BORRADO, EDICIÓN Y CREACIÓN
   const modalHtml = `
     <div id="deleteModal" class="modal-overlay" style="display:none;">
       <div class="modal-content">
@@ -737,6 +911,23 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
         </form>
         <div id="editError" style="color:red; display:none; font-size:0.95em; margin-top:8px;"></div>
+      </div>
+    </div>
+    
+    <div id="createModal" class="modal-overlay" style="display:none;">
+      <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+        <div class="modal-header">
+          <h3 id="createModalTitle">Crear Nuevo Registro</h3>
+          <button id="closeCreateModal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">&times;</button>
+        </div>
+        <form id="createForm">
+          <div id="createFormFields"></div>
+          <div class="modal-actions" style="margin-top: 20px;">
+            <button type="button" id="cancelCreateBtn">Cancelar</button>
+            <button type="submit" id="saveCreateBtn">Crear Registro</button>
+          </div>
+        </form>
+        <div id="createError" style="color:red; display:none; font-size:0.95em; margin-top:8px;"></div>
       </div>
     </div>
   `;
@@ -781,10 +972,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Función para mostrar el modal de edición
   function showEditModal(row, entity) {
+    console.log('🔍 showEditModal llamado con:', { row, entity });
+    
     const modal = document.getElementById('editModal');
     const formFields = document.getElementById('editFormFields');
     const editError = document.getElementById('editError');
     const editModalTitle = document.getElementById('editModalTitle');
+    
+    if (!modal || !formFields || !editError || !editModalTitle) {
+      console.error('❌ Elementos del modal no encontrados:', { modal, formFields, editError, editModalTitle });
+      return;
+    }
+    
+    console.log('✅ Elementos del modal encontrados');
     
     // Limpiar errores previos
     editError.style.display = 'none';
@@ -792,35 +992,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar título del modal
     editModalTitle.textContent = `Editar ${entity}`;
     
-    // Generar campos del formulario según la entidad
-    let formHtml = '';
-    const columns = Object.keys(row);
+    // Guardar el ID de la reserva actual si estamos editando una reserva
+    if (entity === 'Reservas' && row.id_reserva) {
+      modal.dataset.currentReservaId = row.id_reserva;
+    } else {
+      delete modal.dataset.currentReservaId;
+    }
     
-    columns.forEach(col => {
-      // Omitir campos de ID (claves primarias)
-      if (col.startsWith('id_') && col !== 'id_tipo_habitacion' && col !== 'id_estado_habitacion' && 
-          col !== 'id_rol_empleado' && col !== 'id_turno_empleado' && col !== 'id_tipo_reserva' && 
-          col !== 'id_metodo_pago' && col !== 'id_estado_estancia' && col !== 'id_estado_mantenimiento') {
-        return; // Saltar este campo
-      }
-      
-      const value = row[col];
-      const displayName = getDisplayName(col);
-      const fieldType = getFieldType(col, value);
-      const fieldValue = formatFieldValueForInput(value, col);
-      
-      formHtml += `
-        <div class="form-field" style="margin-bottom: 15px;">
-          <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
-            ${displayName}:
-          </label>
-          ${generateInputField(col, fieldType, fieldValue)}
-        </div>
-      `;
-    });
-    
-    formFields.innerHTML = formHtml;
+    // Mostrar el modal primero
     modal.style.display = 'flex';
+    console.log('✅ Modal mostrado');
+    
+    // Mostrar un mensaje de carga temporal
+    formFields.innerHTML = '<div style="text-align: center; padding: 20px;">Cargando formulario...</div>';
+    
+    // Cargar datos y generar formulario de manera asíncrona
+    loadEditFormData(row, entity);
     
     // Configurar eventos del modal
     document.getElementById('closeEditModal').onclick = () => {
@@ -836,6 +1023,581 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       await handleEditSubmit(row, entity);
     };
+  }
+  
+  // Función para cargar los datos del formulario de edición
+  async function loadEditFormData(row, entity) {
+    const formFields = document.getElementById('editFormFields');
+    let formHtml = '';
+    const columns = Object.keys(row);
+    
+    console.log('🔍 loadEditFormData - Datos recibidos:', { row, entity, columns });
+    
+    // Cargar datos adicionales según la entidad
+    let tiposHabitacion = [];
+    let estadosHabitacion = [];
+    let rolesEmpleado = [];
+    let turnosEmpleado = [];
+    let tiposReserva = [];
+    let huespedes = [];
+    let habitaciones = [];
+    let estadosEstancia = [];
+    let reservasConHuesped = [];
+    
+    if (entity === 'Habitación') {
+      try {
+        const [tiposRes, estadosRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/tipo_habitacion`),
+          fetch(`${API_BASE_URL}/api/estado_habitacion`)
+        ]);
+        
+        if (tiposRes.ok) tiposHabitacion = await tiposRes.json();
+        if (estadosRes.ok) estadosHabitacion = await estadosRes.json();
+      } catch (error) {
+        console.error('Error cargando datos para selectores:', error);
+      }
+    }
+    
+    if (entity === 'Empleado') {
+      try {
+        console.log('🔄 Cargando datos para empleados...');
+        const [rolesRes, turnosRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/rol_empleado`),
+          fetch(`${API_BASE_URL}/api/turno_empleado`)
+        ]);
+        
+        if (rolesRes.ok) {
+          rolesEmpleado = await rolesRes.json();
+          console.log('✅ Roles cargados:', rolesEmpleado);
+        }
+        if (turnosRes.ok) {
+          turnosEmpleado = await turnosRes.json();
+          console.log('✅ Turnos cargados:', turnosEmpleado);
+        }
+      } catch (error) {
+        console.error('Error cargando datos para selectores de empleado:', error);
+      }
+    }
+    
+    if (entity === 'Reservas') {
+      try {
+        console.log('🔄 Cargando datos para reservas...');
+        const [tiposRes, huespedesRes, habitacionesRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/tipo_reserva`),
+          fetch(`${API_BASE_URL}/api/huesped`),
+          fetch(`${API_BASE_URL}/api/habitacion`)
+        ]);
+        
+        if (tiposRes.ok) {
+          tiposReserva = await tiposRes.json();
+          console.log('✅ Tipos de reserva cargados:', tiposReserva);
+        }
+        if (huespedesRes.ok) {
+          huespedes = await huespedesRes.json();
+          console.log('✅ Huéspedes cargados:', huespedes);
+        }
+        if (habitacionesRes.ok) {
+          habitaciones = await habitacionesRes.json();
+          console.log('✅ Habitaciones cargadas:', habitaciones);
+        }
+      } catch (error) {
+        console.error('Error cargando datos para selectores de reserva:', error);
+      }
+    }
+    
+    if (entity === 'Estancia') {
+      try {
+        console.log('🔄 Cargando datos para estancias...');
+        const [estadosRes, reservasRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/estado_estancia`),
+          fetch(`${API_BASE_URL}/api/estancia/reservas-con-huesped`)
+        ]);
+        
+        if (estadosRes.ok) {
+          estadosEstancia = await estadosRes.json();
+          console.log('✅ Estados de estancia cargados:', estadosEstancia);
+        }
+        if (reservasRes.ok) {
+          reservasConHuesped = await reservasRes.json();
+          console.log('✅ Reservas con huésped cargadas:', reservasConHuesped);
+        }
+      } catch (error) {
+        console.error('Error cargando datos para selectores de estancia:', error);
+      }
+    }
+    
+    if (entity === 'Mantenimiento') {
+      try {
+        console.log('🔄 Cargando datos para mantenimiento...');
+        const [estadosRes, habitacionesRes, empleadosRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/estado_mantenimiento`),
+          fetch(`${API_BASE_URL}/api/habitacion`),
+          fetch(`${API_BASE_URL}/api/empleado`)
+        ]);
+        
+        if (estadosRes.ok) {
+          const estadosMantenimiento = await estadosRes.json();
+          console.log('✅ Estados de mantenimiento cargados:', estadosMantenimiento);
+          window.estadosMantenimiento = estadosMantenimiento;
+        }
+        
+        if (habitacionesRes.ok) {
+          const habitaciones = await habitacionesRes.json();
+          console.log('✅ Habitaciones cargadas:', habitaciones);
+          window.habitaciones = habitaciones;
+        }
+        
+        if (empleadosRes.ok) {
+          const empleados = await empleadosRes.json();
+          console.log('✅ Empleados cargados:', empleados);
+          window.empleados = empleados;
+        }
+      } catch (error) {
+        console.error('Error cargando datos para selectores de mantenimiento:', error);
+      }
+    }
+    
+    columns.forEach(col => {
+      console.log(`🔍 Procesando campo: ${col} (entity: ${entity})`);
+      
+      // Debug: Mostrar todos los campos para estancias
+      if (entity === 'Estancia') {
+        console.log(`🔍 [ESTANCIA] Campo: ${col}, Tipo: ${typeof col}, Valor: ${row[col]}`);
+        
+        // Debug específico para placa_vehiculo
+        if (col === 'placa_vehiculo') {
+          console.log(`🔍 [PLACA] Campo placa_vehiculo encontrado con valor: ${row[col]}`);
+        }
+      }
+      
+      // PRIMERA PRIORIDAD: Omitir campos de ID principal inmediatamente
+      const idFields = ['id_estancia', 'id_huesped', 'id_mantenimiento', 'id'];
+      if (idFields.includes(col.toLowerCase())) {
+        console.log(`⏭️ Saltando campo ID principal (lista): ${col}`);
+        return; // Saltar este campo
+      }
+      
+      // Para estancias, omitir el campo id_estancia (ID principal) - redundante pero seguro
+      if (entity === 'Estancia' && (col === 'id_estancia' || col === 'ID' || col === 'id')) {
+        console.log(`⏭️ Saltando campo ID principal de estancia: ${col}`);
+        return; // Saltar este campo
+      }
+      
+      // Omitir campos de ID (claves primarias) excepto los que necesitamos
+      if (col.startsWith('id_') && col !== 'id_tipo_habitacion' && col !== 'id_estado_habitacion' && 
+          col !== 'id_rol_empleado' && col !== 'id_turno_empleado' && col !== 'id_tipo_reserva' && 
+          col !== 'id_huesped' && col !== 'id_habitacion' && col !== 'id_reserva' && 
+          col !== 'id_metodo_pago' && col !== 'id_estado_estancia' && col !== 'id_estado_mantenimiento') {
+        console.log(`⏭️ Saltando campo ID: ${col}`);
+        return; // Saltar este campo
+      }
+      
+      // Omitir campos de nombre descriptivo ya que se mostrarán a través de selectores
+      if (col === 'nombre_tipo' || col === 'nombre_estado' || col === 'nombre_rol' || 
+          col === 'nombre_turno' || col === 'nombre_tipo_reserva' || 
+          col === 'nombre_huesped' || col === 'apellido_huesped' || col === 'numero_habitacion' ||
+          col === 'nombre_completo_huesped' || col === 'fecha_checkin_prevista' || col === 'fecha_checkout_prevista' ||
+          col === 'nombre_empleado' || col === 'apellido_empleado') {
+        console.log(`⏭️ Saltando campo descriptivo: ${col}`);
+        return; // Saltar estos campos
+      }
+      
+      // Asegurar que el campo placa_vehiculo se incluya en estancias
+      if (entity === 'Estancia' && col === 'placa_vehiculo') {
+        console.log(`🔍 [PLACA] Campo placa_vehiculo será procesado específicamente`);
+      }
+      
+      // Omitir campos de auditoría (fechas de creación y modificación)
+      if (col === 'fecha_creacion' || col === 'fecha_modificacion') {
+        console.log(`⏭️ Saltando campo de auditoría: ${col}`);
+        return; // Saltar este campo
+      }
+      
+      // Para habitaciones, mostrar el precio base por noche como campo editable
+      if (entity === 'Habitación' && col === 'precio_base_por_noche') {
+        const value = row[col];
+        formHtml += `
+          <div class="form-field" style="margin-bottom: 15px;">
+            <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+              Precio Base Por Noche:
+            </label>
+            <input 
+              type="number" 
+              step="0.01" 
+              min="0" 
+              id="${col}" 
+              name="${col}" 
+              value="${value}"
+              style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+            >
+            <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
+              ⚠️ Al cambiar este precio, se actualizará para todas las habitaciones del mismo tipo.
+            </small>
+          </div>
+        `;
+        return;
+      }
+      
+      const value = row[col];
+      const displayName = getDisplayName(col);
+      const fieldType = getFieldType(col, value);
+      const fieldValue = formatFieldValueForInput(value, col);
+      
+      // Generar campos especiales para habitaciones
+      if (entity === 'Habitación') {
+        if (col === 'id_tipo_habitacion') {
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Tipo de Habitación:
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                ${tiposHabitacion.map(tipo => 
+                  `<option value="${tipo.id_tipo_habitacion}" ${tipo.id_tipo_habitacion == value ? 'selected' : ''}>
+                    ${tipo.nombre_tipo}
+                  </option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          return;
+        }
+        
+        if (col === 'id_estado_habitacion') {
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Estado de Habitación:
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                ${estadosHabitacion.map(estado => 
+                  `<option value="${estado.id_estado_habitacion}" ${estado.id_estado_habitacion == value ? 'selected' : ''}>
+                    ${estado.nombre_estado}
+                  </option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          return;
+        }
+      }
+      
+      // Generar campos especiales para empleados
+      if (entity === 'Empleado') {
+        if (col === 'id_rol_empleado') {
+          console.log(`🎯 Generando selector de rol para empleado. Valor actual: ${value}`);
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Rol del Empleado:
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                ${rolesEmpleado.map(rol => 
+                  `<option value="${rol.id_rol_empleado}" ${rol.id_rol_empleado == value ? 'selected' : ''}>
+                    ${rol.nombre_rol}
+                  </option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          return;
+        }
+        
+        if (col === 'id_turno_empleado') {
+          console.log(`🎯 Generando selector de turno para empleado. Valor actual: ${value}`);
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Turno del Empleado:
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                ${turnosEmpleado.map(turno => 
+                  `<option value="${turno.id_turno_empleado}" ${turno.id_turno_empleado == value ? 'selected' : ''}>
+                    ${turno.nombre_turno}
+                  </option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          return;
+        }
+      }
+      
+      // Generar campos especiales para reservas
+      if (entity === 'Reservas') {
+        if (col === 'id_tipo_reserva') {
+          console.log(`🎯 Generando selector de tipo de reserva. Valor actual: ${value}`);
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Tipo de Reserva:
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                ${tiposReserva.map(tipo => 
+                  `<option value="${tipo.id_tipo_reserva}" ${tipo.id_tipo_reserva == value ? 'selected' : ''}>
+                    ${tipo.nombre_tipo}
+                  </option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          return;
+        }
+        
+        if (col === 'id_huesped') {
+          console.log(`🎯 Generando selector de huésped. Valor actual: ${value}`);
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Huésped:
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                ${huespedes.map(huesped => 
+                  `<option value="${huesped.id_huesped}" ${huesped.id_huesped == value ? 'selected' : ''}>
+                    ${huesped.nombre} ${huesped.apellido_paterno} ${huesped.apellido_materno || ''}
+                  </option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          return;
+        }
+        
+        if (col === 'id_habitacion') {
+          console.log(`🎯 Generando selector de habitación. Valor actual: ${value}`);
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Habitación:
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="verificarDisponibilidadHabitacion(this.value)">
+                ${habitaciones.map(habitacion => 
+                  `<option value="${habitacion.id_habitacion}" ${habitacion.id_habitacion == value ? 'selected' : ''}>
+                    Habitación ${habitacion.numero_habitacion}
+                  </option>`
+                ).join('')}
+              </select>
+              <div id="disponibilidad-info" style="margin-top: 8px; font-size: 12px;"></div>
+            </div>
+          `;
+          return;
+        }
+      }
+      
+      // Generar campos especiales para estancias
+      if (entity === 'Estancia') {
+        if (col === 'id_reserva') {
+          console.log(`🎯 Generando selector de reserva para estancia. Valor actual: ${value}`);
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Reserva (Huésped):
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="actualizarHuespedDesdeReserva(this.value)">
+                ${reservasConHuesped.map(reserva => 
+                  `<option value="${reserva.id_reserva}" data-huesped-id="${reserva.id_huesped}" ${reserva.id_reserva == value ? 'selected' : ''}>
+                    ${reserva.descripcion_reserva}
+                  </option>`
+                ).join('')}
+              </select>
+            </div>
+            <!-- Campo oculto para id_huesped -->
+            <input type="hidden" id="id_huesped" name="id_huesped" value="${row.id_huesped || ''}">
+          `;
+          return;
+        }
+        
+        if (col === 'id_estado_estancia') {
+          console.log(`🎯 Generando selector de estado para estancia. Valor actual: ${value}`);
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Estado de Estancia:
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                ${estadosEstancia.map(estado => 
+                  `<option value="${estado.id_estado_estancia}" ${estado.id_estado_estancia == value ? 'selected' : ''}>
+                    ${estado.nombre_estado}
+                  </option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          return;
+        }
+        
+        if (col === 'vehiculo_registrado') {
+          console.log(`🎯 Generando selector de vehículo registrado. Valor actual: ${value}`);
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Vehículo Registrado:
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="togglePlacaVehiculo(this.value)">
+                <option value="0" ${value == 0 ? 'selected' : ''}>No</option>
+                <option value="1" ${value == 1 ? 'selected' : ''}>Sí</option>
+              </select>
+            </div>
+          `;
+          return;
+        }
+        
+        if (col === 'requiere_factura') {
+          console.log(`🎯 Generando selector de requiere factura. Valor actual: ${value}`);
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Requiere Factura:
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="0" ${value == 0 ? 'selected' : ''}>No</option>
+                <option value="1" ${value == 1 ? 'selected' : ''}>Sí</option>
+              </select>
+            </div>
+          `;
+          return;
+        }
+      }
+      
+      // Generar campos especiales para mantenimiento
+      if (entity === 'Mantenimiento') {
+        if (col === 'id_habitacion') {
+          console.log(`🎯 Generando selector de habitación para mantenimiento. Valor actual: ${value}`);
+          const habitaciones = window.habitaciones || [];
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Habitación:
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                ${habitaciones.map(habitacion => 
+                  `<option value="${habitacion.id_habitacion}" ${habitacion.id_habitacion == value ? 'selected' : ''}>
+                    Habitación ${habitacion.numero_habitacion}
+                  </option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          return;
+        }
+        
+        if (col === 'id_empleado') {
+          console.log(`🎯 Generando selector de empleado para mantenimiento. Valor actual: ${value}`);
+          const empleados = window.empleados || [];
+          // Filtrar solo empleados del área de limpieza (id_rol_empleado = 2)
+          const empleadosLimpieza = empleados.filter(empleado => empleado.id_rol_empleado === 2);
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Empleado de Limpieza:
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Sin asignar</option>
+                ${empleadosLimpieza.map(empleado => 
+                  `<option value="${empleado.id_empleado}" ${empleado.id_empleado == value ? 'selected' : ''}>
+                    ${empleado.nombre} ${empleado.apellido_paterno}
+                  </option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          return;
+        }
+        
+        if (col === 'id_estado_mantenimiento') {
+          console.log(`🎯 Generando selector de estado para mantenimiento. Valor actual: ${value}`);
+          const estadosMantenimiento = window.estadosMantenimiento || [];
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+                Estado de Mantenimiento:
+              </label>
+              <select id="${col}" name="${col}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                ${estadosMantenimiento.map(estado => 
+                  `<option value="${estado.id_estado_mantenimiento}" ${estado.id_estado_mantenimiento == value ? 'selected' : ''}>
+                    ${estado.nombre_estado}
+                  </option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          return;
+        }
+      }
+      
+      // Debug específico para placa_vehiculo
+      if (col === 'placa_vehiculo') {
+        console.log(`🔍 [PLACA] Generando campo placa_vehiculo con valor: ${fieldValue}`);
+      }
+      
+      // Generar campo especial para placa_vehiculo en estancias
+      if (entity === 'Estancia' && col === 'placa_vehiculo') {
+        console.log(`🎯 Generando campo especial de placa de vehículo. Valor actual: ${fieldValue}`);
+        formHtml += `
+          <div class="form-field" style="margin-bottom: 15px;" id="placa_vehiculo_container">
+            <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+              Placa Vehículo:
+            </label>
+            <input 
+              type="text" 
+              id="${col}" 
+              name="${col}" 
+              value="${fieldValue}"
+              style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+              placeholder="Ingrese la placa del vehículo"
+            >
+          </div>
+        `;
+        return;
+      }
+      
+      formHtml += `
+        <div class="form-field" style="margin-bottom: 15px;">
+          <label for="${col}" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">
+            ${displayName}:
+          </label>
+          ${generateInputField(col, fieldType, fieldValue)}
+        </div>
+      `;
+    });
+    
+    console.log(`📝 Formulario final generado para ${entity}:`, formHtml);
+    formFields.innerHTML = formHtml;
+    
+    // Agregar event listeners para fechas si es una reserva
+    if (entity === 'Reservas') {
+      setTimeout(() => {
+        agregarEventListenersFechas();
+        // Verificar disponibilidad inicial
+        const habitacionSelect = document.getElementById('id_habitacion');
+        if (habitacionSelect) {
+          verificarDisponibilidadHabitacion(habitacionSelect.value);
+        }
+      }, 100);
+    }
+    
+    // Agregar event listeners para estancias
+    if (entity === 'Estancia') {
+      setTimeout(() => {
+        // Configurar visibilidad inicial del campo placa_vehiculo
+        const vehiculoSelect = document.getElementById('vehiculo_registrado');
+        if (vehiculoSelect) {
+          console.log(`🔧 Configurando visibilidad inicial del campo placa_vehiculo con valor: ${vehiculoSelect.value}`);
+          togglePlacaVehiculo(vehiculoSelect.value);
+        } else {
+          console.warn('⚠️ No se encontró el selector de vehículo registrado');
+        }
+        
+        // Configurar el id_huesped inicial basado en la reserva seleccionada
+        const reservaSelect = document.getElementById('id_reserva');
+        if (reservaSelect) {
+          console.log(`🔧 Configurando id_huesped inicial basado en la reserva seleccionada: ${reservaSelect.value}`);
+          actualizarHuespedDesdeReserva(reservaSelect.value);
+        } else {
+          console.warn('⚠️ No se encontró el selector de reserva');
+        }
+      }, 100);
+    }
   }
 
   // Función para determinar el tipo de campo
@@ -872,9 +1634,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     if (fieldName.includes('hora_') || fieldName.includes('Hora')) {
+      // Si el valor ya es una hora en formato HH:MM:SS, devolverlo tal como está
+      if (typeof value === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(value)) {
+        return value;
+      }
+      
+      // Si es un objeto Date, convertirlo a formato HH:MM:SS
       const date = new Date(value);
       if (!isNaN(date.getTime())) {
         return date.toTimeString().split(' ')[0]; // Formato HH:MM:SS
+      }
+      
+      // Si es un string con formato de datetime, extraer solo la hora
+      if (typeof value === 'string' && value.includes('T')) {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          return date.toTimeString().split(' ')[0]; // Formato HH:MM:SS
+        }
       }
     }
     
@@ -920,7 +1696,78 @@ document.addEventListener('DOMContentLoaded', function() {
       // Convertir FormData a objeto
       const updatedData = {};
       for (let [key, value] of formData.entries()) {
-        updatedData[key] = value;
+        // Validar que no se envíen valores 'undefined' como string
+        if (value === 'undefined' || value === 'null') {
+          console.warn(`⚠️ Valor inválido para ${key}: ${value}`);
+          continue; // Saltar este campo
+        }
+        
+        // Procesar campos de hora para convertirlos a formato MySQL
+        if (key.includes('hora_') || key.includes('Hora')) {
+          if (value && value.trim() !== '') {
+            // Si es solo hora (HH:MM:SS), convertir a datetime de hoy
+            if (/^\d{2}:\d{2}:\d{2}$/.test(value)) {
+              const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+              updatedData[key] = `${today} ${value}`;
+              console.log(`🕐 Campo de hora ${key} convertido: ${value} -> ${updatedData[key]}`);
+            } else {
+              updatedData[key] = value;
+            }
+          } else {
+            updatedData[key] = value;
+          }
+        } else {
+          updatedData[key] = value;
+        }
+      }
+      
+      // Validación específica para estancias
+      if (entity === 'Estancia') {
+        console.log('🔍 Validando datos de estancia:', updatedData);
+        
+        if (!updatedData.id_reserva || updatedData.id_reserva === 'undefined') {
+          editError.textContent = 'Error: Debe seleccionar una reserva válida';
+          editError.style.display = 'block';
+          return;
+        }
+        
+        if (!updatedData.id_huesped || updatedData.id_huesped === 'undefined') {
+          editError.textContent = 'Error: No se pudo obtener el huésped de la reserva seleccionada';
+          editError.style.display = 'block';
+          return;
+        }
+        
+        // Validar placa de vehículo si está registrado
+        if (updatedData.vehiculo_registrado === '1' && (!updatedData.placa_vehiculo || updatedData.placa_vehiculo.trim() === '')) {
+          editError.textContent = 'Error: Si el vehículo está registrado, debe ingresar la placa del vehículo';
+          editError.style.display = 'block';
+          return;
+        }
+        
+        console.log('✅ Datos de estancia válidos:', {
+          id_reserva: updatedData.id_reserva,
+          id_huesped: updatedData.id_huesped,
+          vehiculo_registrado: updatedData.vehiculo_registrado,
+          placa_vehiculo: updatedData.placa_vehiculo
+        });
+      }
+      
+      // Verificar si se está cambiando el precio en una habitación
+      if (entity === 'Habitación' && updatedData.precio_base_por_noche !== undefined) {
+        const precioOriginal = parseFloat(originalRow.precio_base_por_noche);
+        const precioNuevo = parseFloat(updatedData.precio_base_por_noche);
+        
+        if (precioOriginal !== precioNuevo) {
+          const confirmar = confirm(
+            `¿Estás seguro de que quieres cambiar el precio de ${precioOriginal} a ${precioNuevo}?\n\n` +
+            `⚠️ ADVERTENCIA: Este cambio afectará a TODAS las habitaciones del tipo "${originalRow.nombre_tipo}".\n\n` +
+            `¿Deseas continuar?`
+          );
+          
+          if (!confirmar) {
+            return; // Cancelar la actualización
+          }
+        }
       }
       
       // Obtener el ID del registro
@@ -953,8 +1800,19 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('editModal').style.display = 'none';
         loadEntityTable(entity);
         
-        // Mostrar mensaje de éxito
-        showSuccessMessage('Registro actualizado correctamente');
+        // Mostrar mensaje de éxito específico si se cambió el precio
+        if (entity === 'Habitación' && updatedData.precio_base_por_noche !== undefined) {
+          const precioOriginal = parseFloat(originalRow.precio_base_por_noche);
+          const precioNuevo = parseFloat(updatedData.precio_base_por_noche);
+          
+          if (precioOriginal !== precioNuevo) {
+            showSuccessMessage(`Precio actualizado correctamente. El nuevo precio de ${precioNuevo} se aplicará a todas las habitaciones del tipo "${originalRow.nombre_tipo}".`);
+          } else {
+            showSuccessMessage('Registro actualizado correctamente');
+          }
+        } else {
+          showSuccessMessage('Registro actualizado correctamente');
+        }
       } else {
         const errorData = await response.json();
         editError.textContent = errorData.error || 'Error al actualizar el registro';
@@ -992,12 +1850,20 @@ document.addEventListener('DOMContentLoaded', function() {
   entityTableContainer.addEventListener('click', function(e) {
     // Manejar botones de editar
     if (e.target.closest('.edit-btn')) {
+      console.log('🔘 Botón editar clickeado');
       const card = e.target.closest('.data-card');
       const index = Array.from(document.querySelectorAll('.data-card')).indexOf(card);
       const entity = entityTitle.textContent;
       const row = (typeof originalData !== 'undefined' && originalData[index]) ? originalData[index] : null;
-      if (!row) return;
       
+      console.log('📋 Datos encontrados:', { index, entity, row });
+      
+      if (!row) {
+        console.error('❌ No se encontraron datos para editar');
+        return;
+      }
+      
+      console.log('✅ Llamando a showEditModal');
       showEditModal(row, entity);
       return;
     }
@@ -1088,6 +1954,1193 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   });
+
+  // Función para verificar disponibilidad de habitación
+  async function verificarDisponibilidadHabitacion(habitacionId) {
+    const disponibilidadInfo = document.getElementById('disponibilidad-info');
+    const fechaCheckin = document.getElementById('fecha_checkin_prevista');
+    const fechaCheckout = document.getElementById('fecha_checkout_prevista');
+    
+    if (!fechaCheckin || !fechaCheckout || !habitacionId) {
+      disponibilidadInfo.innerHTML = '';
+      return;
+    }
+    
+    const checkin = fechaCheckin.value;
+    const checkout = fechaCheckout.value;
+    
+    if (!checkin || !checkout) {
+      disponibilidadInfo.innerHTML = '<span style="color: #666;">Selecciona las fechas para verificar disponibilidad</span>';
+      return;
+    }
+    
+    // Obtener el ID de la reserva actual si estamos editando
+    const editModal = document.getElementById('editModal');
+    const reservaId = editModal.dataset.currentReservaId || null;
+    
+    try {
+      disponibilidadInfo.innerHTML = '<span style="color: #666;">Verificando disponibilidad...</span>';
+      
+      const url = `${API_BASE_URL}/api/reserva/verificar-disponibilidad/${habitacionId}?fecha_checkin=${checkin}&fecha_checkout=${checkout}${reservaId ? `&reserva_id=${reservaId}` : ''}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (data.disponible) {
+        disponibilidadInfo.innerHTML = '<span style="color: #4CAF50;">✅ Habitación disponible en las fechas seleccionadas</span>';
+      } else {
+        let conflictosHtml = '<span style="color: #f44336;">❌ Habitación no disponible. Conflictos:</span><ul style="margin: 5px 0 0 20px; font-size: 11px;">';
+        data.conflictos.forEach(conflicto => {
+          const checkinDate = conflicto.fecha_checkin_prevista.split('T')[0];
+          const checkoutDate = conflicto.fecha_checkout_prevista.split('T')[0];
+          conflictosHtml += `<li><b>Reserva #${conflicto.id_reserva}</b>: ${conflicto.nombre_huesped} ${conflicto.apellido_huesped} (${checkinDate} - ${checkoutDate})</li>`;
+        });
+        conflictosHtml += '</ul>';
+        disponibilidadInfo.innerHTML = conflictosHtml;
+      }
+    } catch (error) {
+      disponibilidadInfo.innerHTML = '<span style="color: #f44336;">Error al verificar disponibilidad</span>';
+      console.error('Error verificando disponibilidad:', error);
+    }
+  }
+
+  // Función para verificar disponibilidad cuando cambian las fechas
+  function verificarDisponibilidadEnCambioFecha() {
+    const habitacionSelect = document.getElementById('id_habitacion');
+    if (habitacionSelect) {
+      verificarDisponibilidadHabitacion(habitacionSelect.value);
+    }
+  }
+
+  // Agregar event listeners para las fechas cuando se genera el formulario
+  function agregarEventListenersFechas() {
+    const fechaCheckin = document.getElementById('fecha_checkin_prevista');
+    const fechaCheckout = document.getElementById('fecha_checkout_prevista');
+    
+    if (fechaCheckin) {
+      fechaCheckin.addEventListener('change', verificarDisponibilidadEnCambioFecha);
+    }
+    if (fechaCheckout) {
+      fechaCheckout.addEventListener('change', verificarDisponibilidadEnCambioFecha);
+    }
+  }
+
+  // Función para actualizar el huésped cuando se selecciona una reserva
+  window.actualizarHuespedDesdeReserva = function(reservaId) {
+    console.log(`🔄 actualizarHuespedDesdeReserva llamado con reservaId: ${reservaId}`);
+    
+    if (!reservaId || reservaId === 'undefined' || reservaId === '') {
+      console.warn('⚠️ reservaId inválido:', reservaId);
+      return;
+    }
+    
+    const reservaSelect = document.getElementById('id_reserva');
+    const huespedInput = document.getElementById('id_huesped');
+    
+    if (!reservaSelect || !huespedInput) {
+      console.warn('⚠️ No se encontraron los elementos necesarios');
+      console.warn('reservaSelect:', reservaSelect);
+      console.warn('huespedInput:', huespedInput);
+      return;
+    }
+    
+    // Obtener la opción seleccionada
+    const selectedOption = reservaSelect.querySelector(`option[value="${reservaId}"]`);
+    if (selectedOption) {
+      const huespedId = selectedOption.getAttribute('data-huesped-id');
+      console.log(`✅ Huésped ID obtenido de la reserva: ${huespedId}`);
+      
+      if (huespedId && huespedId !== 'undefined' && huespedId !== '') {
+        huespedInput.value = huespedId;
+        console.log(`✅ Campo id_huesped actualizado con valor: ${huespedId}`);
+      } else {
+        console.warn('⚠️ No se encontró el ID del huésped en la opción seleccionada o es inválido');
+        console.warn('huespedId:', huespedId);
+      }
+    } else {
+      console.warn('⚠️ No se encontró la opción seleccionada');
+      console.warn('reservaId buscado:', reservaId);
+      console.warn('Opciones disponibles:', Array.from(reservaSelect.options).map(opt => ({value: opt.value, data: opt.getAttribute('data-huesped-id')})));
+    }
+  };
+
+  // Función para mostrar/ocultar el campo de placa de vehículo
+  window.togglePlacaVehiculo = function(value) {
+    console.log(`🔧 togglePlacaVehiculo llamado con valor: ${value}`);
+    
+    // Debug: Mostrar todos los campos del formulario
+    const allFormFields = document.querySelectorAll('.form-field');
+    console.log(`🔍 Total de campos en el formulario: ${allFormFields.length}`);
+    allFormFields.forEach((field, index) => {
+      const label = field.querySelector('label');
+      const input = field.querySelector('input, select, textarea');
+      console.log(`🔍 Campo ${index}: Label="${label?.textContent}", Input="${input?.id || input?.name}"`);
+    });
+    
+    // Buscar el campo de placa de vehículo de múltiples formas
+    let placaField = null;
+    
+    // Método 1: Buscar por label
+    const placaLabel = document.querySelector('label[for="placa_vehiculo"]');
+    if (placaLabel) {
+      placaField = placaLabel.parentElement;
+      console.log('✅ Campo encontrado por label');
+    }
+    
+    // Método 2: Buscar por ID del input
+    if (!placaField) {
+      const placaInput = document.getElementById('placa_vehiculo');
+      if (placaInput) {
+        placaField = placaInput.closest('.form-field');
+        console.log('✅ Campo encontrado por input ID');
+      }
+    }
+    
+    // Método 3: Buscar por texto del label
+    if (!placaField) {
+      const labels = document.querySelectorAll('label');
+      for (const label of labels) {
+        if (label.textContent.includes('Placa Vehiculo') || label.textContent.includes('Placa Vehículo') || 
+            label.textContent.includes('Placa') || label.textContent.includes('placa')) {
+          placaField = label.parentElement;
+          console.log('✅ Campo encontrado por texto del label');
+          break;
+        }
+      }
+    }
+    
+    // Método 4: Buscar por nombre del input
+    if (!placaField) {
+      const inputs = document.querySelectorAll('input[name="placa_vehiculo"]');
+      if (inputs.length > 0) {
+        placaField = inputs[0].closest('.form-field');
+        console.log('✅ Campo encontrado por nombre del input');
+      }
+    }
+    
+    // Método 5: Buscar por ID del contenedor
+    if (!placaField) {
+      const container = document.getElementById('placa_vehiculo_container');
+      if (container) {
+        placaField = container;
+        console.log('✅ Campo encontrado por ID del contenedor');
+      }
+    }
+    
+    if (placaField) {
+      console.log(`🔧 Configurando visibilidad del campo placa_vehiculo: ${value === '1' ? 'mostrar' : 'ocultar'}`);
+      
+      if (value === '1') {
+        placaField.style.display = 'block';
+        console.log('✅ Campo placa_vehiculo mostrado');
+      } else {
+        placaField.style.display = 'none';
+        // Limpiar el valor cuando se oculta
+        const placaInput = document.getElementById('placa_vehiculo');
+        if (placaInput) {
+          placaInput.value = '';
+          console.log('✅ Campo placa_vehiculo ocultado y valor limpiado');
+        }
+      }
+    } else {
+      console.warn('⚠️ No se pudo encontrar el campo placa_vehiculo');
+      console.warn('⚠️ Esto puede indicar que el campo no se está generando en el formulario');
+    }
+  }
+
+  // Función para cargar el formulario de creación
+  async function loadCreateForm(entity) {
+    // Ocultar dashboard y mostrar formulario
+    dashboardContainer.style.display = 'none';
+    entityTableContainer.style.display = 'block';
+    entityTableContainer.innerHTML = '<div style="color:#64748b;">Cargando formulario...</div>';
+    
+    try {
+      // Cargar datos adicionales según la entidad
+      let tiposHabitacion = [];
+      let estadosHabitacion = [];
+      let rolesEmpleado = [];
+      let turnosEmpleado = [];
+      let tiposReserva = [];
+      let huespedes = [];
+      let habitaciones = [];
+      let estadosEstancia = [];
+      let reservasConHuesped = [];
+      let estadosMantenimiento = [];
+      let empleados = [];
+      
+      // Cargar datos según la entidad
+      if (entity === 'Habitación') {
+        const [tiposRes, estadosRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/tipo_habitacion`),
+          fetch(`${API_BASE_URL}/api/estado_habitacion`)
+        ]);
+        if (tiposRes.ok) tiposHabitacion = await tiposRes.json();
+        if (estadosRes.ok) estadosHabitacion = await estadosRes.json();
+      }
+      
+      if (entity === 'Empleado') {
+        const [rolesRes, turnosRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/rol_empleado`),
+          fetch(`${API_BASE_URL}/api/turno_empleado`)
+        ]);
+        if (rolesRes.ok) rolesEmpleado = await rolesRes.json();
+        if (turnosRes.ok) turnosEmpleado = await turnosRes.json();
+      }
+      
+      if (entity === 'Reservas') {
+        const [tiposRes, huespedesRes, habitacionesRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/tipo_reserva`),
+          fetch(`${API_BASE_URL}/api/huesped`),
+          fetch(`${API_BASE_URL}/api/habitacion`)
+        ]);
+        if (tiposRes.ok) tiposReserva = await tiposRes.json();
+        if (huespedesRes.ok) huespedes = await huespedesRes.json();
+        if (habitacionesRes.ok) habitaciones = await habitacionesRes.json();
+      }
+      
+      if (entity === 'Estancia') {
+        const [estadosRes, reservasRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/estado_estancia`),
+          fetch(`${API_BASE_URL}/api/estancia/reservas-con-huesped`)
+        ]);
+        if (estadosRes.ok) estadosEstancia = await estadosRes.json();
+        if (reservasRes.ok) reservasConHuesped = await reservasRes.json();
+      }
+      
+      if (entity === 'Mantenimiento') {
+        const [estadosRes, habitacionesRes, empleadosRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/estado_mantenimiento`),
+          fetch(`${API_BASE_URL}/api/habitacion`),
+          fetch(`${API_BASE_URL}/api/empleado`)
+        ]);
+        if (estadosRes.ok) estadosMantenimiento = await estadosRes.json();
+        if (habitacionesRes.ok) habitaciones = await habitacionesRes.json();
+        if (empleadosRes.ok) empleados = await empleadosRes.json();
+      }
+      
+      // Generar formulario según la entidad
+      let formHtml = '<div style="max-width: 600px; margin: 0 auto; padding: 20px;">';
+      formHtml += '<form id="createEntityForm" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">';
+      
+      // Campos específicos según la entidad
+      switch(entity) {
+        case 'Huésped':
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="nombre" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Nombre:</label>
+              <input type="text" id="nombre" name="nombre" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="apellido_paterno" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Apellido Paterno:</label>
+              <input type="text" id="apellido_paterno" name="apellido_paterno" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="apellido_materno" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Apellido Materno:</label>
+              <input type="text" id="apellido_materno" name="apellido_materno" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="email" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Email:</label>
+              <input type="email" id="email" name="email" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="telefono" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Teléfono:</label>
+              <input type="tel" id="telefono" name="telefono" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="fecha_nacimiento" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Fecha de Nacimiento:</label>
+              <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="nacionalidad" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Nacionalidad:</label>
+              <input type="text" id="nacionalidad" name="nacionalidad" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+          `;
+          break;
+          
+        case 'Habitación':
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="numero" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Número de Habitación:</label>
+              <input type="number" id="numero" name="numero" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="verificarNumeroHabitacion(this.value)">
+              <div id="numero-habitacion-info" style="margin-top: 8px; font-size: 12px;"></div>
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="id_tipo_habitacion" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Tipo de Habitación:</label>
+              <select id="id_tipo_habitacion" name="id_tipo_habitacion" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Seleccione un tipo</option>
+                ${tiposHabitacion.map(tipo => 
+                  `<option value="${tipo.id_tipo_habitacion}">${tipo.nombre_tipo}</option>`
+                ).join('')}
+              </select>
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="id_estado_habitacion" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Estado de Habitación:</label>
+              <select id="id_estado_habitacion" name="id_estado_habitacion" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Seleccione un estado</option>
+                ${estadosHabitacion.map(estado => 
+                  `<option value="${estado.id_estado_habitacion}">${estado.nombre_estado}</option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          break;
+          
+        case 'Empleado':
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="nombre" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Nombre:</label>
+              <input type="text" id="nombre" name="nombre" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="apellido_paterno" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Apellido Paterno:</label>
+              <input type="text" id="apellido_paterno" name="apellido_paterno" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="apellido_materno" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Apellido Materno:</label>
+              <input type="text" id="apellido_materno" name="apellido_materno" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="email" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Email:</label>
+              <input type="email" id="email" name="email" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="telefono" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Teléfono:</label>
+              <input type="tel" id="telefono" name="telefono" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="fecha_nacimiento" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Fecha de Nacimiento:</label>
+              <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="fecha_contratacion" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Fecha de Contratación:</label>
+              <input type="date" id="fecha_contratacion" name="fecha_contratacion" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="id_rol_empleado" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Rol del Empleado:</label>
+              <select id="id_rol_empleado" name="id_rol_empleado" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Seleccione un rol</option>
+                ${rolesEmpleado.map(rol => 
+                  `<option value="${rol.id_rol_empleado}">${rol.nombre_rol}</option>`
+                ).join('')}
+              </select>
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="id_turno_empleado" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Turno del Empleado:</label>
+              <select id="id_turno_empleado" name="id_turno_empleado" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Seleccione un turno</option>
+                ${turnosEmpleado.map(turno => 
+                  `<option value="${turno.id_turno_empleado}">${turno.nombre_turno}</option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          break;
+          
+        case 'Reservas':
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="id_huesped" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Huésped:</label>
+              <select id="id_huesped" name="id_huesped" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Seleccione un huésped</option>
+                ${huespedes.map(huesped => 
+                  `<option value="${huesped.id_huesped}">${huesped.nombre} ${huesped.apellido_paterno} ${huesped.apellido_materno || ''}</option>`
+                ).join('')}
+              </select>
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="id_habitacion" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Habitación:</label>
+              <select id="id_habitacion" name="id_habitacion" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="verificarDisponibilidadHabitacionCrear(this.value)">
+                <option value="">Seleccione una habitación</option>
+                ${habitaciones.map(habitacion => 
+                  `<option value="${habitacion.id_habitacion}" data-tipo="${habitacion.id_tipo_habitacion}">Habitación ${habitacion.numero_habitacion}</option>`
+                ).join('')}
+              </select>
+              <div id="disponibilidad-info-crear" style="margin-top: 8px; font-size: 12px;"></div>
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="fecha_reserva" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Fecha de la Reserva:</label>
+              <input type="date" id="fecha_reserva" name="fecha_reserva" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" value="${new Date().toISOString().split('T')[0]}">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="fecha_checkin_prevista" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Fecha de Check-in:</label>
+              <input type="date" id="fecha_checkin_prevista" name="fecha_checkin_prevista" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="calcularPrecioTotal()">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="fecha_checkout_prevista" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Fecha de Check-out:</label>
+              <input type="date" id="fecha_checkout_prevista" name="fecha_checkout_prevista" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="calcularPrecioTotal()">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="precio_total_estimado" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Precio Total Estimado:</label>
+              <input type="number" id="precio_total_estimado" name="precio_total_estimado" readonly style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background-color: #f5f5f5;" placeholder="Se calculará automáticamente">
+              <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
+                💡 El precio se calcula automáticamente basado en la habitación y las fechas seleccionadas
+              </small>
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="id_tipo_reserva" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Tipo de Reserva:</label>
+              <select id="id_tipo_reserva" name="id_tipo_reserva" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Seleccione un tipo</option>
+                ${tiposReserva.map(tipo => 
+                  `<option value="${tipo.id_tipo_reserva}">${tipo.nombre_tipo}</option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          break;
+          
+        case 'Estancia':
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="id_reserva" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Reserva (Huésped):</label>
+              <select id="id_reserva" name="id_reserva" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="actualizarHuespedDesdeReservaCrear(this.value)">
+                <option value="">Seleccione una reserva</option>
+                ${reservasConHuesped.map(reserva => 
+                  `<option value="${reserva.id_reserva}" data-huesped-id="${reserva.id_huesped}">${reserva.descripcion_reserva}</option>`
+                ).join('')}
+              </select>
+            </div>
+            <input type="hidden" id="id_huesped" name="id_huesped" value="">
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="numero_personas" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Número de Personas:</label>
+              <input type="number" id="numero_personas" name="numero_personas" min="1" max="10" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="Ingrese el número de personas">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="hora_checkin" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Hora de Check-in:</label>
+              <input type="time" id="hora_checkin" name="hora_checkin" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="hora_checkout" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Hora de Check-out:</label>
+              <input type="time" id="hora_checkout" name="hora_checkout" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="id_estado_estancia" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Estado de Estancia:</label>
+              <select id="id_estado_estancia" name="id_estado_estancia" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Seleccione un estado</option>
+                ${estadosEstancia.map(estado => 
+                  `<option value="${estado.id_estado_estancia}">${estado.nombre_estado}</option>`
+                ).join('')}
+              </select>
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="vehiculo_registrado" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Vehículo Registrado:</label>
+              <select id="vehiculo_registrado" name="vehiculo_registrado" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="togglePlacaVehiculoCrear(this.value)">
+                <option value="0">No</option>
+                <option value="1">Sí</option>
+              </select>
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;" id="placa_vehiculo_container_crear" style="display:none;">
+              <label for="placa_vehiculo" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Placa Vehículo:</label>
+              <input type="text" id="placa_vehiculo" name="placa_vehiculo" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="Ingrese la placa del vehículo">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="requiere_factura" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Requiere Factura:</label>
+              <select id="requiere_factura" name="requiere_factura" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="0">No</option>
+                <option value="1">Sí</option>
+              </select>
+            </div>
+          `;
+          break;
+          
+        case 'Mantenimiento':
+          formHtml += `
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="id_habitacion" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Habitación:</label>
+              <select id="id_habitacion" name="id_habitacion" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Seleccione una habitación</option>
+                ${habitaciones.map(habitacion => 
+                  `<option value="${habitacion.id_habitacion}">Habitación ${habitacion.numero_habitacion}</option>`
+                ).join('')}
+              </select>
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="id_empleado" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Empleado de Limpieza:</label>
+              <select id="id_empleado" name="id_empleado" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Sin asignar</option>
+                ${empleados.filter(emp => emp.id_rol_empleado === 2).map(empleado => 
+                  `<option value="${empleado.id_empleado}">${empleado.nombre} ${empleado.apellido_paterno}</option>`
+                ).join('')}
+              </select>
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="descripcion" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Descripción:</label>
+              <textarea id="descripcion" name="descripcion" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; min-height: 80px; resize: vertical;" placeholder="Describa el mantenimiento requerido"></textarea>
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="fecha_solicitud" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Fecha de Solicitud:</label>
+              <input type="date" id="fecha_solicitud" name="fecha_solicitud" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="fecha_inicio" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Fecha de Inicio:</label>
+              <input type="date" id="fecha_inicio" name="fecha_inicio" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="fecha_fin" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Fecha de Fin:</label>
+              <input type="date" id="fecha_fin" name="fecha_fin" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+              <label for="id_estado_mantenimiento" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Estado de Mantenimiento:</label>
+              <select id="id_estado_mantenimiento" name="id_estado_mantenimiento" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Seleccione un estado</option>
+                ${estadosMantenimiento.map(estado => 
+                  `<option value="${estado.id_estado_mantenimiento}">${estado.nombre_estado}</option>`
+                ).join('')}
+              </select>
+            </div>
+          `;
+          break;
+      }
+      
+      formHtml += `
+        <div style="margin-top: 20px; text-align: center;">
+          <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Crear ${entity}</button>
+        </div>
+      </form>
+      </div>
+      `;
+      
+      entityTableContainer.innerHTML = formHtml;
+      
+      // Configurar el envío del formulario
+      document.getElementById('createEntityForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        await handleCreateSubmit(entity);
+      });
+      
+      // Configurar event listeners específicos según la entidad
+      if (entity === 'Reservas') {
+        setTimeout(() => {
+          const habitacionSelect = document.getElementById('id_habitacion');
+          if (habitacionSelect) {
+            verificarDisponibilidadHabitacionCrear(habitacionSelect.value);
+          }
+        }, 100);
+      }
+      
+      if (entity === 'Estancia') {
+        setTimeout(() => {
+          const vehiculoSelect = document.getElementById('vehiculo_registrado');
+          if (vehiculoSelect) {
+            togglePlacaVehiculoCrear(vehiculoSelect.value);
+          }
+        }, 100);
+      }
+      
+    } catch (error) {
+      entityTableContainer.innerHTML = '<div style="color:red;">Error al cargar el formulario: ' + error.message + '</div>';
+    }
+  }
+
+  // Función para manejar el envío del formulario de creación
+  async function handleCreateSubmit(entity) {
+    const form = document.getElementById('createEntityForm');
+    const formData = new FormData(form);
+    
+    // Validación específica para habitaciones
+    if (entity === 'Habitación') {
+      const numero = formData.get('numero');
+      if (numero) {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/habitacion`);
+          if (response.ok) {
+            const habitaciones = await response.json();
+            const habitacionExistente = habitaciones.find(h => h.numero_habitacion == numero);
+            
+            if (habitacionExistente) {
+              alert('Error: Ya existe una habitación con el número ' + numero);
+              return;
+            }
+          }
+        } catch (error) {
+          console.error('Error validando número de habitación:', error);
+        }
+      }
+    }
+    
+    try {
+      // Convertir FormData a objeto
+      const createData = {};
+      for (let [key, value] of formData.entries()) {
+        if (value === 'undefined' || value === 'null') {
+          continue;
+        }
+        
+        // Procesar campos de hora para convertirlos a formato MySQL
+        if (key.includes('hora_') || key.includes('Hora')) {
+          if (value && value.trim() !== '') {
+            if (/^\d{2}:\d{2}$/.test(value)) {
+              const today = new Date().toISOString().split('T')[0];
+              createData[key] = `${today} ${value}:00`;
+            } else {
+              createData[key] = value;
+            }
+          } else {
+            createData[key] = value;
+          }
+        } else {
+          createData[key] = value;
+        }
+      }
+      
+      // Determinar la URL de la API
+      let apiUrl = '';
+      switch(entity) {
+        case 'Huésped': apiUrl = `${API_BASE_URL}/api/huesped`; break;
+        case 'Habitación': apiUrl = `${API_BASE_URL}/api/habitacion`; break;
+        case 'Empleado': apiUrl = `${API_BASE_URL}/api/empleado`; break;
+        case 'Reservas': apiUrl = `${API_BASE_URL}/api/reserva`; break;
+        case 'Estancia': apiUrl = `${API_BASE_URL}/api/estancia`; break;
+        case 'Mantenimiento': apiUrl = `${API_BASE_URL}/api/mantenimiento`; break;
+        default: throw new Error('Entidad no soportada');
+      }
+      
+      // Realizar la creación
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createData)
+      });
+      
+      if (response.ok) {
+        showSuccessMessage(`${entity} creado correctamente`);
+        // Limpiar el formulario
+        form.reset();
+        // Si es estancia, ocultar el campo de placa
+        if (entity === 'Estancia') {
+          const placaContainer = document.getElementById('placa_vehiculo_container_crear');
+          if (placaContainer) {
+            placaContainer.style.display = 'none';
+          }
+        }
+      } else {
+        const errorData = await response.json();
+        alert('Error al crear el registro: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error) {
+      alert('Error de conexión: ' + error.message);
+    }
+  }
+
+  // Funciones auxiliares para el formulario de creación
+  window.verificarDisponibilidadHabitacionCrear = async function(habitacionId) {
+    const disponibilidadInfo = document.getElementById('disponibilidad-info-crear');
+    const fechaCheckin = document.getElementById('fecha_checkin_prevista');
+    const fechaCheckout = document.getElementById('fecha_checkout_prevista');
+    
+    if (!fechaCheckin || !fechaCheckout || !habitacionId) {
+      disponibilidadInfo.innerHTML = '';
+      // Calcular precio aunque no haya fechas (para mostrar precio base)
+      calcularPrecioTotal();
+      return;
+    }
+    
+    const checkin = fechaCheckin.value;
+    const checkout = fechaCheckout.value;
+    
+    if (!checkin || !checkout) {
+      disponibilidadInfo.innerHTML = '<span style="color: #666;">Selecciona las fechas para verificar disponibilidad</span>';
+      return;
+    }
+    
+    try {
+      disponibilidadInfo.innerHTML = '<span style="color: #666;">Verificando disponibilidad...</span>';
+      
+      const url = `${API_BASE_URL}/api/reserva/verificar-disponibilidad/${habitacionId}?fecha_checkin=${checkin}&fecha_checkout=${checkout}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (data.disponible) {
+        disponibilidadInfo.innerHTML = '<span style="color: #4CAF50;">✅ Habitación disponible en las fechas seleccionadas</span>';
+      } else {
+        let conflictosHtml = '<span style="color: #f44336;">❌ Habitación no disponible. Conflictos:</span><ul style="margin: 5px 0 0 20px; font-size: 11px;">';
+        data.conflictos.forEach(conflicto => {
+          const checkinDate = conflicto.fecha_checkin_prevista.split('T')[0];
+          const checkoutDate = conflicto.fecha_checkout_prevista.split('T')[0];
+          conflictosHtml += `<li><b>Reserva #${conflicto.id_reserva}</b>: ${conflicto.nombre_huesped} ${conflicto.apellido_huesped} (${checkinDate} - ${checkoutDate})</li>`;
+        });
+        conflictosHtml += '</ul>';
+        disponibilidadInfo.innerHTML = conflictosHtml;
+      }
+      
+      // Calcular precio después de verificar disponibilidad
+      calcularPrecioTotal();
+    } catch (error) {
+      disponibilidadInfo.innerHTML = '<span style="color: #f44336;">Error al verificar disponibilidad</span>';
+    }
+  };
+
+  window.verificarDisponibilidadEnCambioFechaCrear = function() {
+    const habitacionSelect = document.getElementById('id_habitacion');
+    if (habitacionSelect) {
+      verificarDisponibilidadHabitacionCrear(habitacionSelect.value);
+    }
+    // También calcular precio cuando cambian las fechas
+    calcularPrecioTotal();
+  };
+
+  window.actualizarHuespedDesdeReservaCrear = function(reservaId) {
+    if (!reservaId || reservaId === 'undefined' || reservaId === '') {
+      return;
+    }
+    
+    const reservaSelect = document.getElementById('id_reserva');
+    const huespedInput = document.getElementById('id_huesped');
+    
+    if (!reservaSelect || !huespedInput) {
+      return;
+    }
+    
+    const selectedOption = reservaSelect.querySelector(`option[value="${reservaId}"]`);
+    if (selectedOption) {
+      const huespedId = selectedOption.getAttribute('data-huesped-id');
+      if (huespedId && huespedId !== 'undefined' && huespedId !== '') {
+        huespedInput.value = huespedId;
+      }
+    }
+  };
+
+  window.togglePlacaVehiculoCrear = function(value) {
+    const placaContainer = document.getElementById('placa_vehiculo_container_crear');
+    const placaInput = document.getElementById('placa_vehiculo');
+    
+    if (placaContainer) {
+      if (value === '1') {
+        placaContainer.style.display = 'block';
+      } else {
+        placaContainer.style.display = 'none';
+        if (placaInput) {
+          placaInput.value = '';
+        }
+      }
+    }
+  };
+
+  // Función para cargar el dashboard
+  async function loadDashboard() {
+    try {
+      console.log('🚀 Iniciando carga del dashboard...');
+      
+      // Verificar que los elementos existan
+      if (!entityTableContainer || !searchFilterContainer || !dashboardContainer || !entityTitle) {
+        console.error('❌ Elementos del DOM no encontrados');
+        throw new Error('Elementos del DOM no encontrados');
+      }
+      
+      // Ocultar contenedores de entidades y mostrar dashboard
+      entityTableContainer.style.display = 'none';
+      searchFilterContainer.style.display = 'none';
+      dashboardContainer.style.display = 'block';
+      
+      // Configurar título
+      entityTitle.textContent = 'Dashboard - Resumen del Hostal';
+      
+      console.log('📡 Realizando llamadas a la API...');
+      console.log('🌐 API_BASE_URL:', API_BASE_URL);
+      
+      // Cargar datos en paralelo
+      const [habitacionesRes, estanciasRes, reservasRes, huespedesRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/habitacion`),
+        fetch(`${API_BASE_URL}/api/estancia`),
+        fetch(`${API_BASE_URL}/api/reserva`),
+        fetch(`${API_BASE_URL}/api/huesped`)
+      ]);
+      
+      console.log('📊 Respuestas de API recibidas:', {
+        habitaciones: habitacionesRes.status,
+        estancias: estanciasRes.status,
+        reservas: reservasRes.status,
+        huespedes: huespedesRes.status
+      });
+      
+      const habitaciones = habitacionesRes.ok ? await habitacionesRes.json() : [];
+      const estancias = estanciasRes.ok ? await estanciasRes.json() : [];
+      const reservas = reservasRes.ok ? await reservasRes.json() : [];
+      const huespedes = huespedesRes.ok ? await huespedesRes.json() : [];
+      
+      console.log('📈 Datos procesados:', {
+        habitaciones: habitaciones.length,
+        estancias: estancias.length,
+        reservas: reservas.length,
+        huespedes: huespedes.length
+      });
+      
+      // Mostrar estructura de datos para debugging
+      if (habitaciones.length > 0) {
+        console.log('🏨 Ejemplo de habitación:', habitaciones[0]);
+      }
+      if (estancias.length > 0) {
+        console.log('🏠 Ejemplo de estancia:', estancias[0]);
+      }
+      if (reservas.length > 0) {
+        console.log('📅 Ejemplo de reserva:', reservas[0]);
+      }
+      
+      // Crear mapa de huéspedes para búsqueda rápida
+      const huespedesMap = {};
+      huespedes.forEach(h => {
+        huespedesMap[h.id_huesped] = h;
+      });
+      
+      // Calcular estadísticas de habitaciones
+      const habitacionesDisponibles = habitaciones.filter(h => h.nombre_estado === 'Disponible').length;
+      const habitacionesOcupadas = habitaciones.filter(h => h.nombre_estado === 'Ocupada').length;
+      const habitacionesReservadas = habitaciones.filter(h => h.nombre_estado === 'Reservada').length;
+      const habitacionesFueraServicio = habitaciones.filter(h => h.nombre_estado === 'Fuera de Servicio').length;
+      
+      console.log('🏨 Estadísticas de habitaciones:', {
+        disponibles: habitacionesDisponibles,
+        ocupadas: habitacionesOcupadas,
+        reservadas: habitacionesReservadas,
+        fueraServicio: habitacionesFueraServicio
+      });
+      
+      // Obtener estancias activas (estado activo)
+      console.log('🏠 Estados de estancia disponibles:', [...new Set(estancias.map(e => e.nombre_estado))]);
+      const estanciasActivas = estancias.filter(e => e.nombre_estado === 'Activa');
+      console.log('👥 Estancias activas encontradas:', estanciasActivas.length);
+      
+      // Obtener próximos check-ins y check-outs (reservas futuras)
+      const hoy = new Date();
+      console.log('📅 Fecha actual:', hoy.toISOString());
+      
+      const proximosCheckins = reservas.filter(r => {
+        try {
+          const fechaCheckin = new Date(r.fecha_checkin_prevista);
+          return fechaCheckin >= hoy;
+        } catch (error) {
+          console.warn('⚠️ Error procesando fecha de check-in:', r.fecha_checkin_prevista);
+          return false;
+        }
+      }).sort((a, b) => {
+        try {
+          return new Date(a.fecha_checkin_prevista) - new Date(b.fecha_checkin_prevista);
+        } catch (error) {
+          return 0;
+        }
+      }).slice(0, 5);
+      
+      const proximosCheckouts = estancias.filter(e => {
+        try {
+          const fechaSalida = new Date(e.fecha_salida);
+          return fechaSalida >= hoy;
+        } catch (error) {
+          console.warn('⚠️ Error procesando fecha de salida:', e.fecha_salida);
+          return false;
+        }
+      }).sort((a, b) => {
+        try {
+          return new Date(a.fecha_salida) - new Date(b.fecha_salida);
+        } catch (error) {
+          return 0;
+        }
+      }).slice(0, 5);
+      
+      // Obtener últimas reservas creadas
+      const ultimasReservas = reservas
+        .sort((a, b) => {
+          try {
+            return new Date(b.fecha_reserva || b.fecha_creacion) - new Date(a.fecha_reserva || a.fecha_creacion);
+          } catch (error) {
+            return 0;
+          }
+        })
+        .slice(0, 5);
+      
+      console.log('📋 Datos filtrados:', {
+        proximosCheckins: proximosCheckins.length,
+        proximosCheckouts: proximosCheckouts.length,
+        ultimasReservas: ultimasReservas.length
+      });
+      
+      // Generar HTML del dashboard
+      let dashboardHtml = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+          <!-- Estadísticas de Habitaciones -->
+          <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <h3 style="color: #23408e; margin: 0 0 15px 0; font-size: 1.2rem;">
+              <i class="fa-solid fa-bed" style="margin-right: 8px;"></i>
+              Estado de Habitaciones
+            </h3>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+              <span style="color: #4CAF50; font-weight: 600;">Disponibles:</span>
+              <span style="font-size: 1.5rem; font-weight: 700; color: #4CAF50;">${habitacionesDisponibles}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+              <span style="color: #FF9800; font-weight: 600;">Ocupadas:</span>
+              <span style="font-size: 1.5rem; font-weight: 700; color: #FF9800;">${habitacionesOcupadas}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+              <span style="color: #9C27B0; font-weight: 600;">Reservadas:</span>
+              <span style="font-size: 1.5rem; font-weight: 700; color: #9C27B0;">${habitacionesReservadas}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #f44336; font-weight: 600;">Fuera de Servicio:</span>
+              <span style="font-size: 1.5rem; font-weight: 700; color: #f44336;">${habitacionesFueraServicio}</span>
+            </div>
+          </div>
+          
+          <!-- Estancias Activas -->
+          <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <h3 style="color: #23408e; margin: 0 0 15px 0; font-size: 1.2rem;">
+              <i class="fa-solid fa-users" style="margin-right: 8px;"></i>
+              Estancias Activas
+            </h3>
+            <div style="font-size: 3rem; font-weight: 700; color: #3b82f6; text-align: center; margin: 20px 0;">
+              ${estanciasActivas.length}
+            </div>
+            <div style="color: #64748b; text-align: center; font-size: 0.9rem;">
+              Huéspedes hospedados actualmente
+            </div>
+          </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+          <!-- Próximos Check-ins -->
+          <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <h3 style="color: #23408e; margin: 0 0 15px 0; font-size: 1.2rem;">
+              <i class="fa-solid fa-sign-in-alt" style="margin-right: 8px;"></i>
+              Próximos Check-ins
+            </h3>
+            ${proximosCheckins.length > 0 ? `
+              <div style="max-height: 300px; overflow-y: auto;">
+                ${proximosCheckins.map(reserva => {
+                  const huesped = huespedesMap[reserva.id_huesped] || {};
+                  const fecha = new Date(reserva.fecha_checkin_prevista).toLocaleDateString();
+                  return `
+                    <div style="padding: 10px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        <div style="font-weight: 600; color: #23408e;">
+                          ${huesped.nombre || 'N/A'} ${huesped.apellido_paterno || ''}
+                        </div>
+                        <div style="font-size: 0.9rem; color: #64748b;">
+                          Habitación ${reserva.numero_habitacion || 'N/A'}
+                        </div>
+                      </div>
+                      <div style="text-align: right;">
+                        <div style="font-weight: 600; color: #4CAF50;">${fecha}</div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            ` : '<div style="color: #64748b; text-align: center; padding: 20px;">No hay check-ins próximos</div>'}
+          </div>
+          
+          <!-- Próximos Check-outs -->
+          <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <h3 style="color: #23408e; margin: 0 0 15px 0; font-size: 1.2rem;">
+              <i class="fa-solid fa-sign-out-alt" style="margin-right: 8px;"></i>
+              Próximos Check-outs
+            </h3>
+            ${proximosCheckouts.length > 0 ? `
+              <div style="max-height: 300px; overflow-y: auto;">
+                ${proximosCheckouts.map(estancia => {
+                  const huesped = huespedesMap[estancia.id_huesped] || {};
+                  const fecha = new Date(estancia.fecha_salida).toLocaleDateString();
+                  return `
+                    <div style="padding: 10px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        <div style="font-weight: 600; color: #23408e;">
+                          ${huesped.nombre || 'N/A'} ${huesped.apellido_paterno || ''}
+                        </div>
+                        <div style="font-size: 0.9rem; color: #64748b;">
+                          Habitación ${estancia.numero_habitacion || 'N/A'}
+                        </div>
+                      </div>
+                      <div style="text-align: right;">
+                        <div style="font-weight: 600; color: #f44336;">${fecha}</div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            ` : '<div style="color: #64748b; text-align: center; padding: 20px;">No hay check-outs próximos</div>'}
+          </div>
+        </div>
+        
+        <!-- Últimas Reservas -->
+        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 20px;">
+          <h3 style="color: #23408e; margin: 0 0 15px 0; font-size: 1.2rem;">
+            <i class="fa-solid fa-calendar-plus" style="margin-right: 8px;"></i>
+            Últimas Reservas Creadas
+          </h3>
+          ${ultimasReservas.length > 0 ? `
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                    <th style="padding: 12px; text-align: left; color: #23408e; font-weight: 600;">Huésped</th>
+                    <th style="padding: 12px; text-align: left; color: #23408e; font-weight: 600;">Habitación</th>
+                    <th style="padding: 12px; text-align: left; color: #23408e; font-weight: 600;">Check-in</th>
+                    <th style="padding: 12px; text-align: left; color: #23408e; font-weight: 600;">Check-out</th>
+                    <th style="padding: 12px; text-align: left; color: #23408e; font-weight: 600;">Fecha Reserva</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${ultimasReservas.map(reserva => {
+                    const huesped = huespedesMap[reserva.id_huesped] || {};
+                    const checkin = new Date(reserva.fecha_checkin_prevista).toLocaleDateString();
+                    const checkout = new Date(reserva.fecha_checkout_prevista).toLocaleDateString();
+                    const fechaReserva = new Date(reserva.fecha_reserva || reserva.fecha_creacion).toLocaleDateString();
+                    return `
+                      <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 12px; font-weight: 500;">
+                          ${huesped.nombre || 'N/A'} ${huesped.apellido_paterno || ''}
+                        </td>
+                        <td style="padding: 12px;">Habitación ${reserva.numero_habitacion || 'N/A'}</td>
+                        <td style="padding: 12px; color: #4CAF50;">${checkin}</td>
+                        <td style="padding: 12px; color: #f44336;">${checkout}</td>
+                        <td style="padding: 12px; color: #64748b;">${fechaReserva}</td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          ` : '<div style="color: #64748b; text-align: center; padding: 20px;">No hay reservas recientes</div>'}
+        </div>
+      `;
+      
+      console.log('🎨 HTML del dashboard generado, aplicando al DOM...');
+      dashboardContainer.innerHTML = dashboardHtml;
+      console.log('✅ Dashboard cargado exitosamente');
+      
+    } catch (error) {
+      console.error('❌ Error cargando dashboard:', error);
+      console.error('📋 Detalles del error:', {
+        message: error.message,
+        stack: error.stack
+      });
+      
+      if (dashboardContainer) {
+        dashboardContainer.innerHTML = `
+          <div style="color: red; text-align: center; padding: 20px; background: #fee; border: 1px solid #fcc; border-radius: 8px;">
+            <h3>Error al cargar el dashboard</h3>
+            <p>${error.message}</p>
+            <button onclick="loadDashboard()" style="margin-top: 10px; padding: 8px 16px; background: #23408e; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              Reintentar
+            </button>
+          </div>
+        `;
+      }
+    }
+  }
+
+  // Función para calcular el precio total estimado
+  window.calcularPrecioTotal = async function() {
+    const habitacionSelect = document.getElementById('id_habitacion');
+    const fechaCheckin = document.getElementById('fecha_checkin_prevista');
+    const fechaCheckout = document.getElementById('fecha_checkout_prevista');
+    const precioInput = document.getElementById('precio_total_estimado');
+    
+    if (!habitacionSelect || !fechaCheckin || !fechaCheckout || !precioInput) {
+      return;
+    }
+    
+    const habitacionId = habitacionSelect.value;
+    const checkin = fechaCheckin.value;
+    const checkout = fechaCheckout.value;
+    
+    if (!habitacionId || !checkin || !checkout) {
+      precioInput.value = '';
+      return;
+    }
+    
+    try {
+      // Obtener información de la habitación y su tipo
+      const habitacionResponse = await fetch(`${API_BASE_URL}/api/habitacion`);
+      if (habitacionResponse.ok) {
+        const habitaciones = await habitacionResponse.json();
+        const habitacion = habitaciones.find(h => h.id_habitacion == habitacionId);
+        
+        if (habitacion) {
+          // Obtener información del tipo de habitación
+          const tipoResponse = await fetch(`${API_BASE_URL}/api/tipo_habitacion`);
+          if (tipoResponse.ok) {
+            const tipos = await tipoResponse.json();
+            const tipo = tipos.find(t => t.id_tipo_habitacion == habitacion.id_tipo_habitacion);
+            
+            if (tipo && tipo.precio_base_por_noche) {
+              // Calcular días de estadía
+              const fechaInicio = new Date(checkin);
+              const fechaFin = new Date(checkout);
+              const diferenciaTiempo = fechaFin.getTime() - fechaInicio.getTime();
+              const diasEstadia = Math.ceil(diferenciaTiempo / (1000 * 3600 * 24));
+              
+              if (diasEstadia > 0) {
+                const precioTotal = tipo.precio_base_por_noche * diasEstadia;
+                precioInput.value = precioTotal.toFixed(2);
+              } else {
+                precioInput.value = '';
+              }
+            } else {
+              precioInput.value = '';
+            }
+          } else {
+            precioInput.value = '';
+          }
+        } else {
+          precioInput.value = '';
+        }
+      } else {
+        precioInput.value = '';
+      }
+    } catch (error) {
+      console.error('Error calculando precio:', error);
+      precioInput.value = '';
+    }
+  };
+
+  // Función para verificar si el número de habitación ya existe
+  window.verificarNumeroHabitacion = async function(numero) {
+    const numeroInfo = document.getElementById('numero-habitacion-info');
+    
+    if (!numero || numero.trim() === '') {
+      numeroInfo.innerHTML = '';
+      return;
+    }
+    
+    try {
+      numeroInfo.innerHTML = '<span style="color: #666;">Verificando número de habitación...</span>';
+      
+      const response = await fetch(`${API_BASE_URL}/api/habitacion`);
+      if (response.ok) {
+        const habitaciones = await response.json();
+        const habitacionExistente = habitaciones.find(h => h.numero_habitacion == numero);
+        
+        if (habitacionExistente) {
+          numeroInfo.innerHTML = '<span style="color: #f44336;">❌ Ya existe una habitación con el número ' + numero + '</span>';
+          // Deshabilitar el botón de crear
+          const submitBtn = document.querySelector('#createEntityForm button[type="submit"]');
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+          }
+        } else {
+          numeroInfo.innerHTML = '<span style="color: #4CAF50;">✅ Número de habitación disponible</span>';
+          // Habilitar el botón de crear
+          const submitBtn = document.querySelector('#createEntityForm button[type="submit"]');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+          }
+        }
+      } else {
+        numeroInfo.innerHTML = '<span style="color: #f44336;">Error al verificar disponibilidad</span>';
+      }
+    } catch (error) {
+      numeroInfo.innerHTML = '<span style="color: #f44336;">Error al verificar disponibilidad</span>';
+      console.error('Error verificando número de habitación:', error);
+    }
+  };
+
+  // Cargar dashboard al inicio después de que todo esté listo
+  console.log('🚀 Iniciando aplicación...');
+  loadDashboard();
 });
 </script>
 </html> 
